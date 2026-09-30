@@ -1,1381 +1,328 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>PV Wiring Lab 3D</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SolarCraft 3D: Energy Architect</title>
 <style>
-:root{
-  --bg:#E8EEF2;--grid:#D3DCE3;--ink:#14263A;--mut:#54657A;--pan:#F7FAFC;
-  --sun:#F2A900;--cu:#B4552D;--tl:#0F8B8D;--bad:#C0392B;--ok:#23804F;
-}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0E1822;--grid:#1B2A37;--ink:#DCE6EE;--mut:#8FA1B2;--pan:#15222E;
-  --sun:#FFC233;--cu:#E08A5E;--tl:#37C1C3;--bad:#FF6B5B;--ok:#5FCB8C;
-}}
 *{box-sizing:border-box}
-body{margin:0;font-family:"IBM Plex Sans",system-ui,sans-serif;color:var(--ink);
-  background:linear-gradient(var(--grid) 1px,transparent 1px) 0 0/24px 24px,
-             linear-gradient(90deg,var(--grid) 1px,transparent 1px) 0 0/24px 24px,var(--bg);
-  min-height:100vh}
-.layout{display:grid;grid-template-columns:300px 1fr;gap:10px;max-width:1440px;margin:0 auto;padding:10px}
-@media(max-width:820px){.layout{grid-template-columns:1fr}}
-h1{font-size:19px;margin:4px 6px}
-h2{font-size:14px;margin:12px 6px 6px;color:var(--mut)}
-.panel{background:var(--pan);border:1.5px solid var(--ink);border-radius:8px;padding:8px}
-.bar{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 10px;background:var(--pan);border:1.5px solid var(--ink);border-radius:8px;margin-bottom:8px;flex-wrap:wrap}
-button{font:inherit;color:var(--ink);background:var(--pan);border:1.5px solid var(--ink);border-radius:6px;min-height:36px;padding:0 10px;cursor:pointer;transition:transform .1s}
-button:active{transform:scale(.97)}
-button[aria-pressed=true]{background:var(--ink);color:var(--pan)}
-#go{background:var(--sun);color:#14263A;font-weight:700;min-width:80px}
-#scene{width:100%;height:520px;background:var(--pan);border:1.5px solid var(--ink);border-radius:8px;overflow:hidden;position:relative;touch-action:none}
-@media(max-width:820px){#scene{height:380px}}
-#scene canvas{display:block}
-.scene-hint{position:absolute;bottom:8px;left:10px;font-size:11px;color:var(--mut);pointer-events:none;background:rgba(255,255,255,.5);padding:2px 6px;border-radius:4px;backdrop-filter:blur(4px)}
-#alert,#diag,#sel{margin:8px 0;padding:8px 12px;border-left:5px solid var(--sun);background:var(--pan);font-size:13.5px;border-radius:6px;min-height:36px}
-#diag{border-color:var(--tl);font-weight:600}
-#sel{border-color:var(--mut);display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0}
-.stats div{background:var(--pan);border:1.5px solid var(--ink);border-radius:6px;padding:6px 4px;text-align:center}
-.stats b{display:block;font-size:16px;font-variant-numeric:tabular-nums}.stats small{color:var(--mut);font-size:11px}
-.cat{margin:6px 0;border:1px solid var(--mut);border-radius:6px;overflow:hidden}
-.cat summary{padding:6px 10px;cursor:pointer;font-weight:700;font-size:13px;list-style:none}
-.cat summary::-webkit-details-marker{display:none}
-.cat summary:before{content:'▸ ';display:inline-block}
-.cat[open] summary:before{content:'▾ '}
-.cat .items{display:grid;gap:4px;padding:6px}
-.item{display:flex;justify-content:space-between;gap:6px;padding:6px 8px;background:var(--pan);border:1px solid var(--mut);border-radius:6px;cursor:grab;font-size:12.5px;user-select:none}
-.item:hover{background:var(--grid)}
-.item .spec{color:var(--mut);font-size:11px}
-.app-card{background:var(--pan);border:1px solid var(--mut);border-radius:6px;padding:6px;margin:4px 0;font-size:12.5px}
-.app-head{display:flex;justify-content:space-between;align-items:center;gap:6px}
-.app-head .name{flex:1}
-.app-head .cnt{min-width:22px;text-align:center;font-weight:700}
-.app-head button{min-height:26px;min-width:26px;padding:0}
-.app-prog{margin-top:5px;padding-top:5px;border-top:1px dashed var(--mut)}
-.app-prog .line{display:flex;align-items:center;gap:5px;flex-wrap:wrap;font-size:11.5px;margin:3px 0}
-.app-prog button{min-height:22px;min-width:24px;padding:0 4px;font-size:11px}
-.app-prog .tm{min-width:42px;text-align:center;font-weight:700;font-variant-numeric:tabular-nums}
-.info{font-size:12px;color:var(--mut);margin:4px 6px}
-.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 4px;font-size:13.5px}
-input[type=range]{flex:1}
-.speed{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin:6px 0}
-.rooms{display:flex;align-items:center;gap:8px;padding:6px;flex-wrap:wrap}
-.rooms select{padding:4px 8px;font:inherit;border:1.5px solid var(--ink);border-radius:6px;background:var(--pan);color:var(--ink)}
-.weather{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px;font-size:12px}
-.weather span{display:flex;justify-content:space-between;padding:3px 6px;background:var(--pan);border:1px solid var(--mut);border-radius:4px}
-.weather b{font-variant-numeric:tabular-nums}
-#info{position:absolute;top:10px;right:10px;background:var(--pan);border:1.5px solid var(--ink);border-radius:8px;padding:8px 10px;font-size:12.5px;min-width:180px;max-width:250px;box-shadow:0 4px 14px rgba(0,0,0,.15);display:none;z-index:5}
-#info h4{margin:0 0 6px;font-size:13px;border-bottom:1px solid var(--mut);padding-bottom:4px}
-#info .kv{display:flex;justify-content:space-between;gap:8px;padding:2px 0;font-variant-numeric:tabular-nums}
-#info .kv span:first-child{color:var(--mut)}
-#info .close{position:absolute;top:4px;right:6px;min-height:20px;padding:0 6px;font-size:12px;line-height:1}
-.gridbadge{position:absolute;top:10px;left:10px;background:var(--pan);border:1.5px solid var(--ink);border-radius:6px;padding:4px 8px;font-size:12px;font-weight:700;z-index:5}
-.gridbadge.on{border-color:var(--ok);color:var(--ok)}
-.gridbadge.off{border-color:var(--bad);color:var(--bad)}
+body{margin:0;background:#f8fafc;color:#1e293b;font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+#app{max-width:980px;margin:0 auto}
+header{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#0f172a;color:#fff;padding:8px 12px}
+header b{font-size:17px;margin-right:auto}header span{font-size:13px;color:#cbd5e1}
+#view{width:100%;height:44vh;min-height:280px;max-height:520px;background:#9fc9ee;touch-action:none;position:relative}
+#view canvas{display:block;width:100%;height:100%}
+#tip{position:absolute;left:8px;bottom:6px;font-size:11px;color:#0f172a;background:#ffffffb0;padding:2px 6px;border-radius:4px}
+nav{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:6px;background:#e2e8f0}
+button{font:inherit;border:1.5px solid #0f172a;background:#fff;color:#0f172a;border-radius:8px;padding:8px 10px;min-height:42px;cursor:pointer}
+button[aria-pressed=true],nav button.on{background:#0f172a;color:#fff}
+button:disabled{opacity:.4;cursor:not-allowed}
+button small{display:block;font-size:11px;opacity:.75;line-height:1.3}
+button:focus-visible,input:focus-visible{outline:3px solid #f59e0b;outline-offset:2px}
+#pn{padding:10px 12px 40px}
+h3{margin:14px 0 6px;font-size:15px}
+.row{display:flex;flex-wrap:wrap;gap:6px}
+.row>button{flex:1 1 140px}
+.k{background:#fff;border:1.5px solid #cbd5e1;border-radius:8px;padding:8px 10px;margin:8px 0;font-size:14px}
+.ok{color:#15803d}.bad{color:#b91c1c}.warn{color:#b45309}
+label{display:block;margin:8px 0;font-size:14px}label input{width:100%}
+.go{background:#f59e0b;border-color:#0f172a;font-weight:700;width:100%;margin-top:10px}
+.stat{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0}
+.stat div{background:#fff;border:1.5px solid #cbd5e1;border-radius:8px;padding:6px;text-align:center}
+.stat b{display:block;font-size:17px}.stat small{color:#64748b}
+canvas#ch{width:100%;height:auto;background:#fff;border:1.5px solid #cbd5e1;border-radius:8px}
+.edu{background:#eff6ff;border:1.5px solid #93c5fd;border-radius:8px;padding:8px 10px;margin:8px 0;font-size:13.5px}
+#menu{position:fixed;inset:0;background:#0f172ae6;display:flex;align-items:center;justify-content:center;padding:14px;z-index:9;overflow:auto}
+#menu .card{background:#fff;border-radius:12px;padding:16px;max-width:460px;width:100%}
+#menu h1{margin:0}#menu p{margin:0 0 6px;color:#64748b}
+.cl{display:block;width:100%;text-align:left;margin:6px 0}
 </style>
 </head>
 <body>
-
-<div class="layout">
-  <aside>
-    <h1>☀️ PV Wiring Lab 3D</h1>
-    <p class="info">Drag components into the scene. Connect Grid ↔ House directly to power everything.</p>
-
-    <div class="panel" style="margin-bottom:8px">
-      <div class="bar" style="border:none;padding:0;background:transparent;margin:0">
-        <span>Day <b id="day">1</b></span>
-        <b id="clk">06:00</b>
-        <button id="go" data-a="go">Start</button>
-      </div>
-      <div class="weather">
-        <span>🌤 Sky <b id="wSky">Clear</b></span>
-        <span>☁️ Cloud <b id="wCld">10%</b></span>
-      </div>
-      <div class="row" style="padding:4px 0">
-        <span>☁️ Clouds</span>
-        <input type="range" id="cloudSlider" min="0" max="100" value="10">
-      </div>
-    </div>
-
-    <h2>🏗️ System Components</h2>
-    <div id="catalog"></div>
-
-    <h2>🏠 House Appliances</h2>
-    <p class="info">Use +/− to place. Program ON/OFF hours per device.</p>
-    <div id="appliances"></div>
-    <div style="display:flex;gap:6px;margin-top:6px">
-      <button data-a="allon" style="flex:1">💡 All ON</button>
-      <button data-a="alloff" style="flex:1">⏻ All OFF</button>
-    </div>
-
-    <h2>🏠 House Settings</h2>
-    <div class="panel">
-      <div class="rooms">
-        <label>Rooms:</label>
-        <select id="rooms">
-          <option value="1">1</option>
-          <option value="2" selected>2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-        </select>
-      </div>
-      <div class="row">
-        <span>Ambient temp <b id="vTa">20</b>°C</span>
-        <input type="range" id="tamb" min="0" max="40" value="20">
-      </div>
-      <div class="speed">
-        <button data-a="sp" data-v="1" aria-pressed="true">1×</button>
-        <button data-a="sp" data-v="2" aria-pressed="false">2×</button>
-        <button data-a="sp" data-v="4" aria-pressed="false">4×</button>
-      </div>
-      <div style="display:flex;gap:6px;margin-top:6px">
-        <button data-a="pre" style="flex:1">Ready-made setup</button>
-        <button data-a="clr" style="flex:1">Clear</button>
-      </div>
-    </div>
-
-    <h2>📊 Measurements</h2>
-    <div class="stats">
-      <div><b id="vG">0</b><small>Irradiance W/m²</small></div>
-      <div><b id="vTc">0</b><small>Cell temp °C</small></div>
-      <div><b id="vP">0</b><small>PV power W</small></div>
-      <div><b id="vV">0</b><small>Vmp V</small></div>
-      <div><b id="vSoc">—</b><small>Battery %</small></div>
-      <div><b id="vL">0</b><small>House load W</small></div>
-    </div>
-    <p class="info" id="eng"></p>
-  </aside>
-
-  <main>
-    <div id="alert">Welcome! Drag a component into the scene to begin.</div>
-    <div id="scene">
-      <div class="scene-hint">🖱️ Drag to rotate · Scroll to zoom · Click components for info</div>
-      <div class="gridbadge off" id="gridBadge">🔌 GRID: disconnected</div>
-      <div id="info">
-        <button class="close" data-a="closeinfo">×</button>
-        <h4 id="infoTitle">—</h4>
-        <div id="infoBody"></div>
-      </div>
-    </div>
-    <div id="sel"><span>Nothing selected</span></div>
-    <div id="diag"></div>
-  </main>
+<div id="app">
+<header><b>☀ SolarCraft 3D</b><span id="hC"></span><span id="hB"></span><button id="bM">Menu</button></header>
+<div id="view"><div id="tip">Drag to orbit · scroll or pinch to zoom</div></div>
+<nav id="nv"></nav>
+<main id="pn"></main>
 </div>
+<div id="menu"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const $=id=>document.getElementById(id),D=Math.PI/180,cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+const PN=[{n:'Monocrystalline 400 W',P:400,Voc:41,Vmp:34,Isc:12.2,g:-.0035,pr:180,c:'#10233f'},{n:'Polycrystalline 330 W',P:330,Voc:46,Vmp:37,Isc:9.3,g:-.004,pr:125,c:'#2a5fa8'},{n:'Flexible 200 W',P:200,Voc:24,Vmp:20,Isc:10.4,g:-.0025,pr:140,c:'#3a3f4c'}];
+const IVS=[{n:'String 5 kW',kw:5,vmax:600,vmin:120,e:.97,pr:900,t:'s'},{n:'String 10 kW',kw:10,vmax:1000,vmin:180,e:.97,pr:1700,t:'s'},{n:'Microinverters (per panel)',kw:0,e:.96,pr:95,t:'m'},{n:'Hybrid 5 kW',kw:5,vmax:500,vmin:100,e:.96,pr:1800,t:'h'},{n:'Hybrid 10 kW',kw:10,vmax:600,vmin:150,e:.96,pr:3000,t:'h'}];
+const BTS=[{n:'None'},{n:'Li-ion 5 kWh',cap:5,dod:.9,e:.96,pr:2500},{n:'Lead-acid 5 kWh',cap:5,dod:.5,e:.8,pr:1200}];
+const ITM={fuse:['DC fuses',60],breaker:['Breakers',90],spd:['Surge protector (SPD)',120],ground:['Grounding kit',70],clean:['Auto-cleaning system',300]};
+const PROF={res:[.35,.3,.3,.3,.3,.4,.7,1,.8,.6,.5,.5,.6,.5,.5,.6,.8,1.2,1.6,1.7,1.5,1.2,.8,.5],ind:[.2,.2,.2,.2,.2,.3,.6,1,1.2,1.3,1.3,1.2,1.1,1.3,1.3,1.2,1,.7,.4,.3,.2,.2,.2,.2],farm:[.2,.2,.2,.2,.2,.3,.5,.8,1.2,1.6,1.8,1.8,1.7,1.6,1.4,.9,.6,.5,.6,.6,.5,.4,.3,.2],hosp:[.8,.8,.8,.8,.8,.85,.9,1,1.1,1.15,1.2,1.2,1.2,1.2,1.15,1.1,1.05,1,1,.95,.9,.85,.85,.8]};
+const ST=[
+{n:'Family house',em:'🏠',lat:34,dec:0,ground:'#6b9b4d',b:[0,0,9,3,7],m:{w:9,d:7,y:3},ob:[['t',-8,3,6.5],['t',-7,-3,5.5],['t',9,5,5]],dem:14,pr:'res',bud:7500,grid:1,pay:1800,ta:26,soil:.004,req:['breaker','ground'],out:0,r:26,info:'Flat-roof home, grid-tied. Trees to the west will shade the afternoon.'},
+{n:'Desert farm',em:'🏜️',lat:30,dec:23.4,ground:'#d9c08a',b:[-14,0,4,3,4],m:{w:16,d:9,y:.3},ob:[['b',9,-10,2,8,2],['b',-6,10,3,3,3]],dem:30,pr:'farm',bud:15000,grid:0,pay:3500,ta:38,soil:.05,req:['spd','ground','breaker'],out:0,r:36,info:'Off-grid irrigation farm. Heat and dust are severe. It needs batteries and a hybrid inverter.'},
+{n:'Factory',em:'🏭',lat:36,dec:23.4,ground:'#8d949c',b:[0,0,24,8,14],m:{w:20,d:12,y:8},ob:[['b',-16,4,2,14,2],['b',17,-6,4,12,4]],dem:70,pr:'ind',bud:28000,grid:1,pay:5000,ta:32,soil:.01,req:['fuse','breaker','ground'],out:0,r:52,info:'Large flat roof, daytime load. Chimneys create moving shadows.'},
+{n:'Hospital',em:'🏥',lat:33,dec:-15,ground:'#7aa06a',b:[0,0,26,10,12],m:{w:22,d:10,y:10},ob:[['b',-19,0,8,16,12],['t',12,12,8]],dem:90,pr:'hosp',bud:38000,grid:1,pay:7000,ta:22,soil:.006,req:['fuse','breaker','spd','ground'],out:[17,21],r:56,info:'Critical load. A grid outage hits on day 2 from 17:00 to 21:00. You need battery backup and every safety item.'}];
+const EV={clear:['Clear sky',{cloud:1,dT:0,soil:0}],cloud:['Cloudy',{cloud:.45,dT:-3,soil:0}],heat:['Heat wave',{cloud:1,dT:12,soil:0}],dust:['Dust storm',{cloud:.85,dT:2,soil:.12}],storm:['Thunderstorm',{cloud:.3,dT:-4,soil:0,st:14}]};
+let G={mode:'career',site:0,ph:0,stars:[],bank:0,cfg:null,v:null,sim:null};
+let sc,cam,ren,sunL,sunM,world,arr,pth,obs=[],panels=[],cm={a:.6,e:.5,r:30};
+const ray=new THREE.Raycaster(),QQ=new THREE.Quaternion();
 
-<script type="importmap">
-{"imports":{
-  "three":"https://unpkg.com/three@0.160.0/build/three.module.js",
-  "three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"
-}}
-</script>
-
-<script type="module">
-import * as THREE from 'three';
-import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
-
-const $=i=>document.getElementById(i),cl=(v,a,b)=>Math.max(a,Math.min(b,v));
-const msg=m=>$('alert').textContent=m;
-
-/* ============================================================
-   1) CATALOG
-   ============================================================ */
-const CATALOG=[
- {id:'panels',name:'🔆 Solar Panels',items:[
-   {k:'mod',t:0,name:'Mono Panel 320W',spec:'Vmp 33.6V · Voc 40.8V'},
-   {k:'mod',t:1,name:'Poly Panel 250W',spec:'Vmp 30V · Voc 37.2V'},
-   {k:'mod',t:2,name:'Thin-film Panel 175W',spec:'Vmp 39V · Voc 51V'},
- ]},
- {id:'controllers',name:'🎛️ Charge Controllers',items:[
-   {k:'reg',t:1,name:'PWM Controller 30A',spec:'12/24V · 100V Voc max'},
-   {k:'reg',t:2,name:'MPPT Controller 60A',spec:'12–48V · 150V Voc max'},
- ]},
- {id:'batteries',name:'🔋 Batteries',items:[
-   {k:'bat',t:1,name:'Lead-acid 9.6kWh',spec:'48V 200Ah · DoD 50%'},
-   {k:'bat',t:2,name:'LiFePO4 4.8kWh',spec:'48V 100Ah · BMS'},
-   {k:'bat',t:3,name:'LiFePO4 9.6kWh',spec:'48V 200Ah · BMS'},
- ]},
- {id:'inverters',name:'⚡ Inverters',items:[
-   {k:'inv',t:1,name:'Inverter 1kW',spec:'12/24/48V → 220V'},
-   {k:'inv',t:2,name:'Inverter 3kW',spec:'48V → 220V pure sine'},
-   {k:'inv',t:3,name:'Inverter 5kW',spec:'48V → 220V pure sine'},
- ]},
- {id:'protection',name:'🛡️ Protection',items:[
-   {k:'fuse',t:0,name:'DC Fuse 20A',spec:'1000V DC · gPV'},
-   {k:'sw',t:0,name:'DC Isolator',spec:'Manual disconnect'},
-   {k:'spd',t:0,name:'Surge Protector SPD',spec:'Type 2 · 40kA'},
-   {k:'brk',t:0,name:'AC Breaker',spec:'MCB 16A · 220V'},
- ]},
- {id:'wires',name:'🔌 Connectors & Grid',items:[
-   {k:'jct',t:0,name:'DC Bus Junction',spec:'4-way connector'},
-   {k:'grid',t:0,name:'Grid Port',spec:'AC mains inlet 220V'},
- ]},
-];
-
-const MD=[{n:'Mono',P:320,Vm:33.6,Vo:40.8},{n:'Poly',P:250,Vm:30,Vo:37.2},{n:'Thin',P:175,Vm:39,Vo:51}];
-const BT=[0,{n:'Lead-acid',cap:9600,cut:.5,res:.6,eff:.8,v0:46,v1:52},
-          {n:'LiFePO4',cap:4800,cut:.1,res:.25,eff:.96,v0:44,v1:54},
-          {n:'LiFePO4',cap:9600,cut:.1,res:.25,eff:.96,v0:44,v1:54}];
-const IV=[0,1000,3000,5000];
-
-const A=[
- {n:'LED Lamp',w:10,icon:'💡',hue:0xffd84a},
- {n:'Refrigerator',w:150,icon:'🧊',hue:0xdfe8f0},
- {n:'TV',w:100,icon:'📺',hue:0x1c2733},
- {n:'Fan',w:60,icon:'🌀',hue:0x8fb3d4},
- {n:'Computer',w:80,icon:'💻',hue:0x1c2733},
- {n:'Water Pump',w:750,icon:'💧',hue:0x3b7bbf},
- {n:'Washing Machine',w:500,icon:'🌀',hue:0xe9eef3},
- {n:'Air Conditioner',w:1200,icon:'❄️',hue:0xf1f4f7},
-];
-
-/* ============================================================
-   2) TERMINALS
-   ============================================================ */
-const Z={mod:'m',fuse:'p',sw:'p',spd:'p',reg:'r',jct:'b',bat:'b',inv:'i',brk:'k',house:'h',grid:'g'};
-const MX={mod:12,fuse:3,sw:3,spd:3,reg:1,jct:3,bat:1,inv:1,brk:2,house:1,grid:1};
-const TP={
-  mod:{m:[-.24,.32,0],p:[.24,.32,0]},
-  fuse:{a:[0,.18,0],b:[0,-.18,0]},
-  sw:{a:[0,.22,0],b:[0,-.22,0]},
-  brk:{a:[0,.22,0],b:[0,-.22,0]},
-  spd:{a:[0,.20,0]},
-  reg:{p:[-.24,.20,0],n:[.24,.20,0],o:[0,-.22,0]},
-  bat:{b:[0,.24,0]},
-  jct:{a:[-.28,0,0],b:[.28,0,0],c:[0,.24,0],d:[0,-.24,0]},
-  inv:{d:[0,.20,0],a:[0,-.22,0]},
-  house:{i:[0,1.6,0]},
-  grid:{a:[0,.22,0]},
-};
-const TC={mod:{p:0xc0392b,m:0x222222},reg:{p:0xc0392b,n:0x222222}};
-
-/* ============================================================
-   3) SCENE
-   ============================================================ */
-const scene=new THREE.Scene();
-scene.background=new THREE.Color(0xE8EEF2);
-scene.fog=new THREE.Fog(0xE8EEF2,22,55);
-
-const camera=new THREE.PerspectiveCamera(45,1,.1,200);
-camera.position.set(7,6,10);
-
-const renderer=new THREE.WebGLRenderer({antialias:true});
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-renderer.shadowMap.enabled=true;
-renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-$('scene').appendChild(renderer.domElement);
-
-const controls=new OrbitControls(camera,renderer.domElement);
-controls.enableDamping=true;controls.dampingFactor=.08;
-controls.target.set(0,.3,0);
-controls.maxPolarAngle=Math.PI/2.1;
-controls.minDistance=3;controls.maxDistance=24;
-
-const hemi=new THREE.HemisphereLight(0xffffff,0x8899aa,.85);
-scene.add(hemi);
-
-const sunLight=new THREE.DirectionalLight(0xfff3c4,1.3);
-sunLight.position.set(8,14,6);
-sunLight.castShadow=true;
-sunLight.shadow.mapSize.set(1024,1024);
-sunLight.shadow.camera.left=-14;sunLight.shadow.camera.right=14;
-sunLight.shadow.camera.top=14;sunLight.shadow.camera.bottom=-14;
-scene.add(sunLight);
-
-const sunSphere=new THREE.Mesh(
-  new THREE.SphereGeometry(.6,24,16),
-  new THREE.MeshBasicMaterial({color:0xffe27a})
-);
-sunSphere.position.set(8,14,6);
-scene.add(sunSphere);
-
-const ground=new THREE.Mesh(
-  new THREE.PlaneGeometry(80,80),
-  new THREE.MeshStandardMaterial({color:0xdbe4ec,roughness:1})
-);
-ground.rotation.x=-Math.PI/2;ground.position.y=-.01;ground.receiveShadow=true;scene.add(ground);
-const gridHelper=new THREE.GridHelper(24,48,0xa8b6c4,0xc4d0da);
-gridHelper.material.transparent=true;gridHelper.material.opacity=.45;scene.add(gridHelper);
-
-const cloudGroup=new THREE.Group();scene.add(cloudGroup);
-const cloudMeshes=[];
-function makeCloud(){
-  const g=new THREE.Group();
-  const n=4+Math.floor(Math.random()*4);
-  for(let i=0;i<n;i++){
-    const s=.6+Math.random()*1.2;
-    const puff=new THREE.Mesh(new THREE.SphereGeometry(s,8,6),
-      new THREE.MeshStandardMaterial({color:0xffffff,transparent:true,opacity:.85,roughness:1}));
-    puff.position.set((Math.random()-.5)*2.4,(Math.random()-.5)*.5,(Math.random()-.5)*1.6);
-    puff.scale.y=.6;g.add(puff);
-  }
-  g.position.set(-25+Math.random()*50,8+Math.random()*4,-20+Math.random()*40);
-  g.userData.speed=.3+Math.random()*.6;
-  cloudGroup.add(g);cloudMeshes.push(g);
+/* ---------- physics helpers ---------- */
+function sunPos(lat,dec,t){const H=15*(t-12)*D,l=lat*D,d=dec*D,se=Math.sin(l)*Math.sin(d)+Math.cos(l)*Math.cos(d)*Math.cos(H),el=Math.asin(cl(se,-1,1));let ca=(Math.sin(d)-se*Math.sin(l))/(Math.cos(el)*Math.cos(l)+1e-9);let az=Math.acos(cl(ca,-1,1))/D;if(H>0)az=360-az;return{el:el/D,az}}
+function sdir(s){const e=s.el*D,a=s.az*D;return new THREE.Vector3(Math.sin(a)*Math.cos(e),Math.sin(e),-Math.cos(a)*Math.cos(e))}
+function layout(tilt){const S=ST[G.site],b=tilt*D,pitch=1.7*Math.cos(b)+1.7*Math.sin(b)*1.2+.15,cols=Math.max(1,Math.floor(S.m.w/1.05)),rows=Math.max(1,1+Math.floor((S.m.d-1.7*Math.cos(b))/pitch));return{cols,rows,pitch,cap:cols*rows}}
+function design(){
+ const c=G.cfg,P=PN[c.panel],I=IVS[c.inv],S=ST[G.site],micro=I.t=='m',s=micro?1:c.S,n=c.n,str=Math.ceil(n/s),par=Math.max(1,Math.floor(n/s));
+ const Voc=s*P.Voc*(1+.003*(25-(S.ta-12))),Vmp=s*P.Vmp*(1-.0035*(S.ta+30-25)),m=[];let st='ok';
+ if(!micro){if(Voc>I.vmax){st='over';m.push(['bad',`Cold-morning string voltage ${Math.round(Voc)} V exceeds the inverter limit (${I.vmax} V). Use fewer panels in series.`])}
+  else if(Vmp<I.vmin){st='under';m.push(['bad',`Hot-day string voltage ${Math.round(Vmp)} V is below the inverter MPPT minimum (${I.vmin} V). Add panels in series.`])}
+  else m.push(['ok',`String voltage window OK: ${Math.round(Vmp)} V hot to ${Math.round(Voc)} V cold.`]);
+  if(n%s)m.push(['warn','Strings have unequal lengths: about 7% mismatch loss.']);
+  if(n*P.P/1000>I.kw*1.4)m.push(['warn',`Array ${(n*P.P/1000).toFixed(1)} kWp is much larger than the ${I.kw} kW inverter: midday clipping.`])}
+ if(c.bq>0&&I.t!='h')m.push(['warn','Batteries only work with a hybrid inverter.']);
+ if(!S.grid&&!(I.t=='h'&&c.bq>0&&c.bt))m.push(['bad','Off-grid site: you need a hybrid inverter and batteries for the nights.']);
+ return{s,str,par,Voc,Vmp,st,m,I:P.Isc*par,Pdc:n*P.P}
 }
-for(let i=0;i<14;i++)makeCloud();
+function cost(){const c=G.cfg,P=PN[c.panel],I=IVS[c.inv];let t=c.n*(P.pr+40)+(I.t=='m'?c.n*I.pr:I.pr);if(c.bt)t+=c.bq*BTS[c.bt].pr;for(const k in c.items)if(c.items[k])t+=ITM[k][1];return t}
 
-const compGroup=new THREE.Group();scene.add(compGroup);
-const wireGroup=new THREE.Group();scene.add(wireGroup);
-const termGroup=new THREE.Group();scene.add(termGroup);
-const houseGroup=new THREE.Group();scene.add(houseGroup);
-const applianceGroup=new THREE.Group();scene.add(applianceGroup);
+/* ---------- 3D ---------- */
+function mesh(g,c,cast=true){const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:c,roughness:.85}));m.castShadow=cast;m.receiveShadow=true;return m}
+function initGL(){
+ sc=new THREE.Scene();cam=new THREE.PerspectiveCamera(50,1,.1,500);
+ ren=new THREE.WebGLRenderer({antialias:true});ren.shadowMap.enabled=true;$('view').prepend(ren.domElement);
+ sc.add(new THREE.HemisphereLight(0xffffff,0x667755,.6));
+ sunL=new THREE.DirectionalLight(0xfff2d6,.9);sunL.castShadow=true;const s=sunL.shadow.camera;s.left=-45;s.right=45;s.top=45;s.bottom=-45;s.far=200;sunL.shadow.mapSize.set(2048,2048);sc.add(sunL);sc.add(sunL.target);
+ sunM=new THREE.Mesh(new THREE.SphereGeometry(2,16,16),new THREE.MeshBasicMaterial({color:0xffd23f}));sc.add(sunM);
+ world=new THREE.Group();sc.add(world);
+ const el=ren.domElement,pt=new Map();let pd=0;
+ el.addEventListener('pointerdown',e=>{el.setPointerCapture(e.pointerId);pt.set(e.pointerId,[e.clientX,e.clientY]);pd=0});
+ el.addEventListener('pointerup',e=>pt.delete(e.pointerId));el.addEventListener('pointercancel',e=>pt.delete(e.pointerId));
+ el.addEventListener('pointermove',e=>{if(!pt.has(e.pointerId))return;const o=pt.get(e.pointerId);
+  if(pt.size==1){cm.a-=(e.clientX-o[0])*.008;cm.e=cl(cm.e+(e.clientY-o[1])*.006,.05,1.5)}
+  else{const q=[...pt.entries()].find(x=>x[0]!=e.pointerId)[1],d0=Math.hypot(o[0]-q[0],o[1]-q[1]),d1=Math.hypot(e.clientX-q[0],e.clientY-q[1]);cm.r=cl(cm.r*d0/(d1||1),8,120)}
+  pt.set(e.pointerId,[e.clientX,e.clientY])});
+ el.addEventListener('wheel',e=>{e.preventDefault();cm.r=cl(cm.r*(1+e.deltaY*.001),8,120)},{passive:false});
+ new ResizeObserver(rs).observe($('view'));rs();
+}
+function rs(){const v=$('view'),w=v.clientWidth,h=v.clientHeight;ren.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
+function buildSite(){
+ while(world.children.length)world.remove(world.children[0]);obs=[];const S=ST[G.site];
+ const g=mesh(new THREE.PlaneGeometry(200,200),S.ground,false);g.rotation.x=-Math.PI/2;world.add(g);
+ const [cx,cz,w,h,d]=S.b,bd=mesh(new THREE.BoxGeometry(w,h,d),'#d8d2c4');bd.position.set(cx,h/2,cz);world.add(bd);obs.push(bd);
+ S.ob.forEach(o=>{if(o[0]=='t'){const[,x,z,H]=o,tr=mesh(new THREE.CylinderGeometry(.25,.3,H*.45),'#6b4a2b'),cn=mesh(new THREE.SphereGeometry(H*.32,12,10),'#2e7d32');tr.position.set(x,H*.22,z);cn.position.set(x,H*.68,z);world.add(tr,cn);obs.push(tr,cn)}
+  else{const[,x,z,bw,bh,bdp]=o,b=mesh(new THREE.BoxGeometry(bw,bh,bdp),'#b9b2a3');b.position.set(x,bh/2,z);world.add(b);obs.push(b)}});
+ arr=new THREE.Group();arr.position.set(0,S.m.y,0);world.add(arr);pth=new THREE.Group();world.add(pth);
+ cm.r=S.r;buildPanels();buildPath();
+}
+function buildPanels(){
+ while(arr.children.length)arr.remove(arr.children[0]);panels=[];
+ const c=G.cfg,P=PN[c.panel],{cols,pitch}=layout(c.tilt),ur=Math.ceil(c.n/cols);
+ for(let i=0;i<c.n;i++){const r=Math.floor(i/cols),k=i%cols,m=mesh(new THREE.BoxGeometry(1,.05,1.7),P.c);m.material.metalness=.5;m.material.roughness=.35;
+  m.position.set((k-(Math.min(cols,c.n)-1)/2)*1.05,.3+.85*Math.sin(c.tilt*D),(r-(ur-1)/2)*pitch);m.rotation.x=c.tilt*D;arr.add(m);panels.push(m)}
+ arr.rotation.y=(180-c.az)*D;
+}
+function buildPath(){
+ while(pth.children.length)pth.remove(pth.children[0]);if(!G.v.path)return;const S=ST[G.site];
+ [[23.4,0xf59e0b],[0,0x22c55e],[-23.4,0x3b82f6]].forEach(([dec,col])=>{const pts=[];for(let t=4;t<=20;t+=.25){const sp=sunPos(S.lat,dec,t);if(sp.el>0)pts.push(sdir(sp).multiplyScalar(55).add(new THREE.Vector3(0,S.m.y,0)))}
+  pth.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:col})))});
+}
+function shadeMap(sd){
+ world.updateMatrixWorld(true);const out=[],tmp=new THREE.Vector3(),n=new THREE.Vector3(),tg=obs.concat(panels);
+ panels.forEach(p=>{p.getWorldPosition(tmp);n.set(0,1,0).applyQuaternion(p.getWorldQuaternion(QQ));ray.set(tmp.clone().addScaledVector(n,.08),sd);ray.far=90;out.push(ray.intersectObjects(tg,false).length>0)});
+ return out;
+}
+function shadeHours(dec){
+ const S=ST[G.site],o=new THREE.Vector3(0,S.m.y+.6,0),res=[];world.updateMatrixWorld(true);
+ for(let t=7;t<=17;t++){const sp=sunPos(S.lat,dec,t);if(sp.el<8)continue;ray.set(o,sdir(sp));ray.far=90;if(ray.intersectObjects(obs,false).length)res.push(t)}
+ return res;
+}
+function setSun(t,dec){
+ const S=ST[G.site],sp=sunPos(S.lat,dec,t),sd=sdir(sp),day=sp.el>1.5;
+ sunL.position.copy(sd.clone().multiplyScalar(80));sunL.intensity=day?.4+Math.min(.6,sp.el/40):.05;sunM.position.copy(sd.clone().multiplyScalar(85));sunM.visible=day;
+ sc.background=new THREE.Color(day?0x9fc9ee:0x101a2c);
+}
+function camUpd(){const S=ST[G.site],t=new THREE.Vector3(0,S.m.y/2+1,0);cam.position.set(t.x+cm.r*Math.cos(cm.e)*Math.sin(cm.a),t.y+cm.r*Math.sin(cm.e),t.z+cm.r*Math.cos(cm.e)*Math.cos(cm.a));cam.lookAt(t)}
 
-/* ============================================================
-   4) MESH BUILDERS
-   ============================================================ */
-const M={
-  metal:new THREE.MeshStandardMaterial({color:0xb8c2cc,metalness:.7,roughness:.35}),
-  dark:new THREE.MeshStandardMaterial({color:0x2e343b,metalness:.5,roughness:.4}),
-  red:new THREE.MeshStandardMaterial({color:0xc0392b,metalness:.4,roughness:.4}),
-  black:new THREE.MeshStandardMaterial({color:0x111111,roughness:.6}),
-  frame:new THREE.MeshStandardMaterial({color:0xcfd6dd,metalness:.5,roughness:.35}),
-  glass:new THREE.MeshPhysicalMaterial({color:0xffffff,metalness:0,roughness:.05,transmission:.9,transparent:true,thickness:.1}),
-  screen:new THREE.MeshStandardMaterial({color:0x0d2a1a,emissive:0x0a3a1a,emissiveIntensity:.6}),
-};
-const cellMats=[
-  new THREE.MeshStandardMaterial({color:0x0f2a55,metalness:.25,roughness:.35}),
-  new THREE.MeshStandardMaterial({color:0x2d6cb8,metalness:.2,roughness:.4}),
-  new THREE.MeshStandardMaterial({color:0x0b1622,metalness:.3,roughness:.3}),
-];
-function makeBox(w,h,d,mat){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.castShadow=true;m.receiveShadow=true;return m;}
-
-function makePanel(t){
-  const g=new THREE.Group();
-  g.add(makeBox(1.05,.06,.75,M.frame));
-  const cell=makeBox(.98,.04,.68,cellMats[t]);cell.position.y=.05;g.add(cell);
-  const glass=new THREE.Mesh(new THREE.BoxGeometry(.98,.01,.68),M.glass);
-  glass.position.y=.075;g.add(glass);
-  const lm=new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:.3});
-  for(let i=1;i<5;i++){
-    const x=(i-2.5)*.16;
-    const geo=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x,.08,-.34),new THREE.Vector3(x,.08,.34)]);
-    g.add(new THREE.Line(geo,lm));
-  }
-  for(let i=1;i<3;i++){
-    const z=(i-1.5)*.22;
-    const geo=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-.49,.08,z),new THREE.Vector3(.49,.08,z)]);
-    g.add(new THREE.Line(geo,lm));
-  }
-  return g;
+/* ---------- simulation ---------- */
+function startSim(){
+ const S=ST[G.site],c=G.cfg,pool=S.soil>.03?['dust','dust','heat','storm','cloud']:['cloud','heat','dust','storm','clear'],r=()=>pool[Math.floor(Math.random()*pool.length)];
+ const I=IVS[c.inv],bt=BTS[c.bt],hyb=I.t=='h'&&c.bq>0&&c.bt,pick=['cable','inverter'].concat(c.items.fuse?['fuse']:[]);
+ G.sim={day:0,t:0,rate:.7,speed:1,soil:0,dead:0,ev:['clear',r(),r()],d:design(),cap:hyb?c.bq*bt.cap*bt.dod:0,tot:{pv:0,load:0,srv:0,imp:0,exp:0,un:0,shd:0,hrs:0},rep:0,wrong:0,fixed:0,run:1,done:0,hist:[],lastH:0,shT:-9,sh:[],fault:null,fAt:10+Math.random()*3,fType:pick[Math.floor(Math.random()*pick.length)],read:'',pv:0,ld:0,msg:'Day 1 begins.'};
+ G.sim.soc=G.sim.cap*.5;nextDay();
+}
+function nextDay(){
+ const M=G.sim;M.day++;if(M.day>3){finish();return}
+ const S=ST[G.site],e=EV[M.ev[M.day-1]];M.ctx={...e[1]};M.t=0;M.hist=[];M.lastH=0;M.shT=-9;
+ M.soil=cl(M.soil+(S.soil+e[1].soil)*(G.cfg.items.clean?.1:1),0,.5);M.msg=`Day ${M.day}: ${e[0]}${e[1].soil?' — dust is coating the panels':''}`;
+}
+function pvKw(t){
+ const M=G.sim,S=ST[G.site],c=G.cfg,P=PN[c.panel],I=IVS[c.inv],ctx=M.ctx,sp=sunPos(S.lat,S.dec,t);
+ if(sp.el<1.5)return 0;
+ const se=Math.sin(sp.el*D),dniC=1353*Math.pow(.7,Math.pow(1/se,.678)),dni=dniC*ctx.cloud,sd=sdir(sp);
+ if(M.shT<0||t-M.shT>=.25||t<M.shT){M.sh=shadeMap(sd);M.shT=t}
+ const b=c.tilt*D,g=c.az*D,cs=Math.max(0,Math.sin(g)*Math.sin(b)*sd.x+Math.cos(b)*sd.y-Math.cos(g)*Math.sin(b)*sd.z);
+ const dif=(.1+.3*(1-ctx.cloud))*dniC*(1+Math.cos(b))/2*.9,ta=S.ta+ctx.dT+5*Math.sin(Math.PI*(t-9)/12),sf=1-M.soil;
+ const p=M.sh.map(sh=>{const poa=dif+(sh?0:dni*cs),tc=ta+poa/800*25;return{w:P.P*poa/1000*(1+P.g*(tc-25))*sf*.97,tc,sh}});
+ M.shFrac=p.filter(x=>x.sh).length/p.length;M.poa=dif+dni*cs;M.tc=p[0].tc;
+ let dc=0;
+ if(I.t=='m')p.forEach(x=>dc+=x.w);
+ else{const s=c.S;for(let i=0;i<p.length;i+=s){const gp=p.slice(i,i+s);let sum=0,mn=1e9,mx=0,ns=0;gp.forEach(x=>{sum+=x.w;mn=Math.min(mn,x.w);mx=Math.max(mx,x.w);if(x.sh)ns++});dc+=ns?Math.max(mn*gp.length,(gp.length-ns)*mx*.55):sum}
+  if(p.length%s)dc*=.93;if(s*P.Vmp*(1-.0035*(p[0].tc-25))<I.vmin)dc=0}
+ let ac=dc*I.e/1000;ac=I.t=='m'?Math.min(ac,c.n*.4):Math.min(ac,I.kw);
+ return M.d.st=='over'?0:ac;
+}
+function sub(dh){
+ const M=G.sim,S=ST[G.site],c=G.cfg,I=IVS[c.inv],bt=BTS[c.bt];M.t+=dh;
+ if(M.t>=24){nextDay();return}
+ if(M.day==2&&!M.fault&&M.t>=M.fAt){M.fault={type:M.fType,fixed:0};M.msg='⚠ Production stopped! Use the multimeter to find the fault.'}
+ if(M.ctx.st&&M.t>=M.ctx.st&&!c.items.spd&&!M.dead&&!M.stormHit){M.dead=1;M.stormHit=1;M.msg='⚡ Lightning surge destroyed the inverter. No surge protector!'}
+ const faulty=M.fault&&!M.fault.fixed,pv=(faulty||M.dead)?0:pvKw(M.t);
+ const base=PROF[S.pr],sum=base.reduce((a,b)=>a+b,0),ld=base[Math.floor(M.t)]/sum*S.dem;
+ let direct=Math.min(pv,ld),sur=pv-direct,def=ld-direct,srv=direct,imp=0,exp=0,un=0;
+ if(M.cap){const st=Math.min(sur*dh*bt.e,M.cap-M.soc);M.soc+=st;sur-=st/bt.e/dh;const tk=Math.min(def*dh,M.soc*bt.e);M.soc-=tk/bt.e;srv+=tk/dh;def-=tk/dh}
+ const out=S.out&&M.day==2&&M.t>=S.out[0]&&M.t<S.out[1];
+ if(S.grid&&!out){imp=def;exp=sur}else un=def;
+ const T=M.tot;T.pv+=pv*dh;T.load+=ld*dh;T.srv+=srv*dh;T.imp+=imp*dh;T.exp+=exp*dh;T.un+=un*dh;
+ if(pv>0){T.shd+=(M.shFrac||0)*dh;T.hrs+=dh}
+ M.pv=pv;M.ld=ld;M.out=out;
+ if(M.t-M.lastH>=.25){M.lastH=M.t;M.hist.push({t:M.t,pv,ld,soc:M.cap?M.soc/M.cap:0})}
+}
+function tick(dt){const M=G.sim;if(!M||!M.run||M.done)return;let h=dt*M.rate*M.speed;while(h>0&&!M.done){const d=Math.min(h,.1);sub(d);h-=d}}
+function finish(){
+ const M=G.sim,S=ST[G.site],T=M.tot,c=G.cfg;M.done=1;M.run=0;
+ const cov=T.load?T.srv/T.load:0,have=S.req.filter(k=>c.items[k]).length,saf=S.req.length?have/S.req.length:1,okB=G.mode=='sandbox'||cost()<=S.bud;
+ const score=.5*cov+.2*saf+.2*(okB?1:0)+.1*(M.wrong<=1?1:0),stars=score>=.85?3:score>=.65?2:score>=.4?1:0;
+ const pay=Math.round(S.pay*(.35+.65*cov)*(.5+.5*saf))-M.rep;
+ M.rep2={cov,saf,score,stars,pay,okB};
+ if(G.mode=='career'){G.bank+=Math.max(0,pay);G.stars[G.site]=Math.max(G.stars[G.site]||0,stars)}
 }
 
-function buildMesh(c){
-  const g=new THREE.Group();
-  const t=c.t;
-  if(c.k==='mod'){ g.add(makePanel(t)); }
-  else if(c.k==='fuse'){
-    g.add(makeBox(.55,.16,.22,M.dark));
-    const cl1=makeBox(.12,.20,.24,M.metal);cl1.position.x=-.3;g.add(cl1);
-    const cr=cl1.clone();cr.position.x=.3;g.add(cr);
-    const el=makeBox(.42,.07,.07,new THREE.MeshStandardMaterial({color:0xd4b04a,metalness:.8,roughness:.2}));
-    el.position.y=.09;g.add(el);
-  }else if(c.k==='sw'){
-    g.add(makeBox(.55,.42,.28,M.dark));
-    const h=makeBox(.07,.30,.07,M.red);h.position.y=.05;g.add(h);c._handle=h;
-  }else if(c.k==='spd'){
-    g.add(makeBox(.42,.42,.28,new THREE.MeshStandardMaterial({color:0x3d4a55,metalness:.4,roughness:.5})));
-    const led=new THREE.Mesh(new THREE.SphereGeometry(.05),new THREE.MeshStandardMaterial({color:0x2ecc71,emissive:0x2ecc71,emissiveIntensity:1.5}));
-    led.position.set(0,.12,.16);g.add(led);c._led=led;
-  }else if(c.k==='reg'){
-    g.add(makeBox(.65,.42,.30,new THREE.MeshStandardMaterial({color:0x3a4550,metalness:.5,roughness:.4})));
-    const scr=makeBox(.36,.16,.02,M.screen);scr.position.set(0,.08,.16);g.add(scr);
-    for(let i=0;i<3;i++){const fin=makeBox(.02,.30,.30,M.metal);fin.position.x=-.28+i*.28;g.add(fin);}
-  }else if(c.k==='jct'){
-    g.add(makeBox(.42,.14,.42,new THREE.MeshStandardMaterial({color:0xd08a3c,metalness:.6,roughness:.4})));
-    const top=makeBox(.14,.42,.14,new THREE.MeshStandardMaterial({color:0xd08a3c,metalness:.6,roughness:.4}));
-    g.add(top);
-  }else if(c.k==='bat'){
-    const isLi=t>1;
-    const col=isLi?0x33506e:0x22272e;
-    g.add(makeBox(.85,.42,.48,new THREE.MeshStandardMaterial({color:col,metalness:.3,roughness:.55})));
-    const red=makeBox(.08,.10,.08,M.red);red.position.set(-.28,.28,0);g.add(red);
-    const blk=makeBox(.08,.10,.08,M.black);blk.position.set(.28,.28,0);g.add(blk);
-    const t1=new THREE.Mesh(new THREE.CylinderGeometry(.04,.04,.06),M.red);t1.position.set(-.28,.34,0);g.add(t1);
-    const t2=new THREE.Mesh(new THREE.CylinderGeometry(.04,.04,.06),M.black);t2.position.set(.28,.34,0);g.add(t2);
-    const bg=makeBox(.65,.06,.05,M.black);bg.position.set(0,-.24,.25);g.add(bg);
-    const fill=new THREE.Mesh(new THREE.BoxGeometry(.65,.07,.06),new THREE.MeshStandardMaterial({color:0x2ecc71,emissive:0x2ecc71,emissiveIntensity:.3}));
-    fill.position.set(-.325,-.24,.25);fill.scale.x=0;g.add(fill);c._socFill=fill;
-  }else if(c.k==='inv'){
-    g.add(makeBox(.85,.42,.42,new THREE.MeshStandardMaterial({color:0xe6ebf0,metalness:.4,roughness:.5})));
-    for(let i=0;i<3;i++){const fin=makeBox(.02,.32,.42,M.metal);fin.position.x=-.32+i*.32;g.add(fin);}
-    const scr=makeBox(.34,.16,.02,M.screen);scr.position.set(0,.08,.22);g.add(scr);
-  }else if(c.k==='brk'){
-    // AC Breaker: enclosure with lever, 2 terminals (a=top AC in, b=bottom AC out)
-    g.add(makeBox(.42,.48,.28,new THREE.MeshStandardMaterial({color:0xf1f3f5,metalness:.2,roughness:.5})));
-    const lever=makeBox(.18,.14,.08,new THREE.MeshStandardMaterial({color:0xdddddd,metalness:.5}));
-    lever.position.set(0,.12,.18);g.add(lever);c._lever=lever;
-  }else if(c.k==='grid'){
-    g.add(makeBox(.5,.6,.24,new THREE.MeshStandardMaterial({color:0xf1f3f5,metalness:.2,roughness:.5})));
-    const sock=makeBox(.3,.3,.06,new THREE.MeshStandardMaterial({color:0x22272e,metalness:.4,roughness:.5}));
-    sock.position.set(0,.05,.15);g.add(sock);
-    const pinMat=new THREE.MeshStandardMaterial({color:0xd4b04a,metalness:.9,roughness:.2});
-    for(let i=0;i<3;i++){
-      const pin=new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,.04),pinMat);
-      pin.rotation.x=Math.PI/2;pin.position.set(-.08+i*.08,.05,.19);g.add(pin);
-    }
-    const led=new THREE.Mesh(new THREE.SphereGeometry(.03),
-      new THREE.MeshStandardMaterial({color:0x2ecc71,emissive:0x2ecc71,emissiveIntensity:0}));
-    led.position.set(0,.25,.16);g.add(led);c._led=led;
-    const plate=makeBox(.4,.08,.02,new THREE.MeshStandardMaterial({color:0xf2a900}));
-    plate.position.set(0,-.25,.13);g.add(plate);
-  }
-  const box=new THREE.Box3().setFromObject(g);
-  const size=box.getSize(new THREE.Vector3());
-  const outline=new THREE.LineSegments(
-    new THREE.EdgesGeometry(new THREE.BoxGeometry(size.x*1.15,size.y*1.15,size.z*1.15)),
-    new THREE.LineBasicMaterial({color:0xF2A900})
-  );
-  outline.visible=false;g.add(outline);c._outline=outline;
-  return g;
+/* ---------- UI ---------- */
+const btn=(k,l,on)=>`<button data-set="${k}" aria-pressed="${!!on}">${l}</button>`;
+function head(){const S=ST[G.site],co=cost();$('hC').textContent=`${S.em} ${S.n} · ${{career:'Career',sandbox:'Sandbox',edu:'Educational'}[G.mode]}`;
+ $('hB').innerHTML=G.mode=='sandbox'?`$${co} (unlimited)`:`<span style="color:${co>S.bud?'#fca5a5':'#bbf7d0'}">$${co} / $${S.bud}</span>`+(G.mode=='career'?` · bank $${G.bank}`:'')}
+function nav(){$('nv').innerHTML=['1 Survey','2 Shop','3 Install','4 Run'].map((l,i)=>`<button data-ph="${i}" class="${G.ph==i?'on':''}">${l}</button>`).join('')}
+function msgs(d){return d.m.map(x=>`<div class="${x[0]}">${x[0]=='ok'?'✔':x[0]=='bad'?'✖':'▲'} ${x[1]}</div>`).join('')}
+function edu(){
+ if(G.mode!='edu')return '';const c=G.cfg,P=PN[c.panel],d=design(),v=d.s*P.Vmp;
+ return `<div class="edu"><b>Lesson: series vs parallel</b><br>Series adds voltage: ${d.s} × ${P.Vmp} V = <b>${Math.round(v)} V</b>. Parallel adds current: ${d.par} string(s) × ${P.Isc} A = <b>${d.I.toFixed(1)} A</b>.<br>Power P = V × I ≈ ${Math.round(v*P.Isc*.9*d.par)} W peak. By Ohm's law I = V / R, so thin long cables lose power as heat.<br>A shaded panel in a series string limits the current of the whole string. Microinverters avoid this.</div>`}
+function go(p){
+ G.ph=p;if(p!=3)G.sim=null;pth&&buildPath();if(p==3)buildPanels();
+ const f=[pSurvey,pShop,pInstall,pRun][p];$('pn').innerHTML=f();nav();head();
+ if(p==0)updShade();cm.e=p==0?cm.e:cm.e;
+}
+function pSurvey(){
+ const S=ST[G.site];
+ return `<div class="k">${S.info}</div><div class="k"><b>Mount area</b> ${S.m.w} × ${S.m.d} m · up to ${layout(G.cfg.tilt).cap} panels at ${G.cfg.tilt}° tilt<br><b>Latitude</b> ${S.lat}° · <b>Load</b> ${S.dem} kWh/day · <b>${S.grid?'Grid-tied':'Off-grid'}</b><br><b>Required safety:</b> ${S.req.map(k=>ITM[k][0]).join(', ')}</div>
+ <div class="row">${btn('dec:23.4','Summer sun',G.v.dec>0)}${btn('dec:-23.4','Winter sun',G.v.dec<0)}${btn('dec:0','Equinox',G.v.dec==0)}</div>
+ <div class="row" style="margin-top:6px">${btn('path:1','Sun path finder',G.v.path)}<button data-top="1">Drone: top view</button></div>
+ <label>Time of day: <b id="tv">${G.v.t}</b> h<input type="range" id="tm" min="5" max="19" step=".25" value="${G.v.t}"></label>
+ <div class="k" id="shd"></div><button class="go" data-ph="1">Continue to shop →</button>`}
+function updShade(){const h=shadeHours(G.v.dec);$('shd').innerHTML=h.length?`<b class="warn">Shade at the mount centre:</b> ${h.map(x=>x+':00').join(', ')}. Consider microinverters or fewer panels in shaded rows.`:'<b class="ok">No shading at the mount centre for this sun path.</b>'}
+function pShop(){
+ const c=G.cfg;
+ return `<h3>Solar panels</h3><div class="row">${PN.map((p,i)=>btn('panel:'+i,`${p.n}<small>$${p.pr} · ${p.g*100}%/°C</small>`,c.panel==i)).join('')}</div>
+ <h3>Inverter</h3><div class="row">${IVS.map((p,i)=>btn('inv:'+i,`${p.n}<small>$${p.pr}${p.t=='m'?' each':''}</small>`,c.inv==i)).join('')}</div>
+ <h3>Batteries</h3><div class="row">${BTS.map((p,i)=>btn('bt:'+i,`${p.n}<small>${p.pr?'$'+p.pr+' each':''}</small>`,c.bt==i)).join('')}</div>
+ <div class="row" style="margin-top:6px"><button data-inc="bq:-1">−</button><button disabled style="flex:2">${c.bq} battery unit(s)</button><button data-inc="bq:1">+</button></div>
+ <h3>Safety and upkeep</h3><div class="row">${Object.keys(ITM).map(k=>btn('item:'+k,`${ITM[k][0]}<small>$${ITM[k][1]}</small>`,c.items[k])).join('')}</div>
+ <div class="k" id="cs"></div>${edu()}<button class="go" data-ph="2">Continue to install →</button>`}
+function pInstall(){
+ const c=G.cfg,L=layout(c.tilt);c.n=Math.min(c.n,L.cap);
+ return `<label>Panels: <b id="v_n">${c.n}</b> (max ${L.cap})<input type="range" data-r="n" min="1" max="${L.cap}" value="${c.n}"></label>
+ <label>Tilt: <b id="v_tilt">${c.tilt}</b>°<input type="range" data-r="tilt" min="0" max="60" value="${c.tilt}"></label>
+ <label>Azimuth: <b id="v_az">${c.az}</b>° (180 = south)<input type="range" data-r="az" min="90" max="270" value="${c.az}"></label>
+ <label>Panels per string (series): <b id="v_S">${c.S}</b><input type="range" data-r="S" min="1" max="20" value="${c.S}"></label>
+ <div class="k" id="dz"></div>${edu()}<button class="go" data-ph="3">Continue to run →</button>`}
+function updInstall(){const d=design(),c=G.cfg;$('dz').innerHTML=`<b>Wiring:</b> ${d.str} string(s) of ${d.s}, ${(d.Pdc/1000).toFixed(1)} kWp<br>${msgs(d)}`}
+function pRun(){
+ const M=G.sim;
+ if(!M)return `<div class="k">Check your design, then test it for 3 days. You will face weather and a possible equipment fault.</div><div class="k" id="dz"></div><button class="go" data-start="1">▶ Run 3-day test</button>`+edu();
+ if(M.done)return report();
+ return `<div class="stat"><div><b id="r_day">1</b><small>Day / 3</small></div><div><b id="r_pv">0</b><small>PV kW</small></div><div><b id="r_ld">0</b><small>Load kW</small></div><div><b id="r_e">0</b><small>PV kWh</small></div><div><b id="r_soc">—</b><small>Battery %</small></div><div><b id="r_cov">0</b><small>Covered %</small></div></div>
+ <div class="k" id="r_msg"></div><canvas id="ch" width="360" height="150"></canvas>
+ <div class="row" style="margin-top:6px">${[1,3,8].map(s=>`<button data-spd="${s}" aria-pressed="${M.speed==s}">${s}×</button>`).join('')}<button data-clean="1">Clean panels ($40)</button></div><div id="flt"></div>${edu()}`}
+function fltUI(){
+ const M=G.sim,f=M.fault,el=$('flt');if(!el)return;let h='';
+ if(M.dead)h=`<div class="k bad"><b>Inverter destroyed.</b> <button data-fix="dead">Replace inverter ($${IVS[G.cfg.inv].pr})</button></div>`;
+ if(f&&!f.fixed){const vm=Math.round(M.d.Vmp);
+  h+=`<div class="k"><b class="bad">Fault!</b> Probe the test points with the multimeter:<div class="row">${[['A','Panel terminals'],['B','After cable'],['C','After fuse'],['D','Inverter AC output']].map(x=>`<button data-tp="${x[0]}">${x[0]}: ${x[1]}</button>`).join('')}</div><div id="rd" style="margin:6px 0"><b>${M.read||'Tap a test point.'}</b></div><div class="row"><button data-fix="cable">Replace cable ($60)</button>${G.cfg.items.fuse?'<button data-fix="fuse">Replace fuse ($25)</button>':''}<button data-fix="inverter">Replace inverter ($${IVS[G.cfg.inv].pr})</button></div></div>`}
+ if(el.dataset.h!==h){el.innerHTML=h;el.dataset.h=h}
+}
+function report(){
+ const M=G.sim,R=M.rep2,T=M.tot,S=ST[G.site],tips=[];
+ if(T.hrs&&T.shd/T.hrs>.1)tips.push('Shading cost you energy: move panels away from the shadows, or try microinverters.');
+ if(R.cov<.6)tips.push('Low coverage: add panels, or batteries to shift solar energy into the evening.');
+ if(M.d.st!='ok')tips.push('Your string voltage was outside the inverter window.');
+ if(R.saf<1)tips.push('Missing required safety items lowered your payment.');
+ if(!R.okB)tips.push('You went over the client budget.');
+ if(M.wrong)tips.push('You replaced '+M.wrong+' healthy part(s) while troubleshooting. Measure first!');
+ return `<div class="k"><h3 style="margin:0">Result: ${'★'.repeat(R.stars)}${'☆'.repeat(3-R.stars)}</h3>
+ Solar produced <b>${T.pv.toFixed(1)} kWh</b> · load <b>${T.load.toFixed(1)} kWh</b><br>Covered by solar/battery: <b>${Math.round(R.cov*100)}%</b> · imported ${T.imp.toFixed(1)} · exported ${T.exp.toFixed(1)} · unmet ${T.un.toFixed(1)} kWh<br>Safety: ${Math.round(R.saf*100)}% · repairs $${M.rep}<br><b>Payment: $${Math.max(0,R.pay)}</b></div>
+ ${tips.map(t=>`<div class="k warn">▲ ${t}</div>`).join('')}<button class="go" data-ph="1">Improve my design</button><button class="go" style="background:#fff" data-menu="1">Choose another client</button>`}
+function uiRun(){
+ const M=G.sim;if(!M||M.done)return;
+ const T=M.tot,set=(i,v)=>{const e=$(i);if(e)e.textContent=v};
+ set('r_day',M.day);set('r_pv',M.pv.toFixed(1));set('r_ld',M.ld.toFixed(1));set('r_e',T.pv.toFixed(0));set('r_soc',M.cap?Math.round(M.soc/M.cap*100):'—');set('r_cov',T.load?Math.round(T.srv/T.load*100):0);
+ const hh=Math.floor(M.t);set('r_msg',`${String(hh).padStart(2,'0')}:${String(Math.floor((M.t-hh)*60)).padStart(2,'0')} · ${M.msg}${M.out?' · GRID OUTAGE':''}${M.shFrac>.05&&M.pv>0?' · '+Math.round(M.shFrac*100)+'% of panels shaded':''}`);
+ fltUI();chart();
+}
+function chart(){
+ const cv=$('ch'),M=G.sim;if(!cv)return;const x=cv.getContext('2d'),W=cv.width,H=cv.height,mx=Math.max(2,...M.hist.map(h=>Math.max(h.pv,h.ld)))*1.15,X=t=>t/24*(W-10)+5,Y=v=>H-16-v/mx*(H-26);
+ x.clearRect(0,0,W,H);x.fillStyle='#64748b';x.font='10px sans-serif';x.strokeStyle='#e2e8f0';
+ for(let h=0;h<=24;h+=6){x.beginPath();x.moveTo(X(h),4);x.lineTo(X(h),H-16);x.stroke();x.fillText(h+'h',X(h)-6,H-4)}
+ if(M.hist.length<2)return;
+ x.beginPath();x.moveTo(X(M.hist[0].t),Y(0));M.hist.forEach(h=>x.lineTo(X(h.t),Y(h.pv)));x.lineTo(X(M.hist.at(-1).t),Y(0));x.fillStyle='#fbbf2480';x.fill();
+ x.strokeStyle='#2563eb';x.lineWidth=2;x.beginPath();M.hist.forEach((h,i)=>i?x.lineTo(X(h.t),Y(h.ld)):x.moveTo(X(h.t),Y(h.ld)));x.stroke();
+ if(M.cap){x.strokeStyle='#16a34a';x.lineWidth=1.5;x.beginPath();M.hist.forEach((h,i)=>{const y=H-16-h.soc*(H-26);i?x.lineTo(X(h.t),y):x.moveTo(X(h.t),y)});x.stroke()}
+ x.fillStyle='#334155';x.fillText('amber: solar kW · blue: load kW · green: battery',8,12);
+}
+function menu(){
+ const m=$('menu');m.style.display='flex';
+ m.innerHTML=`<div class="card"><h1>SolarCraft 3D</h1><p>Energy Architect</p><h3>Mode</h3><div class="row">${[['career','Career'],['sandbox','Sandbox'],['edu','Educational']].map(([k,l])=>`<button data-mode="${k}" aria-pressed="${G.mode==k}">${l}</button>`).join('')}</div><h3>Choose a client</h3>${ST.map((s,i)=>{const lock=G.mode=='career'&&i>0&&!(G.stars[i-1]>0);return `<button class="cl" data-site="${i}" ${lock?'disabled':''}>${s.em} ${s.n}<small>${s.dem} kWh/day · ${s.grid?'grid-tied':'off-grid'} · budget $${s.bud}${G.stars[i]?' · '+'★'.repeat(G.stars[i]):''}${lock?' · finish the previous client first':''}</small></button>`}).join('')}</div>`;
+}
+function pickSite(i){
+ G.site=i;const L=layout(25);G.cfg={panel:0,n:Math.min(8,L.cap),S:4,inv:0,bt:1,bq:0,tilt:25,az:180,items:{fuse:0,breaker:0,spd:0,ground:0,clean:0}};
+ G.v={t:12,dec:ST[i].dec,path:false};G.sim=null;buildSite();$('menu').style.display='none';go(0);
 }
 
-/* ============================================================
-   5) HOUSE
-   ============================================================ */
-let numRooms=2;
-function buildHouse(rooms){
-  while(houseGroup.children.length)houseGroup.remove(houseGroup.children[0]);
-  const W=3.6+rooms*0.9, D=3.2, H=1.9;
-  const floor=new THREE.Mesh(new THREE.BoxGeometry(W,.08,D),
-    new THREE.MeshStandardMaterial({color:0xc49a6c,roughness:.9}));
-  floor.position.y=.04;floor.receiveShadow=true;houseGroup.add(floor);
-  const glassMat=new THREE.MeshPhysicalMaterial({
-    color:0xa8cce0,metalness:0,roughness:.08,
-    transmission:.85,transparent:true,opacity:.35,thickness:.15,side:THREE.DoubleSide
-  });
-  const edgeMat=new THREE.LineBasicMaterial({color:0x3c7898});
-  const walls=[
-    {w:W,h:H,d:.05,x:0,y:H/2,z:-D/2},
-    {w:.05,h:H,d:D,x:-W/2,y:H/2,z:0},
-    {w:.05,h:H,d:D,x:W/2,y:H/2,z:0},
-  ];
-  walls.forEach(wl=>{
-    const m=new THREE.Mesh(new THREE.BoxGeometry(wl.w,wl.h,wl.d),glassMat);
-    m.position.set(wl.x,wl.y,wl.z);houseGroup.add(m);
-    const eg=new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry),edgeMat);
-    eg.position.copy(m.position);houseGroup.add(eg);
-  });
-  const innerGlass=new THREE.MeshPhysicalMaterial({
-    color:0xa8cce0,metalness:0,roughness:.1,
-    transmission:.8,transparent:true,opacity:.28,side:THREE.DoubleSide
-  });
-  for(let i=1;i<rooms;i++){
-    const x=-W/2+(W*i/rooms);
-    const m=new THREE.Mesh(new THREE.BoxGeometry(.05,H-.2,D-1.2),innerGlass);
-    m.position.set(x,H/2,.6);houseGroup.add(m);
-    const eg=new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry),edgeMat);
-    eg.position.copy(m.position);houseGroup.add(eg);
-  }
-  const roof=new THREE.Mesh(new THREE.BoxGeometry(W+.3,.12,D+.3),
-    new THREE.MeshStandardMaterial({color:0x8c4a2f,roughness:.9}));
-  roof.position.y=H+.06;roof.castShadow=true;houseGroup.add(roof);
-  const roofEdge=new THREE.LineSegments(new THREE.EdgesGeometry(roof.geometry),
-    new THREE.LineBasicMaterial({color:0x3a1f0f}));
-  roofEdge.position.copy(roof.position);houseGroup.add(roofEdge);
-  const warm=new THREE.PointLight(0xffd88a,0,7,2);
-  warm.position.set(0,H*.8,0);houseGroup.add(warm);
-  houseGroup.userData.light=warm;
-  houseGroup.userData.W=W;houseGroup.userData.D=D;houseGroup.userData.H=H;
-  houseGroup.userData.rooms=rooms;
-  return houseGroup;
-}
-
-/* ============================================================
-   6) APPLIANCE MESHES
-   ============================================================ */
-function buildApplianceMesh(i){
-  const a=A[i],g=new THREE.Group();
-  const base=new THREE.MeshStandardMaterial({color:a.hue,metalness:.3,roughness:.5});
-  const dark=new THREE.MeshStandardMaterial({color:0x22272e,metalness:.4,roughness:.5});
-
-  if(i===0){ // LED Lamp — floor vase
-    const vase=new THREE.Mesh(new THREE.CylinderGeometry(.07,.1,.18,16),
-      new THREE.MeshStandardMaterial({color:0xb87333,metalness:.5,roughness:.4}));
-    vase.position.y=.09;g.add(vase);
-    const bulb=new THREE.Mesh(new THREE.SphereGeometry(.1,18,14),
-      new THREE.MeshStandardMaterial({color:0xffffff,emissive:0xffffff,emissiveIntensity:0,metalness:0,roughness:.2}));
-    bulb.position.y=.28;g.add(bulb);g.userData.bulb=bulb;
-    const pl=new THREE.PointLight(0xffffff,0,3.5,2);
-    pl.position.y=.28;g.add(pl);g.userData.light=pl;
-    const cap=new THREE.Mesh(new THREE.CylinderGeometry(.05,.06,.04),
-      new THREE.MeshStandardMaterial({color:0x555555,metalness:.7}));
-    cap.position.y=.19;g.add(cap);
-
-  }else if(i===1){
-    const body=new THREE.Mesh(new THREE.BoxGeometry(.4,.7,.4),base);body.position.y=.35;g.add(body);
-    const door=new THREE.Mesh(new THREE.BoxGeometry(.4,.7,.02),new THREE.MeshStandardMaterial({color:0xc8d4de}));
-    door.position.set(0,.35,.21);g.add(door);
-    const snow=new THREE.Group();snow.position.set(0,.55,.23);g.add(snow);g.userData.snow=snow;
-    const snMat=new THREE.MeshBasicMaterial({color:0x5ec8ff,transparent:true,opacity:0});
-    for(let k=0;k<3;k++){
-      const bar=new THREE.Mesh(new THREE.BoxGeometry(.14,.015,.005),snMat);
-      bar.rotation.z=k*Math.PI/3;snow.add(bar);
-    }
-    const glow=new THREE.PointLight(0x88d0f0,0,1.2,2);
-    glow.position.set(0,.35,0);g.add(glow);g.userData.glow=glow;
-
-  }else if(i===2){
-    const body=new THREE.Mesh(new THREE.BoxGeometry(.55,.34,.04),dark);body.position.y=.4;g.add(body);
-    const blackP=new THREE.Mesh(new THREE.PlaneGeometry(.23,.28),
-      new THREE.MeshStandardMaterial({color:0x000000,emissive:0x000000,emissiveIntensity:0}));
-    blackP.position.set(-.14,.4,.021);g.add(blackP);
-    const whiteP=new THREE.Mesh(new THREE.PlaneGeometry(.23,.28),
-      new THREE.MeshStandardMaterial({color:0xffffff,emissive:0xffffff,emissiveIntensity:0}));
-    whiteP.position.set(.14,.4,.021);g.add(whiteP);
-    g.userData.tvBlack=blackP;g.userData.tvWhite=whiteP;
-    const neck=new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,.15),dark);neck.position.y=.2;g.add(neck);
-    const bs=new THREE.Mesh(new THREE.BoxGeometry(.3,.03,.2),dark);g.add(bs);
-
-  }else if(i===3){
-    const pole=new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,.3),dark);pole.position.y=.15;g.add(pole);
-    const bs=new THREE.Mesh(new THREE.CylinderGeometry(.1,.12,.03),dark);g.add(bs);
-    const cage=new THREE.Mesh(new THREE.TorusGeometry(.16,.008,8,24),
-      new THREE.MeshStandardMaterial({color:0x8a95a0,metalness:.6}));
-    cage.rotation.x=Math.PI/2;cage.position.y=.42;g.add(cage);
-    const hub=new THREE.Group();hub.position.y=.42;g.add(hub);g.userData.hub=hub;
-    const hubCap=new THREE.Mesh(new THREE.SphereGeometry(.035,10,8),dark);hub.add(hubCap);
-    for(let k=0;k<3;k++){
-      const bl=new THREE.Mesh(new THREE.BoxGeometry(.055,.15,.015),
-        new THREE.MeshStandardMaterial({color:0x6aa3d8,metalness:.3}));
-      bl.position.y=.08;
-      const wrap=new THREE.Group();wrap.rotation.z=k*Math.PI*2/3;wrap.add(bl);hub.add(wrap);
-    }
-
-  }else if(i===4){
-    const mon=new THREE.Mesh(new THREE.BoxGeometry(.4,.28,.03),dark);mon.position.set(0,.42,0);g.add(mon);
-    const mscr=new THREE.Mesh(new THREE.PlaneGeometry(.36,.24),
-      new THREE.MeshStandardMaterial({color:0x1c2733,emissive:0x5ec8ff,emissiveIntensity:0}));
-    mscr.position.set(0,.42,.016);g.add(mscr);g.userData.screen=mscr;
-    const neck=new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,.15),dark);neck.position.y=.25;g.add(neck);
-    const base2=new THREE.Mesh(new THREE.BoxGeometry(.3,.03,.2),dark);g.add(base2);
-    const tower=new THREE.Mesh(new THREE.BoxGeometry(.12,.3,.2),dark);tower.position.set(.28,.15,0);g.add(tower);
-    const led=new THREE.Mesh(new THREE.SphereGeometry(.018),
-      new THREE.MeshStandardMaterial({color:0x2ecc71,emissive:0x2ecc71,emissiveIntensity:0}));
-    led.position.set(.28,.28,.1);g.add(led);g.userData.led=led;
-
-  }else if(i===5){
-    const body=new THREE.Mesh(new THREE.BoxGeometry(.3,.25,.3),
-      new THREE.MeshStandardMaterial({color:0x3b7bbf,metalness:.6,roughness:.3}));
-    body.position.y=.15;g.add(body);
-    const cyl=new THREE.Mesh(new THREE.CylinderGeometry(.12,.12,.15),
-      new THREE.MeshStandardMaterial({color:0x6aa3d8,metalness:.5}));
-    cyl.rotation.z=Math.PI/2;cyl.position.set(.22,.15,0);g.add(cyl);
-    const imp=new THREE.Group();imp.position.set(.22,.15,0);
-    for(let k=0;k<4;k++){
-      const blade=new THREE.Mesh(new THREE.BoxGeometry(.02,.1,.02),
-        new THREE.MeshStandardMaterial({color:0xffffff,metalness:.7}));
-      blade.position.y=.05;
-      const w=new THREE.Group();w.rotation.x=k*Math.PI/2;w.add(blade);imp.add(w);
-    }
-    g.add(imp);g.userData.impeller=imp;
-    const led=new THREE.Mesh(new THREE.SphereGeometry(.022),
-      new THREE.MeshStandardMaterial({color:0x2ecc71,emissive:0x2ecc71,emissiveIntensity:0}));
-    led.position.set(-.1,.24,.16);g.add(led);g.userData.led=led;
-    const pipe=new THREE.Mesh(new THREE.CylinderGeometry(.03,.03,.5),
-      new THREE.MeshStandardMaterial({color:0x556677,metalness:.5}));
-    pipe.rotation.z=Math.PI/2;pipe.position.set(.55,.15,0);g.add(pipe);
-    const water=new THREE.Group();g.add(water);g.userData.water=water;
-    for(let k=0;k<10;k++){
-      const drop=new THREE.Mesh(new THREE.SphereGeometry(.022),
-        new THREE.MeshStandardMaterial({color:0x5ab4e6,emissive:0x2a80b0,emissiveIntensity:.3,transparent:true,opacity:0}));
-      drop.userData.phase=k/10;water.add(drop);
-    }
-
-  }else if(i===6){
-    const body=new THREE.Mesh(new THREE.BoxGeometry(.42,.55,.42),
-      new THREE.MeshStandardMaterial({color:0xe9eef3,metalness:.2,roughness:.5}));
-    body.position.y=.28;g.add(body);
-    const ring=new THREE.Mesh(new THREE.TorusGeometry(.15,.02,10,24),
-      new THREE.MeshStandardMaterial({color:0x8a95a0,metalness:.6}));
-    ring.position.set(0,.28,.22);g.add(ring);
-    const glass=new THREE.Mesh(new THREE.CircleGeometry(.13,24),
-      new THREE.MeshPhysicalMaterial({color:0xa8d8f0,transparent:true,opacity:.4,metalness:0,roughness:.05,transmission:.7}));
-    glass.position.set(0,.28,.235);g.add(glass);
-    const laundry=new THREE.Group();laundry.position.set(0,.28,.2);g.add(laundry);g.userData.laundry=laundry;
-    const clothColors=[0xff6b6b,0x6bcbff,0xffd84a,0x8bffb0];
-    for(let k=0;k<4;k++){
-      const cloth=new THREE.Mesh(new THREE.BoxGeometry(.06,.06,.02),
-        new THREE.MeshStandardMaterial({color:clothColors[k],emissive:clothColors[k],emissiveIntensity:0,roughness:.8}));
-      cloth.position.set((Math.random()-.5)*.14,(Math.random()-.5)*.14,0);
-      cloth.userData.phase=k*.7;laundry.add(cloth);
-    }
-    const led=new THREE.Mesh(new THREE.SphereGeometry(.015),
-      new THREE.MeshStandardMaterial({color:0x2ecc71,emissive:0x2ecc71,emissiveIntensity:0}));
-    led.position.set(-.16,.5,.22);g.add(led);g.userData.led=led;
-
-  }else if(i===7){
-    const body=new THREE.Mesh(new THREE.BoxGeometry(.7,.24,.24),
-      new THREE.MeshStandardMaterial({color:0xf1f4f7,metalness:.2,roughness:.4}));
-    body.position.y=.55;g.add(body);
-    const grille=new THREE.Mesh(new THREE.BoxGeometry(.65,.02,.15),dark);
-    grille.position.set(0,.5,.08);g.add(grille);
-    const air=new THREE.Group();g.add(air);g.userData.air=air;
-    for(let k=0;k<12;k++){
-      const puff=new THREE.Mesh(new THREE.ConeGeometry(.035,.18,8),
-        new THREE.MeshStandardMaterial({color:0xa8e0ff,emissive:0x60b8e0,emissiveIntensity:.3,transparent:true,opacity:0}));
-      puff.userData.phase=k/12;puff.userData.lane=(k%4)/3-.5;air.add(puff);
-    }
-    const led=new THREE.Mesh(new THREE.SphereGeometry(.015),
-      new THREE.MeshStandardMaterial({color:0x2ecc71,emissive:0x2ecc71,emissiveIntensity:0}));
-    led.position.set(-.28,.62,.13);g.add(led);g.userData.led=led;
-  }
-  return g;
-}
-
-/* ============================================================
-   7) STATE + SIM
-   ============================================================ */
-let C=[],W=[],nid=1,sel=null,pend=null,S,last=0,fa=0,infoComp=null;
-let houseComp=null;
-const meshMap=new Map();
-const wireMeshMap=new Map();
-let termMeshes=[];
-let applianceMeshes=[];
-
-function mk(k,t=0,position){
-  if(C.filter(c=>c.k===k).length>=MX[k]){msg('No room for another component of this type.');return null}
-  if(k==='house'&&houseComp)return houseComp;
-  if(k==='grid'&&C.some(c=>c.k==='grid'))return C.find(c=>c.k==='grid');
-  const c={id:'c'+nid++,k,t,slot:C.filter(x=>x.k===k).length,open:false};
-  c.pos=position||defaultPos(k,c.slot);
-  if(k==='house'){houseComp=c;buildHouse(numRooms);}
-  else{
-    c._group=buildMesh(c);
-    compGroup.add(c._group);
-    c._group.position.copy(c.pos);
-    meshMap.set(c.id,c._group);
-  }
-  C.push(c);
-  if(k==='bat'){S.batDead=false;S.soc=.6;S.bms=false}
-  if(k==='inv')S.invOK=true;
-  if(k==='house')S.houseDead=false;
-  return c;
-}
-function defaultPos(k,slot){
-  if(k==='house')return new THREE.Vector3(0,0,3.5);
-  if(k==='grid')return new THREE.Vector3(4.5,.6,-1.6);
-  const row=Z[k];
-  const rows=['m','p','r','b','i','k'];
-  const ri=Math.max(0,rows.indexOf(row));
-  const x=(slot%6-2.5)*1.3;
-  const z=-5 + ri*1.6;
-  return new THREE.Vector3(x,.35,z);
-}
-function del(id){
-  const c=C.find(x=>x.id===id);if(!c)return;
-  if(c._group)compGroup.remove(c._group);
-  meshMap.delete(c.id);
-  if(c.k==='house'){houseComp=null;while(houseGroup.children.length)houseGroup.remove(houseGroup.children[0])}
-  C=C.filter(x=>x.id!==id);
-  W=W.filter(w=>!w.a.startsWith(id+'.')&&!w.b.startsWith(id+'.'));
-  if(c.k==='bat')S.batDead=false;
-  if(c.k==='inv')S.invOK=true;
-  if(c.k==='house')S.houseDead=false;
-  rebuildAll();
-}
-function termPos(key){
-  const [id,t]=key.split('.'),c=C.find(x=>x.id===id);
-  if(!c)return new THREE.Vector3();
-  const off=TP[c.k]?.[t]||[0,0,0];
-  if(c.k==='house')return new THREE.Vector3(off[0],off[1],off[2]);
-  return new THREE.Vector3(off[0],off[1],off[2]).add(c.pos);
-}
-
-/* ---------- TOPOLOGY ----------
-   The key fix: house.i is a NET that can be reached either from:
-     - Inverter AC out (through breaker) — full PV/battery path
-     - Grid port directly                  — mains-only path
-   We detect whichever AC source feeds the house node.
-*/
-function topo(G,k){
-  const id={},par=[],F=x=>{while(par[x]!==x){par[x]=par[par[x]];x=par[x]}return x};
-  const T=key=>{if(!(key in id)){id[key]=par.length;par.push(par.length)}return id[key]};
-  const N=key=>F(T(key));
-  const U=(a,b)=>{par[F(T(a))]=F(T(b))};
-  W.forEach(w=>U(w.a,w.b));
-  C.forEach(c=>{const i=c.id+'.';
-    // Closed fuse, isolator, breaker bridge their two terminals
-    if(c.k==='fuse'||((c.k==='sw'||c.k==='brk')&&!c.open))U(i+'a',i+'b');
-    if(c.k==='jct'){U(i+'a',i+'b');U(i+'a',i+'c');U(i+'a',i+'d')}
-  });
-  const g=k=>C.find(c=>c.k===k),reg=g('reg'),bat=g('bat'),inv=g('inv'),house=g('house'),grid=g('grid');
-  const R={reg,bat,inv,house,grid,N};
-  R.edges=C.filter(c=>c.k==='mod').map(m=>{const d=MD[m.t];
-    return {a:N(m.id+'.m'),b:N(m.id+'.p'),Vm:d.Vm*(1-.0035*k),Vo:G>30?d.Vo*(1-.0029*k):0,I:d.P/d.Vm*G/1000};
-  });
-  R.mn=new Set();R.edges.forEach(e=>{R.mn.add(e.a);R.mn.add(e.b)});
-  if(reg){R.X=N(reg.id+'.p');R.Y=N(reg.id+'.n')}
-  R.B=inv?N(inv.id+'.d'):reg?N(reg.id+'.o'):null;
-  R.A=inv?N(inv.id+'.a'):null;
-  R.regOn=!!reg&&R.B!==null&&N(reg.id+'.o')===R.B;
-  R.batOn=!!bat&&R.B!==null&&N(bat.id+'.b')===R.B;
-  // House reachable if its "i" net exists
-  R.hOn=!!house;
-  R.H=house?N(house.id+'.i'):null;
-  // Grid AC output net
-  R.G=grid?N(grid.id+'.a'):null;
-  // Which AC sources are actually connected to the house?
-  R.invToHouse=!!inv&&R.A!==null&&R.H!==null&&R.A===R.H;
-  R.gridToHouse=!!grid&&R.G!==null&&R.H!==null&&R.G===R.H;
-  // Grid connected somewhere: to house OR to inverter output
-  R.gridOn=!!grid&&(R.gridToHouse||(R.A!==null&&R.G!==null&&R.G===R.A));
-  R.spd=C.some(c=>c.k==='spd'&&[R.X,R.Y,R.B,R.A].includes(N(c.id+'.a')));
-  R.fuse=C.some(c=>c.k==='fuse'&&[R.X,R.Y].includes(N(c.id+'.a')));
-  R.batBad=!!bat&&R.mn.has(N(bat.id+'.b'));
-  R.invBad=!!inv&&R.mn.has(N(inv.id+'.d'));
-  R.houseBad=!!house&&(R.mn.has(N(house.id+'.i'))||(R.B!==null&&N(house.id+'.i')===R.B));
-  return R;
-}
-function reduce(edges,X,Y,vk){
-  let E=edges.map(e=>({a:e.a,b:e.b,V:e[vk],I:e.I})),ch=true,g=300;
-  while(ch&&g--){ch=false;
-    for(let i=E.length-1;i>=0;i--)if(E[i].a===E[i].b){E.splice(i,1);ch=true}
-    for(let i=0;i<E.length&&!ch;i++)for(let j=i+1;j<E.length&&!ch;j++){const p=E[i],q=E[j];
-      if(p.a===q.a&&p.b===q.b){p.V=Math.min(p.V,q.V);p.I+=q.I;E.splice(j,1);ch=true}
-      else if(p.a===q.b&&p.b===q.a)return{err:'short'};
-    }
-    if(ch)continue;
-    const dg={};E.forEach(e=>{(dg[e.a]=dg[e.a]||[]).push(e);(dg[e.b]=dg[e.b]||[]).push(e)});
-    for(const n in dg){const nn=+n;if(nn===X||nn===Y||dg[n].length!==2)continue;
-      const [p,q]=dg[n];let f,s;
-      if(p.b===nn&&q.a===nn){f=p;s=q}else if(q.b===nn&&p.a===nn){f=q;s=p}else return{err:'pol'};
-      E.splice(E.indexOf(f),1);E.splice(E.indexOf(s),1);
-      E.push({a:f.a,b:s.b,V:f.V+s.V,I:Math.min(f.I,s.I)});ch=true;break;
-    }
-  }
-  const r=E.find(e=>e.a===Y&&e.b===X);
-  if(r)return{V:r.V,I:r.I};
-  return E.some(e=>e.a===X&&e.b===Y)?{err:'rev'}:{err:'none'};
-}
-
-function step(dt){
-  const h=dt*.4*S.sp;S.t+=h;if(S.t>=24){S.t-=24;S.day++}
-  if(S.storm>0){S.storm-=h;if(S.storm<=0){S.storm=0;S.ct=.7}}
-  else{
-    if(!S.cloudLock){
-      if(Math.random()<dt*.06)S.ct=Math.random()<.25?.2:.55+Math.random()*.45;
-      if(Math.random()<dt*.005){S.storm=2;S.ct=.08;
-        const R0=topo(0,25);
-        if(R0.spd)msg('⚡ Thunderstorm: SPD absorbed the strike.');
-        else if(R0.inv&&S.invOK){S.invOK=false;msg('⚡ Lightning! No SPD — inverter burnt out.')}
-      }
-    }else S.ct=S.cloudTarget;
-  }
-  S.cloud+=(S.ct-S.cloud)*Math.min(1,dt*.8);
-  const t=S.t,sun=t>6&&t<18?Math.pow(Math.sin(Math.PI*(t-6)/12),1.2):0;
-  const G=1000*sun*S.cloud,Tc=S.tamb+G/800*25,k=Tc-25;
-  const R=topo(G,k),reg=R.reg;
-  let Ppv=0,Vmp=0,Voc=0,Imp=0,perr='',low=false,flt=0,Pm=0;
-  if(R.edges.length&&!reg)perr='noreg';
-  if(reg){if(R.X===R.Y)perr='short';else{
-    const a=reduce(R.edges,R.X,R.Y,'Vm'),b=reduce(R.edges,R.X,R.Y,'Vo');
-    if(a.err)perr=a.err;else{Vmp=a.V;Imp=a.I;Voc=b.V||0;Ppv=G>20?Vmp*Imp:0}
-  }}
-  if(R.batBad&&!S.batDead&&G>30){S.batDead=true;msg('💥 Battery wired straight to panels.')}
-  if(R.invBad&&S.invOK&&G>30){S.invOK=false;msg('💥 Panel voltage hit inverter — burnt.')}
-  if(R.houseBad&&!S.houseDead){S.houseDead=true;msg('💥 DC reached the house.')}
-  if(!R.fuse&&Ppv>1200&&Math.random()<dt*.01){
-    const m=C.filter(c=>c.k==='mod');
-    if(m.length){del(m[m.length-1].id);msg('🔥 No fuse — panel burnt out.')}
-  }
-  const bt=(R.batOn&&!S.batDead)?BT[R.bat.t]:null,soc=bt?S.soc:0;
-  const Vb=bt?bt.v0+(bt.v1-bt.v0)*soc:50;
-  if(reg&&R.regOn&&!perr&&Voc>0){
-    if(reg.t===1){if(Voc>100)flt=1;else if(Vmp>Vb+2)Pm=Math.min(Imp,40)*Vb*.96;else low=true}
-    else{if(Voc>150)flt=1;else if(Vmp>Vb+4)Pm=Math.min(Ppv,3000,60*Vb)*.97;else low=true}
-  }
-  if(flt&&!S.flt)msg('⚠️ Voc exceeds controller limit.');
-  S.flt=flt;
-  const inv=!!R.inv&&S.invOK&&R.B!==null,rated=inv?IV[R.inv.t]:0;
-  if(bt&&S.bms&&soc>bt.res)S.bms=false;
-  if(bt&&!S.bms&&soc<bt.cut){S.bms=true;msg('🔋 BMS cut loads.')}
-  // House is "alive" if it exists and is not burnt
-  const houseAlive=!!R.house&&!S.houseDead;
-
-  // Appliance demand (respects on/off + schedule)
-  let Pl=0;if(houseAlive)A.forEach(a=>{if(act(a))Pl+=a.c*a.w});
-
-  // ---- AC source resolution ----
-  // Priority: solar/battery via inverter (if inverter feeds house) > grid
-  let src='none', Ps=0, Pdc=0, pw=false;
-  const gridFeedsHouse=R.gridToHouse;
-  const invFeedsHouse=R.invToHouse;
-
-  // Try inverter path first (only if inverter actually wires to house)
-  if(invFeedsHouse&&inv){
-    const invOK=bt?!S.bms:(R.regOn&&Pm*.94>=30);
-    if(invOK){
-      if(Pl>rated){
-        if(!S.ovl){S.ovl=true;msg('⚡ Overload '+Pl+' W > '+rated+' W. Breaker tripped.');
-          C.filter(c=>c.k==='brk').forEach(c=>c.open=true);}
-      }else{
-        S.ovl=false;
-        if(!bt&&Pl>Pm*.94-15){/* PV can't carry alone — fall through to grid if present */}
-        else{Ps=Pl;pw=true;src='solar';Pdc=Ps/.94+15;}
-      }
-    }
-  }
-
-  // Grid takes over if still no power and grid is wired to house
-  if(!pw&&gridFeedsHouse&&houseAlive){
-    Ps=Pl;pw=true;src='grid';Pdc=0;
-    S.ovl=false;
-  }
-
-  // If grid is the only source, keep inverter idle
-  if(src!=='solar')Pdc=Math.min(Pdc,Pm);
-
-  let net=0;
-  if(bt){if(soc>=.999)Pm=Math.min(Pm,Pdc);net=Pm-Pdc;
-    S.soc=cl(S.soc+(net>0?net*bt.eff:net)*h/bt.cap,0,1)}
-  else Pm=Math.min(Pm,Pdc);
-  if(Pl>0&&Ps===0)S.blk+=h;
-  S.srv+=Ps*h;S.pv+=Ppv*h;
-  const live=new Set();
-  if(Ppv>5){R.mn.forEach(n=>live.add(n))}
-  if(R.B!==null&&(Pm>5||Pdc>5))live.add(R.B);
-  if(R.A!==null&&Ps>0&&src==='solar')live.add(R.A);
-  // grid live marker on grid terminal
-  if(gridFeedsHouse&&pw&&src==='grid'&&R.G!==null)live.add(R.G);
-  S.P={G,Tc,Vmp,Voc,Ppv,Pm,Ps,Pdc,net,low,flt,pw,perr,bt,soc:S.soc,R,live,hv:houseAlive,inv,src,gridFeedsHouse,invFeedsHouse};
-}
-
-/* ============================================================
-   8) RENDER
-   ============================================================ */
-function rebuildAll(){
-  while(wireGroup.children.length)wireGroup.remove(wireGroup.children[0]);
-  wireMeshMap.clear();
-  W.forEach(w=>{
-    const p=termPos(w.a),q=termPos(w.b);
-    const mid=p.clone().add(q).multiplyScalar(.5);mid.y+=.5;
-    const curve=new THREE.QuadraticBezierCurve3(p,mid,q);
-    const pts=curve.getPoints(24);
-    const geo=new THREE.BufferGeometry().setFromPoints(pts);
-    const mat=new THREE.LineBasicMaterial({color:0xB4552D});
-    const line=new THREE.Line(geo,mat);
-    line.userData={wireId:w.id};
-    wireGroup.add(line);wireMeshMap.set(w.id,line);
-  });
-  while(termGroup.children.length)termGroup.remove(termGroup.children[0]);
-  termMeshes=[];
-  C.forEach(c=>{
-    if(c.k==='house')return;
-    Object.keys(TP[c.k]).forEach(t=>{
-      const key=c.id+'.'+t,p=termPos(key);
-      const isPend=pend===key;
-      const col=(TC[c.k]||{})[t]??0xE8EDF2;
-      const mat=new THREE.MeshStandardMaterial({color:isPend?0xF2A900:col,emissive:isPend?0xF2A900:0x000000,emissiveIntensity:isPend?.8:0,metalness:.3,roughness:.5});
-      const dot=new THREE.Mesh(new THREE.SphereGeometry(.075,14,12),mat);
-      dot.position.copy(p);dot.userData={term:key};
-      termGroup.add(dot);termMeshes.push(dot);
-    });
-  });
-}
-function updateSelectionVisual(){
-  C.forEach(c=>{if(c._outline)c._outline.visible=(sel===c.id)});
-  wireMeshMap.forEach((line,wid)=>{line.material.color.set(sel==='w:'+wid?0xF2A900:0xB4552D)});
-}
-function update3D(){
-  if(!S.P)return;
-  const P=S.P;
-  C.forEach(c=>{
-    if(c.k==='bat'&&c._socFill){
-      const s=S.batDead?0:P.soc;
-      c._socFill.scale.x=s;c._socFill.position.x=-.325+.325*s;
-      c._socFill.material.color.set(s<.2?0xe74c3c:0x2ecc71);
-    }
-    if(c.k==='sw'&&c._handle)c._handle.rotation.x=c.open?Math.PI/2.2:0;
-    if(c.k==='brk'&&c._lever)c._lever.position.y=c.open?.16:.12;
-    if(c.k==='grid'&&c._led)c._led.material.emissiveIntensity=P.R.gridOn?1.4:0;
-  });
-  const lit=P.pw&&P.hv;
-  if(houseGroup.userData.light)houseGroup.userData.light.intensity=lit?1.2:0;
-  wireMeshMap.forEach((line,wid)=>{
-    const w=W.find(x=>x.id===wid);if(!w)return;
-    const na=P.R.N(w.a);
-    const isLive=P.live.has(na);
-    line.material.color.set(isLive?0xF2A900:(sel==='w:'+wid?0xF2A900:0xB4552D));
-  });
-  // grid badge
-  const gb=$('gridBadge');
-  if(P.R.gridToHouse){gb.textContent='🔌 GRID: wired to house — appliances auto-ON';gb.className='gridbadge on';}
-  else if(P.R.gridOn){gb.textContent='🔌 GRID: connected (standby)';gb.className='gridbadge on';}
-  else if(P.R.grid){gb.textContent='🔌 GRID: not linked yet';gb.className='gridbadge off';}
-  else {gb.textContent='🔌 GRID: not present';gb.className='gridbadge off';}
-
-  applianceMeshes.forEach(({mesh,idx,on})=>{
-    const u=mesh.userData;
-    if(u.bulb){u.bulb.material.emissiveIntensity=on?.95:0;u.bulb.material.emissive.set(on?0xffffff:0x000000);}
-    if(u.light)u.light.intensity=on?.7:0;
-    if(u.screen)u.screen.material.emissiveIntensity=on?.8:0;
-    if(u.led)u.led.material.emissiveIntensity=on?.9:0;
-    if(u.hub)u.hub.rotation.y=on?fa*.4:0;
-    if(u.impeller)u.impeller.rotation.x=on?fa*.7:0;
-    if(u.drum)u.drum.rotation.z=on?fa*.6:0;
-    if(u.tvBlack&&u.tvWhite){
-      u.tvBlack.material.emissiveIntensity=on?.9:0;
-      u.tvWhite.material.emissiveIntensity=on?.9:0;
-    }
-    if(u.snow){u.snow.children.forEach(b=>{b.material.opacity=on?.9:0});if(u.glow)u.glow.intensity=on?.7:0;}
-    if(u.laundry){u.laundry.children.forEach(c=>{c.material.emissiveIntensity=on?.4:0;
-      if(on){const a=fa*.05+c.userData.phase;c.position.x=Math.cos(a)*.08;c.position.y=Math.sin(a)*.08;c.rotation.z=a;}})}
-    if(u.water){u.water.children.forEach(d=>{d.material.opacity=on?.9:0;
-      if(on){const p=((fa*.02+d.userData.phase)%1);d.position.x=.35+p*.55;d.position.y=.15-Math.max(0,p-.6)*.5;}})}
-    if(u.air){u.air.children.forEach(p=>{p.material.opacity=on?.6:0;
-      if(on){const ph=((fa*.015+p.userData.phase)%1);p.position.x=p.userData.lane;p.position.y=.4-ph*.35;}})}
-  });
-  updateSelectionVisual();
-}
-
-/* ============================================================
-   9) WEATHER
-   ============================================================ */
-function updateWeatherVisuals(){
-  if(!S.P)return;
-  const t=S.t;
-  const sunAng=Math.PI*(t-6)/12,sunR=18;
-  sunLight.position.set(-Math.cos(sunAng)*sunR,Math.max(-2,Math.sin(sunAng)*sunR),6);
-  sunSphere.position.copy(sunLight.position);
-  sunSphere.visible=t>6&&t<18&&S.P.G>30;
-  const cf=S.cloud,dayFactor=cl(S.P.G/900,0,1);
-  const daySky=new THREE.Color(0x9ec7e8),duskSky=new THREE.Color(0xf0a878),nightSky=new THREE.Color(0x0a1420),cloudTint=new THREE.Color(0x8894a0);
-  let skyCol;
-  if(t<5||t>20)skyCol=nightSky.clone();
-  else if(t<7)skyCol=duskSky.clone().lerp(daySky,(t-5)/2);
-  else if(t<17)skyCol=daySky.clone();
-  else skyCol=daySky.clone().lerp(duskSky,(t-17)/3);
-  if(cf>.5)skyCol.lerp(cloudTint,(cf-.5)*1.6);
-  scene.background.copy(skyCol);scene.fog.color.copy(skyCol);
-  ground.material.color.set(skyCol.clone().lerp(new THREE.Color(0xdbe4ec),.7));
-  sunLight.intensity=(t>6&&t<18)?(1.4*(1-cf*.7)):.15;
-  if(t<8||t>17)sunLight.color.set(0xffb070);else sunLight.color.set(0xfff3c4);
-  hemi.intensity=.35+dayFactor*(1-cf*.4);
-  const cloudCol=cf>.7?new THREE.Color(0x6a747e):new THREE.Color(0xffffff);
-  cloudMeshes.forEach(c=>{c.children.forEach(p=>{p.material.color.copy(cloudCol);p.material.opacity=.35+cf*.55})});
-  const skyName=cf<.25?'Clear':cf<.5?'Partly cloudy':cf<.75?'Cloudy':S.storm>0?'⛈ Storm':'Overcast';
-  $('wSky').textContent=skyName;$('wCld').textContent=Math.round(cf*100)+'%';
-}
-
-/* ============================================================
-   10) INFO PANEL
-   ============================================================ */
-function showInfo(c){
-  infoComp=c;
-  const panel=$('info');
-  if(!c){panel.style.display='none';return}
-  panel.style.display='block';
-  const title=$('infoTitle'),body=$('infoBody');
-  const P=S.P,rows=[];
-  const kv=(k,v)=>`<div class="kv"><span>${k}</span><span>${v}</span></div>`;
-  if(c.k==='mod'){
-    const d=MD[c.t];
-    rows.push(kv('Type',d.n));rows.push(kv('Rated',d.P+' W'));
-    rows.push(kv('Vmp',d.Vm.toFixed(1)+' V'));rows.push(kv('Voc',d.Vo.toFixed(1)+' V'));
-    if(P&&P.G>20)rows.push(kv('Output',P.live.has(P.R.N(c.id+'.p'))?'✔ Active':'idle'));
-  }else if(c.k==='reg'){
-    rows.push(kv('Type',['','PWM','MPPT'][c.t]));
-    if(P){rows.push(kv('Mode',P.flt?'FAULT':P.low?'LOW V':'OK'));rows.push(kv('Output',Math.round(P.Pm)+' W'));}
-  }else if(c.k==='bat'){
-    const b=BT[c.t];
-    rows.push(kv('Type',b.n));rows.push(kv('Capacity',(b.cap/1000)+' kWh'));
-    rows.push(kv('SoC',S.batDead?'DEAD':Math.round(P.soc*100)+'%'));
-  }else if(c.k==='inv'){
-    rows.push(kv('Rated',IV[c.t]/1000+' kW'));
-    rows.push(kv('Status',!S.invOK?'BURNT':P.pw&&P.src==='solar'?'ON':'OFF'));
-    rows.push(kv('To house',P.R.invToHouse?'✔ wired':'✖ not wired'));
-    rows.push(kv('Output',P.pw&&P.src==='solar'?Math.round(P.Ps)+' W':'0 W'));
-  }else if(c.k==='fuse'){rows.push(kv('Rating','20 A · 1000 V DC'))}
-  else if(c.k==='sw'){rows.push(kv('State',c.open?'OPEN':'CLOSED'))}
-  else if(c.k==='spd'){rows.push(kv('Protected',P.R.spd?'✔ yes':'✖ no'))}
-  else if(c.k==='brk'){
-    rows.push(kv('State',c.open?'TRIPPED':'CLOSED'));
-    rows.push(kv('Rating','16 A · 220 V AC'));
-    rows.push(kv('Position','between inverter AC-out and house'));
-  }
-  else if(c.k==='jct'){rows.push(kv('Wires',W.filter(w=>w.a.startsWith(c.id)||w.b.startsWith(c.id)).length))}
-  else if(c.k==='grid'){
-    rows.push(kv('Type','AC mains inlet 220 V'));
-    rows.push(kv('Direct to house',P.R.gridToHouse?'✔ YES':'✖ no'));
-    rows.push(kv('Supply',P.src==='grid'?'ACTIVE':'standby'));
-  }else if(c.k==='house'){
-    rows.push(kv('Rooms',numRooms));
-    rows.push(kv('State',S.houseDead?'BURNT':P.hv?(P.src==='grid'?'GRID powered':P.src==='solar'?'SOLAR powered':'on'):'no power'));
-    rows.push(kv('AC source',P.src.toUpperCase()));
-    rows.push(kv('Appliances',applianceMeshes.length));
-    rows.push(kv('Load',Math.round(P.Ps)+' W'));
-  }
-  title.textContent=nm(c);
-  body.innerHTML=rows.join('');
-}
-function nm(c){
-  if(c.k==='mod')return `${MD[c.t].n} panel ${MD[c.t].P} W`;
-  if(c.k==='bat')return `${BT[c.t].n} battery`;
-  if(c.k==='inv')return `Inverter ${IV[c.t]/1000} kW`;
-  if(c.k==='reg')return ['','PWM','MPPT'][c.t]+' charge controller';
-  return {fuse:'DC fuse',sw:'DC isolator',spd:'Surge protector',jct:'DC bus junction',brk:'AC breaker',house:'House',grid:'Grid Port'}[c.k];
-}
-
-/* ============================================================
-   11) UI
-   ============================================================ */
-function diag(P){
-  const R=P.R;
-  if(!R.house)return 'Add a house.';
-  if(S.houseDead)return 'The house appliances burnt: delete the house and add it again.';
-  // Grid-only path
-  if(P.gridFeedsHouse&&P.src==='grid')return '✔ GRID is wired directly to the house — all appliances are powered.';
-  // Solar path
-  if(P.invFeedsHouse&&P.src==='solar')return '✔ Solar/battery is powering the house through the inverter.';
-  if(!R.inv&&!R.grid)return 'Add an inverter (DC→AC) or a Grid Port (mains).';
-  if(R.inv&&!P.invFeedsHouse&&!P.gridFeedsHouse)
-    return 'Wire the inverter AC-out (through the breaker) to the house, or wire Grid directly to the house.';
-  if(!S.invOK&&!P.gridFeedsHouse)return 'The inverter is burnt: replace it, or wire Grid directly to the house.';
-  if(!P.hv)return 'The house has no power right now.';
-  return '✔ Power available';
-}
-function ui(){
-  const P=S.P,t=S.t,hh=Math.floor(t),mm=Math.floor((t-hh)*60);
-  $('day').textContent=S.day;
-  $('clk').textContent=String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0');
-  $('vG').textContent=Math.round(P.G);
-  $('vTc').textContent=Math.round(P.Tc);
-  $('vP').textContent=Math.round(P.Ppv);
-  $('vV').textContent=P.G>20?Math.round(P.Vmp):0;
-  $('vSoc').textContent=P.bt?Math.round(P.soc*100):'\u2014';
-  $('vL').textContent=Math.round(P.Ps);
-  $('vTa').textContent=S.tamb;
-  $('eng').textContent=`PV ${(S.pv/1000).toFixed(1)} kWh · Delivered ${(S.srv/1000).toFixed(1)} kWh · Outage ${S.blk.toFixed(1)} h`;
-  document.querySelectorAll('[data-a="sp"]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.v===S.sp));
-  update3D();updateWeatherVisuals();
-  $('diag').textContent=diag(P);
-  A.forEach((a,i)=>{
-    const s=$('sTime'+i),e=$('eTime'+i),badge=$('schedBadge'+i);
-    if(s)s.textContent=hm(a.s);if(e)e.textContent=hm(a.e);
-    if(badge)badge.textContent=a.sc?'⏰':'—';
-  });
-  if(infoComp)showInfo(infoComp);
-}
-function renderSel(){
-  const e=$('sel');
-  if(sel&&sel.startsWith('w:')){e.innerHTML='<span>Wire selected</span><button data-a="delw">Delete wire</button>';return}
-  const c=C.find(x=>x.id===sel);
-  if(!c){e.innerHTML=pend?'<span>Tap the second terminal to finish the wire</span>':'<span>Nothing selected</span>';return}
-  e.innerHTML=`<span>${nm(c)}</span><span>${(c.k==='sw'||c.k==='brk')?`<button data-a="tog">${c.open?'Close':'Open'}</button> `:''}<button data-a="del">Delete</button></span>`;
-}
-const act=a=>a.on&&(!a.sc||(a.s<a.e?S.t>=a.s&&S.t<a.e:S.t>=a.s||S.t<a.e));
-const hm=h=>String(h).padStart(2,'0')+':00';
-
-/* ============================================================
-   12) APPLIANCES UI
-   ============================================================ */
-function renderAppliances(){
-  const c=$('appliances');c.innerHTML='';
-  A.forEach((a,i)=>{
-    const card=document.createElement('div');card.className='app-card';
-    card.innerHTML=`
-      <div class="app-head">
-        <span class="name">${a.icon} ${a.n} <span class="info" style="margin:0">${a.w} W</span></span>
-        <button data-a="apm" data-i="${i}">−</button>
-        <b class="cnt" id="cnt${i}">0</b>
-        <button data-a="app" data-i="${i}">+</button>
-      </div>
-      <div class="app-prog">
-        <div class="line">
-          <button data-a="sctog" data-i="${i}" id="scBtn${i}">Schedule: OFF</button>
-          <span id="schedBadge${i}" style="font-size:13px">—</span>
-        </div>
-        <div class="line" id="swLine${i}" hidden>
-          <span>From</span>
-          <button data-a="shm" data-i="${i}">−</button>
-          <b class="tm" id="sTime${i}">08:00</b>
-          <button data-a="shp" data-i="${i}">+</button>
-          <span>to</span>
-          <button data-a="ehm" data-i="${i}">−</button>
-          <b class="tm" id="eTime${i}">18:00</b>
-          <button data-a="ehp" data-i="${i}">+</button>
-        </div>
-      </div>`;
-    c.appendChild(card);
-  });
-}
-function findFreeSpotInHouse(){
-  const hd=houseGroup.userData,W=hd.W||5,D=hd.D||3,n=applianceMeshes.length;
-  const ang=n*1.7,r=.3+Math.floor(n/6)*.5;
-  return new THREE.Vector3(cl(Math.cos(ang)*r,-W/2+.5,W/2-.5),0,cl(Math.sin(ang)*r,-D/2+.5,D/2-.5));
-}
-function spawnAppliance(i){
-  if(!houseComp){msg('Add a house first.');return false}
-  if(A[i].c>=6)return false;
-  A[i].c++;
-  const mesh=buildApplianceMesh(i);
-  mesh.position.copy(findFreeSpotInHouse());
-  if(i===0)mesh.position.y=0;
-  mesh.rotation.y=Math.random()*Math.PI*2;
-  applianceGroup.add(mesh);
-  applianceMeshes.push({mesh,idx:i,on:false});
-  return true;
-}
-function removeAppliance(i){
-  if(A[i].c<=0)return false;
-  A[i].c--;
-  for(let k=applianceMeshes.length-1;k>=0;k--){
-    if(applianceMeshes[k].idx===i){
-      applianceGroup.remove(applianceMeshes[k].mesh);
-      applianceMeshes.splice(k,1);return true;
-    }
-  }
-  return true;
-}
-function renderAppCounts(){
-  A.forEach((a,i)=>{
-    const el=$('cnt'+i);if(el)el.textContent=a.c;
-    const scBtn=$('scBtn'+i),swLine=$('swLine'+i);
-    if(scBtn)scBtn.textContent='Schedule: '+(a.sc?'ON':'OFF');
-    if(swLine)swLine.hidden=!a.sc;
-  });
-}
-
-/* ============================================================
-   13) CATALOG
-   ============================================================ */
-function renderCatalog(){
-  const c=$('catalog');c.innerHTML='';
-  CATALOG.forEach(cat=>{
-    const d=document.createElement('details');d.className='cat';d.open=(cat.id==='panels');
-    const s=document.createElement('summary');s.textContent=cat.name;d.appendChild(s);
-    const wrap=document.createElement('div');wrap.className='items';
-    cat.items.forEach(it=>{
-      const b=document.createElement('div');b.className='item';b.draggable=true;
-      b.dataset.k=it.k;b.dataset.t=it.t;
-      b.innerHTML=`<span>${it.name}<br><span class="spec">${it.spec}</span></span>`;
-      b.addEventListener('dragstart',e=>{
-        e.dataTransfer.setData('text/plain','comp:'+it.k+':'+it.t);
-        e.dataTransfer.effectAllowed='copy';
-      });
-      wrap.appendChild(b);
-    });
-    d.appendChild(wrap);c.appendChild(d);
-  });
-}
-
-/* ============================================================
-   14) DRAG & DROP
-   ============================================================ */
-const sceneEl=$('scene');
-sceneEl.addEventListener('dragover',e=>{e.preventDefault()});
-sceneEl.addEventListener('drop',e=>{
-  e.preventDefault();
-  const data=e.dataTransfer.getData('text/plain');if(!data)return;
-  const rect=renderer.domElement.getBoundingClientRect();
-  const mouse=new THREE.Vector2(((e.clientX-rect.left)/rect.width)*2-1,-((e.clientY-rect.top)/rect.height)*2+1);
-  const ray=new THREE.Raycaster();ray.setFromCamera(mouse,camera);
-  if(data.startsWith('comp:')){
-    const [,k,t]=data.split(':');const tk=+t;
-    const plane=new THREE.Plane(new THREE.Vector3(0,1,0),-.35);
-    const hit=new THREE.Vector3();ray.ray.intersectPlane(plane,hit);
-    if(!hit)hit.set(0,.35,0);
-    const c=mk(k,tk,new THREE.Vector3(hit.x,.35,hit.z));
-    if(c){sel=c.id;pend=null;showInfo(c);rebuildAll();renderSel();step(0);update3D()}
-  }
-});
-
-/* ============================================================
-   15) POINTER EVENTS
-   ============================================================ */
-let dragAppliance=null;
-const dragPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0);
-const dragOffset=new THREE.Vector3();
-const raycaster=new THREE.Raycaster();
-const mouseNDC=new THREE.Vector2();
-function pointerToGround(e){
-  const rect=renderer.domElement.getBoundingClientRect();
-  mouseNDC.x=((e.clientX-rect.left)/rect.width)*2-1;
-  mouseNDC.y=-((e.clientY-rect.top)/rect.height)*2+1;
-  raycaster.setFromCamera(mouseNDC,camera);
-  const hit=new THREE.Vector3();
-  raycaster.ray.intersectPlane(dragPlane,hit);
-  return hit;
-}
-renderer.domElement.addEventListener('pointerdown',e=>{
-  const rect=renderer.domElement.getBoundingClientRect();
-  mouseNDC.x=((e.clientX-rect.left)/rect.width)*2-1;
-  mouseNDC.y=-((e.clientY-rect.top)/rect.height)*2+1;
-  raycaster.setFromCamera(mouseNDC,camera);
-  const termHits=raycaster.intersectObjects(termMeshes,false);
-  if(termHits.length){
-    const key=termHits[0].object.userData.term;
-    if(pend&&pend!==key){
-      if(!W.some(w=>(w.a===pend&&w.b===key)||(w.a===key&&w.b===pend)))
-        W.push({id:'w'+nid++,a:pend,b:key});
-      pend=null;sel=null;
-    }else pend=pend===key?null:key;
-    rebuildAll();renderSel();step(0);update3D();return;
-  }
-  const appMeshes=applianceMeshes.map(x=>x.mesh);
-  const appHits=raycaster.intersectObjects(appMeshes,true);
-  if(appHits.length){
-    let obj=appHits[0].object;
-    while(obj.parent&&!applianceMeshes.some(x=>x.mesh===obj))obj=obj.parent;
-    const found=applianceMeshes.find(x=>x.mesh===obj);
-    if(found){
-      dragAppliance=found;controls.enabled=false;
-      const ground=pointerToGround(e);
-      dragOffset.copy(found.mesh.position).sub(ground);dragOffset.y=0;
-      renderer.domElement.setPointerCapture(e.pointerId);
-      return;
-    }
-  }
-  const list=[];
-  meshMap.forEach((g,id)=>{g.traverse(o=>{if(o.isMesh){o.userData.compId=id;list.push(o)}})});
-  const ch=raycaster.intersectObjects(list,false);
-  if(ch.length){
-    const id=ch[0].object.userData.compId;
-    sel=id;pend=null;
-    const c=C.find(x=>x.id===id);
-    if(c)showInfo(c);
-    renderSel();update3D();return;
-  }
-  const wh=raycaster.intersectObjects([...wireMeshMap.values()],false);
-  if(wh.length){sel='w:'+wh[0].object.userData.wireId;pend=null;showInfo(null);renderSel();update3D();return}
-  sel=null;pend=null;showInfo(null);renderSel();update3D();
-});
-renderer.domElement.addEventListener('pointermove',e=>{
-  if(!dragAppliance)return;
-  const g=pointerToGround(e),hd=houseGroup.userData,W=hd.W||5,D=hd.D||3;
-  dragAppliance.mesh.position.x=cl(g.x+dragOffset.x,-W/2+.3,W/2-.3);
-  dragAppliance.mesh.position.z=cl(g.z+dragOffset.z,-D/2+.3,D/2-.3);
-});
-renderer.domElement.addEventListener('pointerup',e=>{
-  if(dragAppliance){dragAppliance=null;controls.enabled=true;
-    try{renderer.domElement.releasePointerCapture(e.pointerId)}catch(_){}}
-});
-$('tamb').addEventListener('input',e=>{S.tamb=+e.target.value;step(0)});
-$('cloudSlider').addEventListener('input',e=>{
-  const v=+e.target.value;
-  S.cloudLock=true;S.cloudTarget=v/100;
-  if(S.storm>0&&v<50)S.storm=0;
-});
-$('rooms').addEventListener('change',e=>{
-  numRooms=+e.target.value;
-  if(houseComp){buildHouse(numRooms);rebuildAll()}
-});
-
-/* ============================================================
-   16) CLICK HANDLERS
-   ============================================================ */
+/* ---------- events ---------- */
 document.addEventListener('click',e=>{
-  const b=e.target.closest('[data-a]');
-  if(!b)return;
-  const a=b.dataset.a,v=+b.dataset.v,i=+b.dataset.i;
-  switch(a){
-    case'go':S.run=!S.run;b.textContent=S.run?'Pause':'Start';return;
-    case'sp':S.sp=v;return;
-    case'del':del(sel);showInfo(null);sel=null;break;
-    case'delw':W=W.filter(w=>'w:'+w.id!==sel);sel=null;break;
-    case'tog':{const c=C.find(x=>x.id===sel);if(c){c.open=!c.open;S.ovl=false}break}
-    case'pre':preset();break;
-    case'clr':clearAll();break;
-    case'app':spawnAppliance(i);renderAppCounts();step(0);update3D();return;
-    case'apm':removeAppliance(i);renderAppCounts();step(0);update3D();return;
-    case'allon':A.forEach(a=>a.on=true);renderAppCounts();update3D();return;
-    case'alloff':A.forEach(a=>a.on=false);renderAppCounts();update3D();return;
-    case'closeinfo':showInfo(null);return;
-    case'sctog':A[i].sc=!A[i].sc;renderAppCounts();step(0);update3D();return;
-    case'shm':A[i].s=(A[i].s+23)%24;step(0);update3D();return;
-    case'shp':A[i].s=(A[i].s+1)%24;step(0);update3D();return;
-    case'ehm':A[i].e=(A[i].e+23)%24;step(0);update3D();return;
-    case'ehp':A[i].e=(A[i].e+1)%24;step(0);update3D();return;
-  }
-  rebuildAll();renderSel();step(0);update3D();
+ const t=e.target.closest('button');if(!t)return;const d=t.dataset,c=G.cfg;
+ if(t.id=='bM'){menu();return}
+ if(d.mode){G.mode=d.mode;menu();return}
+ if(d.site!==undefined){pickSite(+d.site);return}
+ if(d.menu){menu();return}
+ if(d.ph!==undefined){go(+d.ph);return}
+ if(d.top){cm.e=1.45;return}
+ if(d.start){startSim();if(G.mode!='sandbox'&&cost()>ST[G.site].bud&&G.mode=='career'){G.sim=null;$('pn').insertAdjacentHTML('afterbegin','<div class="k bad">Over budget! Reduce your purchases in the shop.</div>');return}go(3);return}
+ if(d.spd){G.sim.speed=+d.spd;go(3);return}
+ if(d.clean){const M=G.sim;if(M.soil>0){M.soil=0;M.rep+=40;M.msg='Panels cleaned.'}return}
+ if(d.tp){const M=G.sim,f=M.fault,v=Math.round(M.d.Vmp),bad=f.type,z=(tp)=>tp=='A'?v:tp=='B'?(bad=='cable'?0:v):tp=='C'?(bad=='cable'||bad=='fuse'?0:v):0;M.read=`${d.tp}: ${z(d.tp)} ${d.tp=='D'?'V AC':'V DC'}`;fltUI();return}
+ if(d.fix){const M=G.sim,f=M.fault,pr={cable:60,fuse:25,inverter:IVS[c.inv].pr,dead:IVS[c.inv].pr}[d.fix];M.rep+=pr;
+  if(d.fix=='dead'){M.dead=0;M.msg='Inverter replaced.'}
+  else if(f&&f.type==d.fix){f.fixed=1;M.read='';M.msg='✔ Fault fixed. Production resumes.'}
+  else{M.wrong++;M.msg='That part was fine. Money wasted.'}return}
+ if(d.set){const[k,v]=d.set.split(':');
+  if(k=='dec'){G.v.dec=+v;buildPath();go(0)}else if(k=='path'){G.v.path=!G.v.path;buildPath();go(0)}
+  else if(k=='item'){c.items[v]=c.items[v]?0:1;go(1)}else{c[k]=+v;if(k=='bt'&&!c.bq)c.bq=+v?1:0;if(k=='bt'&&!+v)c.bq=0;if(k=='panel')buildPanels();go(1)}return}
+ if(d.inc){const[k,v]=d.inc.split(':');c[k]=cl(c[k]+ +v,0,8);if(c[k]>0&&!c.bt)c.bt=1;go(1);return}
 });
-
-/* ============================================================
-   17) PRESET + CLEAR
-   ============================================================ */
-function clearAll(){
-  while(compGroup.children.length)compGroup.remove(compGroup.children[0]);
-  while(wireGroup.children.length)wireGroup.remove(wireGroup.children[0]);
-  while(termGroup.children.length)termGroup.remove(termGroup.children[0]);
-  while(houseGroup.children.length)houseGroup.remove(houseGroup.children[0]);
-  while(applianceGroup.children.length)applianceGroup.remove(applianceGroup.children[0]);
-  C=[];W=[];nid=1;sel=pend=null;houseComp=null;
-  meshMap.clear();wireMeshMap.clear();termMeshes=[];applianceMeshes=[];
-  A.forEach(a=>{a.c=0;a.on=true;a.sc=false;a.s=8;a.e=18});
-  Object.assign(S,{batDead:false,invOK:true,houseDead:false,bms:false,soc:.6,ovl:false});
-  renderAppCounts();showInfo(null);
+document.addEventListener('input',e=>{
+ const t=e.target;
+ if(t.id=='tm'){G.v.t=+t.value;$('tv').textContent=t.value;return}
+ if(t.dataset.r){const k=t.dataset.r;G.cfg[k]=+t.value;$('v_'+k).textContent=t.value;
+  if(k=='tilt'){const L=layout(G.cfg.tilt);if(G.cfg.n>L.cap){G.cfg.n=L.cap;go(2);return}}
+  buildPanels();updInstall();head()}
+});
+function upd(){if(G.ph==2)updInstall();if(G.ph==1){const d=design(),S=ST[G.site],el=$('cs');if(el)el.innerHTML=`<b>Total: $${cost()}</b> of $${S.bud}<br>${msgs(d)}`}if(G.ph==3&&!G.sim){const el=$('dz');if(el)el.innerHTML=msgs(design())}}
+let last=performance.now(),fc=0;
+function loop(now){
+ const dt=Math.min(.1,(now-last)/1000);last=now;tick(dt);
+ const S=ST[G.site],M=G.sim;setSun(M?M.t:G.v.t,M?S.dec:G.v.dec);camUpd();ren.render(sc,cam);
+ if(++fc%8==0){if(G.ph==3)uiRun();upd();head();if(G.ph==3&&G.sim&&G.sim.done&&$('ch')){go(3)}}
+ requestAnimationFrame(loop);
 }
-function preset(){
-  clearAll();
-  const h=mk('house',0,new THREE.Vector3(0,0,3.2));
-  const m1=mk('mod',0,new THREE.Vector3(-2.6,.35,-5.0));
-  const m2=mk('mod',0,new THREE.Vector3(-1.3,.35,-5.0));
-  const m3=mk('mod',0,new THREE.Vector3(0,.35,-5.0));
-  const m4=mk('mod',0,new THREE.Vector3(1.3,.35,-5.0));
-  const f=mk('fuse',0,new THREE.Vector3(-3.6,.35,-3.4));
-  const sw=mk('sw',0,new THREE.Vector3(-2.4,.35,-3.4));
-  const sp=mk('spd',0,new THREE.Vector3(-1.2,.35,-3.4));
-  const rg=mk('reg',2,new THREE.Vector3(.2,.35,-3.4));
-  const j=mk('jct',0,new THREE.Vector3(1.8,.35,-3.4));
-  const b=mk('bat',3,new THREE.Vector3(-3.6,.35,-1.6));
-  const iv=mk('inv',2,new THREE.Vector3(-1.8,.35,-1.6));
-  const bk=mk('brk',0,new THREE.Vector3(0,.35,-1.6));
-  const gr=mk('grid',0,new THREE.Vector3(4.2,.6,-1.6));
-  const L=(a,b)=>W.push({id:'w'+nid++,a,b});
-  // DC side
-  L(m1.id+'.p',m2.id+'.m');L(m2.id+'.p',m3.id+'.m');L(m3.id+'.p',m4.id+'.m');
-  L(m1.id+'.m',f.id+'.a');L(f.id+'.b',sw.id+'.a');
-  L(sw.id+'.b',rg.id+'.p');L(m4.id+'.m',rg.id+'.n');
-  L(sp.id+'.a',sw.id+'.b');
-  L(rg.id+'.o',j.id+'.a');L(b.id+'.b',j.id+'.b');L(iv.id+'.d',j.id+'.c');
-  // AC side: inverter AC-out → breaker → house
-  L(iv.id+'.a',bk.id+'.a');
-  L(bk.id+'.b',h.id+'.i');
-  // Grid wired DIRECTLY to house (parallel to breaker path) → powers house on its own
-  L(gr.id+'.a',h.id+'.i');
-  [0,1,2,3].forEach(i=>spawnAppliance(i));
-  A[0].sc=true;A[0].s=18;A[0].e=6;
-  A[2].sc=true;A[2].s=19;A[2].e=23;
-  renderAppCounts();rebuildAll();renderSel();step(0);update3D();
-  msg('Ready-made setup: PV + MPPT + battery + inverter → house, and Grid → house (direct).');
-}
-
-/* ============================================================
-   18) INIT
-   ============================================================ */
-function init(){
-  S={t:6,day:1,run:false,tamb:+$('tamb').value,sp:1,cloud:.1,ct:.1,storm:0,
-     srv:0,pv:0,blk:0,flt:0,ovl:false,cloudLock:false,cloudTarget:.1};
-  C=[];W=[];nid=1;sel=pend=null;houseComp=null;infoComp=null;
-  A.forEach(a=>{a.c=0;a.on=true;a.sc=false;a.s=8;a.e=18});
-  renderCatalog();renderAppliances();renderAppCounts();
-  buildHouse(numRooms);
-  step(0);renderSel();
-}
-function resize(){
-  const el=$('scene');const w=el.clientWidth,h=el.clientHeight;
-  if(!w||!h)return;
-  camera.aspect=w/h;camera.updateProjectionMatrix();
-  renderer.setSize(w,h);
-}
-addEventListener('resize',resize);
-
-function loop(ts){
-  const dt=Math.min(.1,(ts-last)/1000||0);last=ts;
-  if(S.run)step(dt);
-  fa+=dt*60;if(fa>3600)fa=0;
-  cloudMeshes.forEach(c=>{
-    c.position.x+=c.userData.speed*dt*(S.run?S.sp:1);
-    if(c.position.x>28)c.position.x=-28;
-  });
-  ui();controls.update();
-  renderer.render(scene,camera);
-  requestAnimationFrame(loop);
-}
-init();resize();
+initGL();menu();pickSiteInit();
+function pickSiteInit(){G.site=0;G.cfg={panel:0,n:8,S:4,inv:0,bt:1,bq:0,tilt:25,az:180,items:{fuse:0,breaker:0,spd:0,ground:0,clean:0}};G.v={t:12,dec:0,path:false};buildSite();go(0);$('menu').style.display='flex'}
 requestAnimationFrame(loop);
 </script>
 </body>
-  </html>
+</html>
