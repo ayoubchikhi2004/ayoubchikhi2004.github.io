@@ -1,1 +1,380 @@
+هذا ملف HTML لـ "PV Wiring Lab" يحاكي توصيلات الألواح الشمسية. لتحويله إلى 3D، سأستخدم مكتبة Three.js لعرض المشهد ثلاثي الأبعاد مع الحفاظ على منطق المحاكاة.
 
+```html
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PV Wiring Lab 3D</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#E8EEF2;--grid:#D3DCE3;--ink:#14263A;--mut:#54657A;--pan:#F7FAFC;--wall:#F1E8D6;--sun:#F2A900;--cu:#B4552D;--tl:#0F8B8D;--bad:#C0392B;--ok:#23804F;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E1822;--grid:#1B2A37;--ink:#DCE6EE;--mut:#8FA1B2;--pan:#15222E;--wall:#26323F;--sun:#FFC233;--cu:#E08A5E;--tl:#37C1C3;--bad:#FF6B5B;--ok:#5FCB8C}}
+:root[data-theme="dark"]{--bg:#0E1822;--grid:#1B2A37;--ink:#DCE6EE;--mut:#8FA1B2;--pan:#15222E;--wall:#26323F;--sun:#FFC233;--cu:#E08A5E;--tl:#37C1C3;--bad:#FF6B5B;--ok:#5FCB8C}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*:before,*:after{box-sizing:inherit}
+body{margin:0;font:15px/1.5 "IBM Plex Sans",system-ui,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:linear-gradient(var(--grid) 1px,transparent 1px) 0 0/24px 24px,linear-gradient(90deg,var(--grid) 1px,transparent 1px) 0 0/24px 24px,var(--bg)}
+main{max-width:900px;margin:0 auto;padding:12px 10px 28px}
+h1{font-size:20px;margin:4px 4px 2px}h2{font-size:15px;margin:16px 4px 6px}
+.hint{color:var(--mut);font-size:13px;margin:0 4px 10px}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 12px;background:var(--pan);border:1.5px solid var(--ink);border-radius:6px}
+button{font:inherit;color:var(--ink);background:var(--pan);border:1.5px solid var(--ink);border-radius:6px;min-height:40px;padding:0 8px;cursor:pointer}
+button[aria-pressed=true]{background:var(--ink);color:var(--pan)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+#go{background:var(--sun);color:#14263A;font-weight:700;border-color:#14263A;min-width:84px}
+#alert,#diag,#sel{margin:8px 0;padding:6px 12px;border-left:5px solid var(--sun);background:var(--pan);font-size:14px;min-height:34px}
+#diag{border-color:var(--tl);font-weight:600}#sel{border-color:var(--mut);display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+#scene{width:100%;height:420px;background:var(--pan);border:1.5px solid var(--ink);border-radius:6px;overflow:hidden;position:relative;touch-action:manipulation}
+#scene canvas{display:block;width:100%;height:100%}
+.scene-hint{position:absolute;bottom:6px;left:8px;font-size:11px;color:var(--mut);pointer-events:none}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0}
+.stats div{background:var(--pan);border:1.5px solid var(--ink);border-radius:6px;padding:6px 8px;text-align:center}
+.stats b{display:block;font-size:17px;font-variant-numeric:tabular-nums}.stats small{color:var(--mut);font-size:12px}
+.pal{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.pal button{font-size:12.5px;min-height:46px;line-height:1.25}
+.r{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 4px;border-bottom:1px dashed var(--mut);font-size:14px}
+.r>span{flex:1}.st{display:flex;align-items:center;gap:5px}.st b{min-width:20px;text-align:center}
+.info{font-size:12.5px;color:var(--mut);margin:4px}
+.top{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:10px 0}
+</style>
+</head>
+<body>
+<main>
+<h1>PV Wiring Lab 3D</h1>
+<p class="hint">Add a component below, then tap one terminal (dot) and another to wire them. Tap a wire or a component to select or delete it. Drag to rotate the view.</p>
+<div class="bar"><span>Day <b id="day">1</b></span><b id="clk">06:00</b><button id="go" data-a="go">Start</button></div>
+<div id="alert">Empty board. Try “Ready-made setup” to see a wired example.</div>
+<div id="scene"><div class="scene-hint">Drag to rotate · Scroll to zoom</div></div>
+<div id="sel"><span>Nothing selected</span></div>
+<div id="diag"></div>
+<div class="stats">
+<div><b id="vG">0</b><small>Irradiance W/m²</small></div>
+<div><b id="vTc">0</b><small>Cell temp °C</small></div>
+<div><b id="vP">0</b><small>PV power W</small></div>
+<div><b id="vV">0</b><small>Array Vmp V</small></div>
+<div><b id="vSoc">—</b><small>Battery %</small></div>
+<div><b id="vL">0</b><small>House load W</small></div>
+</div>
+<p class="info" id="eng"></p>
+<div class="top"><button data-a="pre">Ready-made setup</button><button data-a="clr">Empty board</button></div>
+
+<h2>Components</h2>
+<div class="pal" id="pal"></div>
+<h2>House appliances</h2>
+<div id="apl"></div>
+<h2>Weather and speed</h2>
+<div class="r"><span>Ambient temp <b id="vTa">20</b> °C</span><input type="range" id="tamb" min="0" max="40" value="20" aria-label="Ambient temperature"></div>
+<div class="top" style="grid-template-columns:repeat(3,1fr)"><button data-a="sp" data-v="1">1×</button><button data-a="sp" data-v="2">2×</button><button data-a="sp" data-v="4">4×</button></div>
+</main>
+<script type="importmap">
+{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import {CSS2DRenderer,CSS2DObject} from 'three/addons/renderers/CSS2DRenderer.js';
+
+const $=i=>document.getElementById(i),cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+const MD=[{n:'Mono',P:320,Vm:33.6,Vo:40.8},{n:'Poly',P:250,Vm:30,Vo:37.2},{n:'Thin',P:175,Vm:39,Vo:51}];
+const BT=[0,{n:'Lead-acid',cap:9600,cut:.5,res:.6,eff:.8,v0:46,v1:52},{n:'LiFePO4',cap:4800,cut:.1,res:.25,eff:.96,v0:44,v1:54},{n:'LiFePO4',cap:9600,cut:.1,res:.25,eff:.96,v0:44,v1:54}];
+const IV=[0,1000,3000,5000];
+const A=[{n:'Lamp',w:10},{n:'Refrigerator',w:150},{n:'TV',w:100},{n:'Fan',w:60},{n:'Computer',w:80},{n:'Water pump',w:750},{n:'Washing machine',w:500},{n:'Air conditioner',w:1200}];
+const PAL=[['mod',0,'Solar panel Mono 320 W'],['mod',1,'Solar panel Poly 250 W'],['mod',2,'Solar panel Thin-film 175 W'],['fuse',0,'Fuse'],['sw',0,'DC isolator'],['spd',0,'Surge protector (SPD)'],['reg',1,'PWM charge controller'],['reg',2,'MPPT charge controller'],['jct',0,'Junction (DC bus)'],['bat',1,'Lead-acid battery 9.6 kWh'],['bat',2,'LiFePO4 battery 4.8 kWh'],['bat',3,'LiFePO4 battery 9.6 kWh'],['inv',1,'Inverter 1 kW'],['inv',2,'Inverter 3 kW'],['inv',3,'Inverter 5 kW'],['brk',0,'AC breaker'],['house',0,'House']];
+const Z={mod:'m',fuse:'p',sw:'p',spd:'p',reg:'r',jct:'b',bat:'b',inv:'i',brk:'k',house:'h'},MX={mod:12,fuse:3,sw:3,spd:3,reg:1,jct:3,bat:1,inv:1,brk:2,house:1};
+const TP={mod:{m:[-.22,.36,0],p:[.22,.36,0]},fuse:{a:[0,0,0],b:[0,-.36,0]},sw:{a:[0,0,0],b:[0,-.36,0]},brk:{a:[0,0,0],b:[0,-.36,0]},spd:{a:[0,0,0]},reg:{p:[-.2,.36,0],n:[.2,.36,0],o:[0,-.36,0]},bat:{b:[0,.36,0]},jct:{a:[-.36,0,0],b:[.36,0,0],c:[0,.36,0],d:[0,-.36,0]},inv:{d:[0,.36,0],a:[0,-.36,0]},house:{i:[0,0,0]}};
+const TL={mod:{m:'−',p:'+'},reg:{p:'+',n:'−'}},TC={mod:{p:0xc0392b,m:0x222222},reg:{p:0xc0392b,n:0x222222}};
+const WCOLS={mod:0x1e3a8a,bat:0x1a1a1a,reg:0x3a4550,inv:0xe6ebf0,house:0xc49a6c};
+let C=[],W=[],nid=1,sel=null,pend=null,S,last=0,fa=0;
+const msg=m=>$('alert').textContent=m;
+const act=a=>a.on&&(!a.sc||(a.s<a.e?S.t>=a.s&&S.t<a.e:S.t>=a.s||S.t<a.e));
+const hm=h=>String(h).padStart(2,'0')+':00';
+function nm(c){
+ if(c.k=='mod')return `Solar panel ${MD[c.t].n} ${MD[c.t].P} W · Vmp ${MD[c.t].Vm} V · Voc ${MD[c.t].Vo} V`;
+ if(c.k=='bat')return `${BT[c.t].n} battery ${BT[c.t].cap/1000} kWh`;
+ if(c.k=='inv')return `Inverter ${IV[c.t]/1000} kW`;
+ if(c.k=='reg')return ['','PWM','MPPT'][c.t]+' charge controller';
+ return {fuse:'Fuse',sw:'DC isolator',spd:'Surge protector (SPD)',jct:'DC bus junction',brk:'AC breaker',house:'House'}[c.k];
+}
+
+/* ---------- Three.js scene ---------- */
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0xE8EEF2);
+const camera=new THREE.PerspectiveCamera(50,1,.1,200);
+camera.position.set(4,5,7);camera.lookAt(0,0,0);
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.shadowMap.enabled=true;
+$('scene').appendChild(renderer.domElement);
+const labelRenderer=new CSS2DRenderer();
+labelRenderer.setSize(1,1);
+Object.assign(labelRenderer.domElement.style,{position:'absolute',top:'0',left:'0',pointerEvents:'none'});
+$('scene').appendChild(labelRenderer.domElement);
+const controls=new OrbitControls(camera,renderer.domElement);
+controls.enableDamping=true;controls.dampingFactor=.08;
+controls.target.set(0,0,0);controls.maxPolarAngle=Math.PI/2.2;
+controls.minDistance=3;controls.maxDistance=20;
+const grid=new THREE.GridHelper(16,32,0xD3DCE3,0xD3DCE3);
+grid.position.y=-.5;scene.add(grid);
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(40,40),new THREE.MeshStandardMaterial({color:0xe8eef2,side:THREE.DoubleSide}));
+ground.rotation.x=-Math.PI/2;ground.position.y=-.51;ground.receiveShadow=true;scene.add(ground);
+scene.add(new THREE.HemisphereLight(0xffffff,0x8899aa,.9));
+const sun=new THREE.DirectionalLight(0xffffff,1.2);
+sun.position.set(5,10,4);sun.castShadow=true;scene.add(sun);
+
+const group=new THREE.Group();scene.add(group);
+const wireGroup=new THREE.Group();scene.add(wireGroup);
+const tempGroup=new THREE.Group();scene.add(tempGroup);
+const meshMap=new Map(); // comp id -> {group, meshes[]}
+const wireMeshes=new Map(); // wire id -> line
+const tempMeshes=[];
+
+function resize(){
+ const el=$('scene');
+ const w=el.clientWidth,h=el.clientHeight;
+ if(!w||!h)return;
+ camera.aspect=w/h;camera.updateProjectionMatrix();
+ renderer.setSize(w,h);
+ labelRenderer.setSize(w,h);
+}
+addEventListener('resize',resize);
+
+/* ---------- Build component meshes ---------- */
+const woodMat=new THREE.MeshStandardMaterial({color:0x8c4a2f,roughness:.9});
+const panelFrameMat=new THREE.MeshStandardMaterial({color:0xcfd6dd,metalness:.4,roughness:.4});
+const panelCellMats=[
+ new THREE.MeshStandardMaterial({color:0x0f2a55,roughness:.35,metalness:.15}),
+ new THREE.MeshStandardMaterial({color:0x2d6cb8,roughness:.4,metalness:.1}),
+ new THREE.MeshStandardMaterial({color:0x0b1622,roughness:.3,metalness:.2})];
+function makePanel(t){
+ const g=new THREE.Group();
+ const frame=new THREE.Mesh(new THREE.BoxGeometry(.98,.06,.72),panelFrameMat);
+ frame.castShadow=true;frame.receiveShadow=true;g.add(frame);
+ const cell=new THREE.Mesh(new THREE.BoxGeometry(.92,.03,.66),panelCellMats[t]);
+ cell.position.y=.045;cell.castShadow=true;g.add(cell);
+ // grid lines via small bars
+ const lineMat=new THREE.MeshStandardMaterial({color:0xffffff,transparent:true,opacity:.25});
+ for(let i=0;i<5;i++){
+  const vx=(i-2)*.14;
+  const bar=new THREE.Mesh(new THREE.BoxGeometry(.015,.005,.66),lineMat);
+  bar.position.set(vx,.062,0);g.add(bar);
+ }
+ return g;
+}
+function makeBox(w,h,d,color,metal=.2,rough=.5){
+ const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshStandardMaterial({color,metalness:metal,roughness:rough}));
+ m.castShadow=true;m.receiveShadow=true;return m;
+}
+function buildCompMesh(c){
+ const g=new THREE.Group();
+ const t=c.t;
+ if(c.k=='mod'){
+  g.add(makePanel(t));
+ }else if(c.k=='fuse'){
+  g.add(makeBox(.5,.12,.2,0xefe9d6,.1,.6));
+  const capL=makeBox(.1,.16,.22,0xd4b04a,.5,.3);capL.position.x=-.3;g.add(capL);
+  const capR=capL.clone();capR.position.x=.3;g.add(capR);
+  // fuse element
+  const el=new THREE.Mesh(new THREE.BoxGeometry(.4,.06,.06),new THREE.MeshStandardMaterial({color:0x666666,emissive:0x000000}));
+  el.position.y=.07;g.add(el);
+ }else if(c.k=='sw'){
+  g.add(makeBox(.5,.36,.24,0x2e343b,.4,.4));
+  const handle=new THREE.Mesh(new THREE.BoxGeometry(.07,.28,.07),new THREE.MeshStandardMaterial({color:0xc0392b,metalness:.3,roughness:.4}));
+  handle.position.y=.05;g.add(handle);c._handle=handle;
+ }else if(c.k=='spd'){
+  g.add(makeBox(.4,.36,.24,0x3d4a55,.3,.5));
+  const led=new THREE.Mesh(new THREE.SphereGeometry(.05),new THREE.MeshStandardMaterial({color:0x2ecc71,emissive:0x2ecc71,emissiveIntensity:1}));
+  led.position.set(0,.1,.13);g.add(led);c._led=led;
+ }else if(c.k=='reg'){
+  g.add(makeBox(.6,.36,.26,0x3a4550,.4,.4));
+  const screen=new THREE.Mesh(new THREE.BoxGeometry(.32,.14,.02),new THREE.MeshStandardMaterial({color:0x0d2a1a,emissive:0x1b4a2a,emissiveIntensity:.5}));
+  screen.position.set(0,.06,.14);g.add(screen);
+  const textEl=document.createElement('div');
+  textEl.style.cssText='font:700 11px ui-monospace,monospace;color:#9dffb0;background:#0d2a1a;padding:1px 4px;border-radius:2px;white-space:nowrap';
+  textEl.textContent='';c._label=new CSS2DObject(textEl);
+  c._label.position.set(0,.06,.2);g.add(c._label);
+ }else if(c.k=='jct'){
+  g.add(makeBox(.36,.12,.36,0xd08a3c,.5,.4));
+ }else if(c.k=='bat'){
+  const col=t>1?0x33506e:0x22272e;
+  g.add(makeBox(.8,.36,.4,col,.2,.6));
+  // terminals
+  const red=new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,.08),new THREE.MeshStandardMaterial({color:0xc0392b}));
+  red.position.set(-.25,.22,0);g.add(red);
+  const blk=new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,.08),new THREE.MeshStandardMaterial({color:0x111111}));
+  blk.position.set(.25,.22,0);g.add(blk);
+  const socBg=new THREE.Mesh(new THREE.BoxGeometry(.6,.04,.04),new THREE.MeshStandardMaterial({color:0x111111}));
+  socBg.position.set(0,-.2,.18);g.add(socBg);
+  const socFill=new THREE.Mesh(new THREE.BoxGeometry(.6,.045,.045),new THREE.MeshStandardMaterial({color:0x2ecc71}));
+  socFill.position.set(-.3,-.2,.18);socFill.scale.x=0;g.add(socFill);c._socFill=socFill;
+ }else if(c.k=='inv'){
+  g.add(makeBox(.8,.36,.4,0xe6ebf0,.3,.5));
+  const screen=new THREE.Mesh(new THREE.BoxGeometry(.3,.14,.02),new THREE.MeshStandardMaterial({color:0x0d2a1a,emissive:0x1b4a2a,emissiveIntensity:.5}));
+  screen.position.set(0,.06,.21);g.add(screen);
+  const textEl=document.createElement('div');
+  textEl.style.cssText='font:700 11px ui-monospace,monospace;color:#9dffb0;background:#0d2a1a;padding:1px 4px;border-radius:2px;white-space:nowrap';
+  textEl.textContent='';c._label=new CSS2DObject(textEl);
+  c._label.position.set(0,.06,.27);g.add(c._label);
+ }else if(c.k=='brk'){
+  g.add(makeBox(.4,.4,.24,0xf1f3f5,.1,.5));
+  const lever=new THREE.Mesh(new THREE.BoxGeometry(.18,.12,.08),new THREE.MeshStandardMaterial({color:0xdddddd,metalness:.3}));
+  lever.position.set(0,.1,.15);g.add(lever);c._lever=lever;
+ }else if(c.k=='house'){
+  // base
+  const base=makeBox(1.6,.8,1.2,0xc49a6c,.1,.8);base.position.y=.4;g.add(base);
+  // roof
+  const roof=new THREE.Mesh(new THREE.ConeGeometry(1.4,.6,4),new THREE.MeshStandardMaterial({color:0x8c4a2f,roughness:.9}));
+  roof.position.y=1.1;roof.rotation.y=Math.PI/4;roof.castShadow=true;g.add(roof);
+  // windows
+  const winMat=new THREE.MeshStandardMaterial({color:0xffd84a,emissive:0xffd84a,emissiveIntensity:0});
+  const w1=new THREE.Mesh(new THREE.BoxGeometry(.3,.3,.05),winMat);
+  w1.position.set(-.4,.5,.61);g.add(w1);c._win1=w1;
+  const w2=w1.clone();w2.position.x=.4;g.add(w2);c._win2=w2;
+  // door
+  const door=new THREE.Mesh(new THREE.BoxGeometry(.3,.45,.05),new THREE.MeshStandardMaterial({color:0x5a3a1a,roughness:.8}));
+  door.position.set(0,.22,.61);g.add(door);
+ }
+ // selection outline
+ const outline=new THREE.Mesh(new THREE.BoxGeometry(1.05,1.05,1.05),new THREE.MeshBasicMaterial({color:0xF2A900,wireframe:true,transparent:true,opacity:0}));
+ outline.visible=false;g.add(outline);c._outline=outline;
+ return g;
+}
+
+/* position a component in the 3D world based on its slot */
+function placeComp(c){
+ const z=Z[c.k];
+ let x,zpos;
+ if(c.k=='house'){x=0;zpos=0;}
+ else{
+  const col=c.slot%6, row=Math.floor(c.slot/6);
+  x=(col-2.5)*1.3;
+  const rows=['m','p','r','b','i','k'];
+  const ri=rows.indexOf(z);
+  zpos=ri!==-1?(ri-2.5)*1.3:0;
+  if(z=='m')zpos-=1.5;
+ }
+ if(!c._group){c._group=buildCompMesh(c);group.add(c._group);meshMap.set(c.id,c._group);}
+ c.pos=new THREE.Vector3(x,c.k=='house'?.3:.35,zpos);
+ c._group.position.copy(c.pos);
+ if(c.k!='mod'&&c.k!='house')c._group.rotation.y=0;
+ if(c.k=='house')c._group.rotation.y=Math.PI/4;
+ return c.pos;
+}
+function termPos(key){
+ const [id,t]=key.split('.'),c=C.find(x=>x.id==id);
+ if(!c)return new THREE.Vector3();
+ const off=TP[c.k]?.[t]||[0,0,0];
+ const local=new THREE.Vector3(off[0],off[1],off[2]);
+ if(c.k=='house'){
+  // house terminal is at top of house
+  local.set(0,.9,0);
+ }
+ return local.applyEuler(new THREE.Euler(0,c._group?.rotation.y||0,0)).add(c.pos);
+}
+function rebuildAll(){
+ // clear groups
+ while(group.children.length)group.remove(group.children[0]);
+ while(wireGroup.children.length)wireGroup.remove(wireGroup.children[0]);
+ while(tempGroup.children.length)tempGroup.remove(tempGroup.children[0]);
+ meshMap.clear();wireMeshes.clear();tempMeshes.length=0;
+ C.forEach(c=>{c._group=null;placeComp(c)});
+ drawWires();
+ drawTerminals();
+}
+function drawWires(){
+ while(wireGroup.children.length)wireGroup.remove(wireGroup.children[0]);
+ wireMeshes.clear();
+ W.forEach(w=>{
+  const p=termPos(w.a),q=termPos(w.b);
+  const mid=p.clone().add(q).multiplyScalar(.5);
+  mid.y+=.4;
+  const curve=new THREE.QuadraticBezierCurve3(p,mid,q);
+  const pts=curve.getPoints(24);
+  const geo=new THREE.BufferGeometry().setFromPoints(pts);
+  const mat=new THREE.LineBasicMaterial({color:0xB4552D,linewidth:2});
+  const line=new THREE.Line(geo,mat);
+  line.userData={wireId:w.id,p,q};
+  wireGroup.add(line);wireMeshes.set(w.id,line);
+ });
+}
+function drawTerminals(){
+ while(tempGroup.children.length)tempGroup.remove(tempGroup.children[0]);
+ tempMeshes.length=0;
+ C.forEach(c=>{
+  Object.keys(TP[c.k]).forEach(t=>{
+   const key=c.id+'.'+t,p=termPos(key);
+   const isPend=pend==key;
+   const col=(TC[c.k]||{})[t]??0xE8EDF2;
+   const mat=new THREE.MeshStandardMaterial({color:isPend?0xF2A900:col,emissive:isPend?0xF2A900:0x000000,emissiveIntensity:isPend?.6:0});
+   const dot=new THREE.Mesh(new THREE.SphereGeometry(.07,12,12),mat);
+   dot.position.copy(p);
+   dot.userData={term:key};
+   tempGroup.add(dot);
+   // label
+   const lb=(TL[c.k]||{})[t];
+   if(lb){
+    const el=document.createElement('div');
+    el.style.cssText='font:700 10px sans-serif;color:#fff;background:rgba(0,0,0,.6);padding:0 3px;border-radius:3px';
+    el.textContent=lb;
+    const lbl=new CSS2DObject(el);
+    lbl.position.copy(p).add(new THREE.Vector3(0,.18,0));
+    tempGroup.add(lbl);
+   }
+   tempMeshes.push(dot);
+  });
+ });
+}
+function updateSelectionVisual(){
+ C.forEach(c=>{
+  if(c._outline)c._outline.visible=(sel==c.id);
+ });
+ if(sel&&sel.startsWith('w:')){
+  const id=sel.slice(2);
+  wireMeshes.forEach((line,wid)=>{
+   line.material.color.set(wid==id?0xF2A900:0xB4552D);
+   line.material.linewidth=wid==id?4:2;
+  });
+ }else{
+  wireMeshes.forEach(line=>{line.material.color.set(0xB4552D);line.material.linewidth=2});
+ }
+ // highlight terminals
+ tempMeshes.forEach(d=>{});
+}
+
+/* ---------- Simulation logic (unchanged) ---------- */
+function clr(){C=[];W=[];nid=1;sel=pend=null;Object.assign(S,{batDead:false,invOK:true,houseDead:false,bms:false,soc:.6,ovl:false});A.forEach(a=>{a.c=0;a.on=true;a.sc=false;a.s=8;a.e=18})}
+function mk(k,t=0){
+ const z=Z[k];let sl=0;while(C.some(c=>Z[c.k]==z&&c.slot==sl))sl++;
+ if(C.filter(c=>c.k==k).length>=MX[k]||sl>(z=='m'?11:5)){msg('No room for another component of this type.');return null}
+ const c={id:'c'+nid++,k,t,slot:sl,open:false};
+ C.push(c);
+ if(k=='bat'){S.batDead=false;S.soc=.6;S.bms=false}if(k=='inv')S.invOK=true;if(k=='house')S.houseDead=false;
+ placeComp(c);return c;
+}
+function del(id){
+ const c=C.find(x=>x.id==id);if(!c)return;
+ if(c._group)group.remove(c._group);
+ C=C.filter(x=>x.id!=id);W=W.filter(w=>!w.a.startsWith(id+'.')&&!w.b.startsWith(id+'.'));
+ if(c.k=='bat')S.batDead=false;if(c.k=='inv')S.invOK=true;if(c.k=='house')S.houseDead=false;
+}
+function preset(){
+ clr();
+ const m=[0,1,2,3].map(()=>mk('mod',0)),f=mk('fuse'),sw=mk('sw'),sp=mk('spd'),rg=mk('reg',2),j=mk('jct'),b=mk('bat',3),iv=mk('inv',2),bk=mk('brk'),h=mk('house');
+ const L=(a,b)=>W.push({id:'w'+nid++,a,b}),i=c=>c.id+'.';
+ L(i(m[0])+'p',i(m[1])+'m');L(i(m[2])+'p',i(m[3])+'m');L(i(m[0])+'m',i(m[2])+'m');L(i(m[1])+'p',i(m[3])+'p');
+ L(i(m[1])+'p',i(f)+'a');L(i(f)+'b',i(sw)+'a');L(i(sw)+'b',i(rg)+'p');L(i(m[0])+'m',i(rg)+'n');L(i(sp)+'a',i(sw)+'b');
+ L(i(rg)+'o',i(j)+'a');L(i(b)+'b',i(j)+'b');L(i(iv)+'d',i(j)+'c');L(i(iv)+'a',i(bk)+'a');L(i(bk)+'b',i(h)+'i');
+ [3,1,1,1,0,0,0,0].forEach((v,n)=>A[n].c=v);Object.assign(A[0],{sc:true,s:18,e:0});Object.assign(A[2],{sc:true,s:19,e:23});
+ msg('Ready-made 2S2P setup loaded. Press Start.');
+ rebuildAll();
+}
+function topo(G,k){
+ const id={},par=[],F=x=>{while(par[x]!=x){par[x]=par[par[x]];x=par[x]}return x},T=key=>{if(!(key in id)){id[key]=par.length;par.push(par.length)}return id[key]},N=key=>F(T(key)),U=(a,b)=>{par[F(T(a))]=F(T(b))};
+ W.forEach(w=>U(w.a,w.b));
+ C.forEach(c=>{const i=c.id+'.';if(c.k=='fuse'||((c.k=='sw'||c.k=='brk')&&!c.open))U(i+'a',i+'b');if(c.k=='jct'){U(i+'a',i+'b');U(i+'a',i+'c');U(i+'a',i+'d')}});
+ const g=k=>C.find(c=>c.k==k),reg=g('reg'),bat=g('bat'),inv=g('inv'),house=g('house'),R={reg,bat,inv,house,N};
+ R.edges=C.filter(c=>c.k=='mod').map(m=>{const d=MD[m.t];return{a:N(m.id+'.m'),b:N(m.id+'.p'),Vm:d.Vm*(1-.0035*k),Vo:G>30?d.Vo*(1-.0029*k):0,I:d.P/d.Vm*G/1000}});
+ R.mn=new Set();R.edges.forEach(e=>{R.mn.add(e.a);R.mn.add(e.b)});
+ if(reg){R.X=N(reg.id+'.p');R.Y=N(reg.id+'.n')}
+ R.B=inv?N(inv.id+'.d'):reg?N(reg.id+'.o'):null;R.A=inv?N(inv.id+'.a'):null;
+ R.regOn=!!reg&&R.B!==null&&N(reg.id+'.o')==R.B;R.batOn=!!bat&&R.B!==null&&N(bat.id+'.b')==R.B;R.hOn=!!house&&R.A!==null&&N(house.id+'.i')==R.A;
+ R.spd=C.some(c=>c.k=='spd'&&
