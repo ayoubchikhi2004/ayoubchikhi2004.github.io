@@ -101,7 +101,7 @@ const msg=m=>$('alert').textContent=m;
 const act=a=>a.on&&(!a.sc||(a.s<a.e?S.t>=a.s&&S.t<a.e:S.t>=a.s||S.t<a.e));
 const hm=h=>String(h).padStart(2,'0')+':00';
 function nm(c){
- if(c.k=='mod')return Solar panel ${MD[c.t].n} ${MD[c.t].P} W · Vmp ${MD[c.t].Vm} V · Voc ${MD[c.t].Vo} V;
+ if(c.k=='mod')return`Solar panel ${MD[c.t].n} ${MD[c.t].P} W · Vmp ${MD[c.t].Vm} V · Voc ${MD[c.t].Vo} V`;
  if(c.k=='bat')return ${BT[c.t].n} battery ${BT[c.t].cap/1000} kWh;
  if(c.k=='inv')return Inverter ${IV[c.t]/1000} kW;
  if(c.k=='reg')return ['','PWM','MPPT'][c.t]+' charge controller';
