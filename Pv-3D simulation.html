@@ -67,6 +67,9 @@ input[type=range]{flex:1}
 .speed{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin:6px 0}
 .rooms{display:flex;align-items:center;gap:8px;padding:6px;flex-wrap:wrap}
 .rooms select{padding:4px 8px;font:inherit;border:1.5px solid var(--ink);border-radius:6px;background:var(--pan);color:var(--ink)}
+.weather{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px;font-size:12px}
+.weather span{display:flex;justify-content:space-between;padding:3px 6px;background:var(--pan);border:1px solid var(--mut);border-radius:4px}
+.weather b{font-variant-numeric:tabular-nums}
 </style>
 </head>
 <body>
@@ -74,7 +77,7 @@ input[type=range]{flex:1}
 <div class="layout">
   <aside>
     <h1>☀️ PV Wiring Lab 3D</h1>
-    <p class="info">Drag any component into the scene. Use +/− to add appliances inside the house.</p>
+    <p class="info">Drag components into the scene. Use +/− for appliances. Drag appliances inside the house to move them.</p>
 
     <div class="panel" style="margin-bottom:8px">
       <div class="bar" style="border:none;padding:0;background:transparent;margin:0">
@@ -82,13 +85,17 @@ input[type=range]{flex:1}
         <b id="clk">06:00</b>
         <button id="go" data-a="go">Start</button>
       </div>
+      <div class="weather">
+        <span>🌤 Sky <b id="wSky">Clear</b></span>
+        <span>☁️ Cloud <b id="wCld">10%</b></span>
+      </div>
     </div>
 
     <h2>🏗️ System Components</h2>
     <div id="catalog"></div>
 
     <h2>🏠 House Appliances</h2>
-    <p class="info">Use +/− to place appliances inside the house (max 6 each).</p>
+    <p class="info">Use +/− to place appliances. Drag them inside the house to reposition.</p>
     <div id="appliances"></div>
 
     <h2>🏠 House Settings</h2>
@@ -132,7 +139,7 @@ input[type=range]{flex:1}
   <main>
     <div id="alert">Welcome! Drag a component from the sidebar into the scene to begin.</div>
     <div id="scene">
-      <div class="scene-hint">🖱️ Drag to rotate · Scroll to zoom</div>
+      <div class="scene-hint">🖱️ Drag to rotate · Scroll to zoom · Drag appliances inside house</div>
       <div class="drop-hint"></div>
     </div>
     <div id="sel"><span>Nothing selected</span></div>
@@ -229,7 +236,7 @@ const TC={mod:{p:0xc0392b,m:0x222222},reg:{p:0xc0392b,n:0x222222}};
    ============================================================ */
 const scene=new THREE.Scene();
 scene.background=new THREE.Color(0xE8EEF2);
-scene.fog=new THREE.Fog(0xE8EEF2,20,45);
+scene.fog=new THREE.Fog(0xE8EEF2,22,55);
 
 const camera=new THREE.PerspectiveCamera(45,1,.1,200);
 camera.position.set(7,6,10);
@@ -246,23 +253,65 @@ controls.target.set(0,.3,0);
 controls.maxPolarAngle=Math.PI/2.1;
 controls.minDistance=3;controls.maxDistance=24;
 
-scene.add(new THREE.HemisphereLight(0xffffff,0x8899aa,.85));
+const hemi=new THREE.HemisphereLight(0xffffff,0x8899aa,.85);
+scene.add(hemi);
+
+/* Sun (moving) */
 const sunLight=new THREE.DirectionalLight(0xfff3c4,1.3);
 sunLight.position.set(8,14,6);
 sunLight.castShadow=true;
 sunLight.shadow.mapSize.set(1024,1024);
-sunLight.shadow.camera.left=-12;sunLight.shadow.camera.right=12;
-sunLight.shadow.camera.top=12;sunLight.shadow.camera.bottom=-12;
+sunLight.shadow.camera.left=-14;sunLight.shadow.camera.right=14;
+sunLight.shadow.camera.top=14;sunLight.shadow.camera.bottom=-14;
 scene.add(sunLight);
 
+/* Sun sphere */
+const sunSphere=new THREE.Mesh(
+  new THREE.SphereGeometry(.6,24,16),
+  new THREE.MeshBasicMaterial({color:0xffe27a})
+);
+sunSphere.position.set(8,14,6);
+scene.add(sunSphere);
+
+/* Ground + grid */
 const ground=new THREE.Mesh(
-  new THREE.PlaneGeometry(60,60),
+  new THREE.PlaneGeometry(80,80),
   new THREE.MeshStandardMaterial({color:0xdbe4ec,roughness:1})
 );
 ground.rotation.x=-Math.PI/2;ground.position.y=-.01;ground.receiveShadow=true;scene.add(ground);
 const grid=new THREE.GridHelper(24,48,0xa8b6c4,0xc4d0da);
 grid.material.transparent=true;grid.material.opacity=.45;scene.add(grid);
 
+/* ============================================================
+   4) CLOUDS (procedural, animated)
+   ============================================================ */
+const cloudGroup=new THREE.Group();
+scene.add(cloudGroup);
+const cloudMat=new THREE.MeshStandardMaterial({color:0xffffff,transparent:true,opacity:.85,roughness:1});
+const cloudMeshes=[];
+function makeCloud(){
+  const g=new THREE.Group();
+  const n=4+Math.floor(Math.random()*4);
+  for(let i=0;i<n;i++){
+    const s=.6+Math.random()*1.2;
+    const puff=new THREE.Mesh(new THREE.SphereGeometry(s,8,6),cloudMat.clone());
+    puff.position.set((Math.random()-.5)*2.4,(Math.random()-.5)*.5,(Math.random()-.5)*1.6);
+    puff.scale.y=.6;
+    g.add(puff);
+  }
+  g.position.set(
+    -25+Math.random()*50,
+    8+Math.random()*4,
+    -20+Math.random()*40
+  );
+  g.userData.speed=.3+Math.random()*.6;
+  cloudGroup.add(g);cloudMeshes.push(g);
+}
+for(let i=0;i<14;i++)makeCloud();
+
+/* ============================================================
+   5) GROUPS
+   ============================================================ */
 const compGroup=new THREE.Group();scene.add(compGroup);
 const wireGroup=new THREE.Group();scene.add(wireGroup);
 const termGroup=new THREE.Group();scene.add(termGroup);
@@ -270,7 +319,7 @@ const houseGroup=new THREE.Group();scene.add(houseGroup);
 const applianceGroup=new THREE.Group();scene.add(applianceGroup);
 
 /* ============================================================
-   4) MATERIALS + MESHES (NO LABELS on components)
+   6) MATERIALS + MESHES
    ============================================================ */
 const M={
   metal:new THREE.MeshStandardMaterial({color:0xb8c2cc,metalness:.7,roughness:.35}),
@@ -354,7 +403,6 @@ function buildMesh(c){
     const lever=makeBox(.18,.14,.08,new THREE.MeshStandardMaterial({color:0xdddddd,metalness:.5}));
     lever.position.set(0,.12,.18);g.add(lever);c._lever=lever;
   }
-  // selection outline
   const box=new THREE.Box3().setFromObject(g);
   const size=box.getSize(new THREE.Vector3());
   const outline=new THREE.LineSegments(
@@ -366,7 +414,7 @@ function buildMesh(c){
 }
 
 /* ============================================================
-   5) HOUSE
+   7) HOUSE
    ============================================================ */
 let numRooms=2;
 function buildHouse(rooms){
@@ -418,31 +466,48 @@ function buildHouse(rooms){
 }
 
 /* ============================================================
-   6) APPLIANCE MESHES
+   8) APPLIANCE MESHES (with visual indicators)
    ============================================================ */
 function buildApplianceMesh(i){
   const a=A[i],g=new THREE.Group();
   const base=new THREE.MeshStandardMaterial({color:a.hue,metalness:.3,roughness:.5});
   const dark=new THREE.MeshStandardMaterial({color:0x22272e,metalness:.4,roughness:.5});
-  if(i===0){
-    const bulb=new THREE.Mesh(new THREE.SphereGeometry(.12,16,12),
+
+  if(i===0){ // LED Lamp — ceiling mount
+    // hanging rod (goes UP)
+    const rod=new THREE.Mesh(new THREE.CylinderGeometry(.012,.012,.35),
+      new THREE.MeshStandardMaterial({color:0x555555,metalness:.6}));
+    rod.position.y=.55;g.add(rod);
+    // shade
+    const shade=new THREE.Mesh(new THREE.ConeGeometry(.18,.16,16,1,true),
+      new THREE.MeshStandardMaterial({color:0x3a3a3a,metalness:.4,side:THREE.DoubleSide}));
+    shade.position.y=.32;g.add(shade);
+    // bulb (emissive)
+    const bulb=new THREE.Mesh(new THREE.SphereGeometry(.08,16,12),
       new THREE.MeshStandardMaterial({color:0xfff2a8,emissive:0xffd84a,emissiveIntensity:0}));
-    bulb.position.y=.3;g.add(bulb);g.userData.bulb=bulb;
-    const pole=new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,.3),dark);
-    pole.position.y=.15;g.add(pole);
-    const base2=new THREE.Mesh(new THREE.CylinderGeometry(.08,.1,.03),dark);g.add(base2);
-  }else if(i===1){
+    bulb.position.y=.24;g.add(bulb);g.userData.bulb=bulb;
+    // point light for glow
+    const pl=new THREE.PointLight(0xffd84a,0,3,2);
+    pl.position.y=.24;g.add(pl);g.userData.light=pl;
+    g.userData.isCeiling=true;
+
+  }else if(i===1){ // Fridge
     const body=new THREE.Mesh(new THREE.BoxGeometry(.4,.7,.4),base);body.position.y=.35;g.add(body);
     const door=new THREE.Mesh(new THREE.BoxGeometry(.4,.7,.02),new THREE.MeshStandardMaterial({color:0xc8d4de}));
     door.position.set(0,.35,.21);g.add(door);
-  }else if(i===2){
+    const led=new THREE.Mesh(new THREE.SphereGeometry(.02),
+      new THREE.MeshStandardMaterial({color:0x2ecc71,emissive:0x2ecc71,emissiveIntensity:0}));
+    led.position.set(.15,.6,.23);g.add(led);g.userData.led=led;
+
+  }else if(i===2){ // TV
     const scr=new THREE.Mesh(new THREE.BoxGeometry(.5,.3,.03),dark);scr.position.y=.35;g.add(scr);
     const screen=new THREE.Mesh(new THREE.PlaneGeometry(.46,.26),
       new THREE.MeshStandardMaterial({color:0x1c2733,emissive:0x5ec8ff,emissiveIntensity:0}));
     screen.position.set(0,.35,.016);g.add(screen);g.userData.screen=screen;
     const stand=new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,.2),dark);stand.position.y=.1;g.add(stand);
     const bs=new THREE.Mesh(new THREE.BoxGeometry(.2,.03,.15),dark);g.add(bs);
-  }else if(i===3){
+
+  }else if(i===3){ // Fan
     const pole=new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,.3),dark);pole.position.y=.15;g.add(pole);
     const bs=new THREE.Mesh(new THREE.CylinderGeometry(.1,.12,.03),dark);g.add(bs);
     const hub=new THREE.Group();hub.position.y=.38;g.add(hub);g.userData.hub=hub;
@@ -453,42 +518,98 @@ function buildApplianceMesh(i){
       const wrap=new THREE.Group();wrap.rotation.z=k*Math.PI*2/3;wrap.add(bl);hub.add(wrap);
     }
     const center=new THREE.Mesh(new THREE.SphereGeometry(.04),dark);hub.add(center);
-  }else if(i===4){
+
+  }else if(i===4){ // Computer — monitor + screen + LED
     const mon=new THREE.Mesh(new THREE.BoxGeometry(.4,.28,.03),dark);mon.position.set(0,.42,0);g.add(mon);
     const mscr=new THREE.Mesh(new THREE.PlaneGeometry(.36,.24),
       new THREE.MeshStandardMaterial({color:0x1c2733,emissive:0x5ec8ff,emissiveIntensity:0}));
     mscr.position.set(0,.42,.016);g.add(mscr);g.userData.screen=mscr;
     const neck=new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,.15),dark);neck.position.y=.25;g.add(neck);
     const base2=new THREE.Mesh(new THREE.BoxGeometry(.3,.03,.2),dark);g.add(base2);
-  }else if(i===5){
+    // PC tower with LED
+    const tower=new THREE.Mesh(new THREE.BoxGeometry(.12,.3,.2),dark);
+    tower.position.set(.28,.15,0);g.add(tower);
+    const led=new THREE.Mesh(new THREE.SphereGeometry(.018),
+      new THREE.MeshStandardMaterial({color:0x2ecc71,emissive:0x2ecc71,emissiveIntensity:0}));
+    led.position.set(.28,.28,.1);g.add(led);g.userData.led=led;
+
+  }else if(i===5){ // Water Pump — impeller + pipe + LED + water flow
     const body=new THREE.Mesh(new THREE.BoxGeometry(.3,.25,.3),
       new THREE.MeshStandardMaterial({color:0x3b7bbf,metalness:.6,roughness:.3}));
     body.position.y=.15;g.add(body);
     const cyl=new THREE.Mesh(new THREE.CylinderGeometry(.12,.12,.15),
       new THREE.MeshStandardMaterial({color:0x6aa3d8,metalness:.5}));
     cyl.rotation.z=Math.PI/2;cyl.position.set(.22,.15,0);g.add(cyl);
-    const led=new THREE.Mesh(new THREE.SphereGeometry(.02),
+    // impeller inside (spins)
+    const imp=new THREE.Group();imp.position.set(.22,.15,0);
+    for(let k=0;k<4;k++){
+      const blade=new THREE.Mesh(new THREE.BoxGeometry(.02,.1,.02),
+        new THREE.MeshStandardMaterial({color:0xffffff,metalness:.7}));
+      blade.position.y=.05;
+      const w=new THREE.Group();w.rotation.x=k*Math.PI/2;w.add(blade);imp.add(w);
+    }
+    g.add(imp);g.userData.impeller=imp;
+    // LED
+    const led=new THREE.Mesh(new THREE.SphereGeometry(.022),
       new THREE.MeshStandardMaterial({color:0x2ecc71,emissive:0x2ecc71,emissiveIntensity:0}));
     led.position.set(-.1,.24,.16);g.add(led);g.userData.led=led;
-  }else if(i===6){
+    // water flow particles
+    const water=new THREE.Group();g.add(water);g.userData.water=water;
+    for(let k=0;k<5;k++){
+      const drop=new THREE.Mesh(new THREE.SphereGeometry(.02),
+        new THREE.MeshStandardMaterial({color:0x5ab4e6,transparent:true,opacity:0}));
+      drop.position.set(.32+k*.06,.15,0);
+      drop.userData.phase=k*.2;
+      water.add(drop);
+    }
+
+  }else if(i===6){ // Washing Machine — drum spins + LED + bubbles
     const body=new THREE.Mesh(new THREE.BoxGeometry(.42,.55,.42),
       new THREE.MeshStandardMaterial({color:0xe9eef3,metalness:.2,roughness:.5}));
     body.position.y=.28;g.add(body);
+    // drum (visible through door)
     const drum=new THREE.Mesh(new THREE.CylinderGeometry(.15,.15,.03),
-      new THREE.MeshStandardMaterial({color:0x5b7f9e,metalness:.5}));
+      new THREE.MeshStandardMaterial({color:0x5b7f9e,metalness:.5,transparent:true,opacity:.6}));
     drum.rotation.x=Math.PI/2;drum.position.set(0,.28,.22);g.add(drum);
+    // drum inner cross (spins)
     const drumG=new THREE.Group();drumG.position.copy(drum.position);
     const cross=new THREE.Mesh(new THREE.BoxGeometry(.28,.005,.005),
       new THREE.MeshStandardMaterial({color:0xcfe6f7,metalness:.8}));
-    cross.position.z=.01;drumG.add(cross);g.add(drumG);g.userData.drum=drumG;
-    const panel=new THREE.Mesh(new THREE.BoxGeometry(.4,.08,.02),dark);
-    panel.position.set(0,.5,.21);g.add(panel);
-  }else if(i===7){
+    cross.position.z=.01;drumG.add(cross);
+    const cross2=new THREE.Mesh(new THREE.BoxGeometry(.005,.28,.005),
+      new THREE.MeshStandardMaterial({color:0xcfe6f7,metalness:.8}));
+    cross2.position.z=.01;drumG.add(cross2);
+    g.add(drumG);g.userData.drum=drumG;
+    // bubbles (visible when on)
+    const bubbles=new THREE.Group();g.add(bubbles);g.userData.bubbles=bubbles;
+    for(let k=0;k<6;k++){
+      const b=new THREE.Mesh(new THREE.SphereGeometry(.02),
+        new THREE.MeshStandardMaterial({color:0xffffff,transparent:true,opacity:0}));
+      b.position.set((Math.random()-.5)*.3,.15+Math.random()*.2,.25);
+      b.userData.phase=Math.random();
+      bubbles.add(b);
+    }
+    // panel LED
+    const led=new THREE.Mesh(new THREE.SphereGeometry(.015),
+      new THREE.MeshStandardMaterial({color:0x2ecc71,emissive:0x2ecc71,emissiveIntensity:0}));
+    led.position.set(-.16,.5,.22);g.add(led);g.userData.led=led;
+
+  }else if(i===7){ // Air Conditioner — wall unit + cold air + LED
     const body=new THREE.Mesh(new THREE.BoxGeometry(.6,.22,.22),
       new THREE.MeshStandardMaterial({color:0xf1f4f7,metalness:.2,roughness:.4}));
     body.position.y=.55;g.add(body);
     const grille=new THREE.Mesh(new THREE.BoxGeometry(.55,.02,.15),dark);
     grille.position.set(0,.5,.08);g.add(grille);
+    // cold air (small blue cones falling)
+    const air=new THREE.Group();g.add(air);g.userData.air=air;
+    for(let k=0;k<4;k++){
+      const puff=new THREE.Mesh(new THREE.ConeGeometry(.05,.15,8),
+        new THREE.MeshStandardMaterial({color:0x88d0f0,transparent:true,opacity:0}));
+      puff.position.set(-.2+k*.13,.4,.1);
+      puff.userData.phase=k*.25;
+      air.add(puff);
+    }
+    // LED
     const led=new THREE.Mesh(new THREE.SphereGeometry(.015),
       new THREE.MeshStandardMaterial({color:0x2ecc71,emissive:0x2ecc71,emissiveIntensity:0}));
     led.position.set(-.24,.62,.12);g.add(led);g.userData.led=led;
@@ -497,7 +618,7 @@ function buildApplianceMesh(i){
 }
 
 /* ============================================================
-   7) STATE + SIMULATION
+   9) STATE + SIMULATION
    ============================================================ */
 let C=[],W=[],nid=1,sel=null,pend=null,S,last=0,fa=0;
 let houseComp=null;
@@ -515,7 +636,6 @@ function mk(k,t=0,position){
   if(k==='house'){
     houseComp=c;
     buildHouse(numRooms);
-    // house doesn't need a comp _group, its terminal is derived from houseGroup position
   }else{
     c._group=buildMesh(c);
     compGroup.add(c._group);
@@ -674,7 +794,7 @@ function step(dt){
 }
 
 /* ============================================================
-   8) RENDER WIRES + TERMINALS
+   10) RENDER WIRES + TERMINALS
    ============================================================ */
 function rebuildAll(){
   while(wireGroup.children.length)wireGroup.remove(wireGroup.children[0]);
@@ -733,20 +853,106 @@ function update3D(){
     const isLive=P.live.has(na);
     line.material.color.set(isLive?0xF2A900:(sel==='w:'+wid?0xF2A900:0xB4552D));
   });
+
+  // appliance indicators
   applianceMeshes.forEach(({mesh,idx,on})=>{
-    if(idx===0&&mesh.userData.bulb)mesh.userData.bulb.material.emissiveIntensity=on?.9:0;
-    if(idx===2&&mesh.userData.screen)mesh.userData.screen.material.emissiveIntensity=on?.7:0;
-    if(idx===4&&mesh.userData.screen)mesh.userData.screen.material.emissiveIntensity=on?.7:0;
-    if(idx===5&&mesh.userData.led)mesh.userData.led.material.emissiveIntensity=on?.9:0;
-    if(idx===7&&mesh.userData.led)mesh.userData.led.material.emissiveIntensity=on?.9:0;
-    if(idx===3&&mesh.userData.hub)mesh.userData.hub.rotation.y=on?fa*.35:0;
-    if(idx===6&&mesh.userData.drum)mesh.userData.drum.rotation.z=on?fa*.5:0;
+    const u=mesh.userData;
+    if(u.bulb){u.bulb.material.emissiveIntensity=on?.9:0;}
+    if(u.light){u.light.intensity=on?.5:0;}
+    if(u.screen){u.screen.material.emissiveIntensity=on?.8:0;}
+    if(u.led){u.led.material.emissiveIntensity=on?.9:0;}
+    if(u.hub){u.hub.rotation.y=on?fa*.4:0;}
+    if(u.impeller){u.impeller.rotation.x=on?fa*.8:0;}
+    if(u.drum){u.drum.rotation.z=on?fa*.6:0;}
+    // bubbles (washing machine)
+    if(u.bubbles){
+      u.bubbles.children.forEach(b=>{
+        b.material.opacity=on?.7:0;
+        if(on){
+          b.position.y=.15+((fa*.02+b.userData.phase)%1)*.3;
+          b.position.x=(Math.sin((fa*.05+b.userData.phase*6))*.15);
+        }
+      });
+    }
+    // water drops (pump)
+    if(u.water){
+      u.water.children.forEach(d=>{
+        d.material.opacity=on?.8:0;
+        if(on){
+          d.position.x=.32+((fa*.03+d.userData.phase)%1)*.4;
+          d.position.y=.15+Math.sin((fa*.1+d.userData.phase*3))*.02;
+        }
+      });
+    }
+    // cold air (AC)
+    if(u.air){
+      u.air.children.forEach(p=>{
+        p.material.opacity=on?.5:0;
+        if(on){
+          p.position.y=.4-((fa*.015+p.userData.phase)%1)*.3;
+        }
+      });
+    }
   });
   updateSelectionVisual();
 }
 
 /* ============================================================
-   9) UI
+   11) WEATHER / SKY / SUN
+   ============================================================ */
+function updateWeatherVisuals(){
+  if(!S.P)return;
+  const t=S.t;
+  // sun angle: from 6 AM (east) to 6 PM (west)
+  const sunAng=Math.PI*(t-6)/12; // 0..π
+  const sunR=18;
+  const sunX=-Math.cos(sunAng)*sunR;
+  const sunY=Math.max(-2,Math.sin(sunAng)*sunR);
+  const sunZ=6;
+  sunLight.position.set(sunX,sunY,sunZ);
+  sunSphere.position.set(sunX,sunY,sunZ);
+  const sunVisible=t>6&&t<18&&S.P.G>30;
+  sunSphere.visible=sunVisible;
+  // fade sun color with clouds
+  const cloudFactor=S.cloud; // 0..1
+  const dayFactor=cl(S.P.G/900,0,1);
+  // sky color
+  const daySky=new THREE.Color(0x9ec7e8);
+  const duskSky=new THREE.Color(0xf0a878);
+  const nightSky=new THREE.Color(0x0a1420);
+  const cloudTint=new THREE.Color(0x8894a0);
+  let skyCol;
+  if(t<5||t>20)skyCol=nightSky.clone();
+  else if(t<7)skyCol=duskSky.clone().lerp(daySky,(t-5)/2);
+  else if(t<17)skyCol=daySky.clone();
+  else skyCol=daySky.clone().lerp(duskSky,(t-17)/3);
+  if(cloudFactor>.5)skyCol.lerp(cloudTint,(cloudFactor-.5)*1.6);
+  scene.background.copy(skyCol);
+  scene.fog.color.copy(skyCol);
+  // ground brightness
+  ground.material.color.set(skyCol.clone().lerp(new THREE.Color(0xdbe4ec),.7));
+  // sun light intensity + color
+  sunLight.intensity=sunVisible?(1.4*(1-cloudFactor*.7)):.15;
+  if(t<8||t>17)sunLight.color.set(0xffb070);
+  else sunLight.color.set(0xfff3c4);
+  // hemisphere
+  hemi.intensity=.35+dayFactor*(1-cloudFactor*.4);
+  // clouds color & opacity based on weather
+  const cloudCol=cloudFactor>.7?new THREE.Color(0x6a747e):new THREE.Color(0xffffff);
+  cloudMeshes.forEach(c=>{
+    c.children.forEach(p=>{
+      p.material.color.copy(cloudCol);
+      p.material.opacity=.35+cloudFactor*.55;
+    });
+  });
+  // UI weather readout
+  const skyName=cloudFactor<.25?'Clear':cloudFactor<.5?'Partly cloudy':cloudFactor<.75?'Cloudy':S.storm>0?'⛈ Storm':'Overcast';
+  $('wSky').textContent=skyName;
+  $('wCld').textContent=Math.round(cloudFactor*100)+'%';
+}
+
+/* ============================================================
+   12) UI
    ============================================================ */
 function diag(P){
   const R=P.R;
@@ -783,6 +989,7 @@ function ui(){
   $('eng').textContent=`PV ${(S.pv/1000).toFixed(1)} kWh \u00b7 Delivered ${(S.srv/1000).toFixed(1)} kWh \u00b7 Outage ${S.blk.toFixed(1)} h`;
   document.querySelectorAll('[data-a="sp"]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.v===S.sp));
   update3D();
+  updateWeatherVisuals();
   $('diag').textContent=diag(P);
 }
 function renderSel(){
@@ -802,7 +1009,7 @@ function nm(c){
 const act=a=>a.on&&(!a.sc||(a.s<a.e?S.t>=a.s&&S.t<a.e:S.t>=a.s||S.t<a.e));
 
 /* ============================================================
-   10) APPLIANCE BUTTONS (no drag, just + / −)
+   13) APPLIANCE BUTTONS
    ============================================================ */
 function renderAppliances(){
   const c=$('appliances');c.innerHTML='';
@@ -818,20 +1025,31 @@ function renderAppliances(){
     c.appendChild(row);
   });
 }
+function findFreeSpotInHouse(){
+  const hd=houseGroup.userData;
+  const W=hd.W||5,D=hd.D||3;
+  const n=applianceMeshes.length;
+  for(let k=0;k<30;k++){
+    const ang=n*1.7+k*.9;
+    const r=.3+Math.floor((n+k)/6)*.5;
+    const px=cl(Math.cos(ang)*r,-W/2+.5,W/2-.5);
+    const pz=cl(Math.sin(ang)*r,-D/2+.5,D/2-.5);
+    return new THREE.Vector3(px,0,pz);
+  }
+  return new THREE.Vector3(0,0,0);
+}
 function spawnAppliance(i){
   if(!houseComp){msg('Add a house first (drag it into the scene).');return false}
   if(A[i].c>=6)return false;
   A[i].c++;
-  const hd=houseGroup.userData;
-  const W=hd.W||5,D=hd.D||3;
-  const n=A[i].c-1;
-  const total=A.reduce((s,x)=>s+x.c,0);
-  const ang=total*1.7;
-  const r=.25+Math.floor(total/6)*.5;
-  const px=cl(Math.cos(ang)*r,-W/2+.5,W/2-.5);
-  const pz=cl(Math.sin(ang)*r,-D/2+.5,D/2-.5);
   const mesh=buildApplianceMesh(i);
-  mesh.position.set(px,0,pz);
+  const pos=findFreeSpotInHouse();
+  mesh.position.copy(pos);
+  // lamps hang from ceiling
+  if(i===0){
+    const hd=houseGroup.userData;
+    mesh.position.y=(hd.H||1.9)-.05;
+  }
   mesh.rotation.y=Math.random()*Math.PI*2;
   applianceGroup.add(mesh);
   applianceMeshes.push({mesh,idx:i,on:false});
@@ -840,7 +1058,6 @@ function spawnAppliance(i){
 function removeAppliance(i){
   if(A[i].c<=0)return false;
   A[i].c--;
-  // remove the last spawned of this type
   for(let k=applianceMeshes.length-1;k>=0;k--){
     if(applianceMeshes[k].idx===i){
       applianceGroup.remove(applianceMeshes[k].mesh);
@@ -855,7 +1072,7 @@ function renderAppCounts(){
 }
 
 /* ============================================================
-   11) CATALOG RENDER
+   14) CATALOG RENDER
    ============================================================ */
 function renderCatalog(){
   const c=$('catalog');c.innerHTML='';
@@ -880,7 +1097,7 @@ function renderCatalog(){
 }
 
 /* ============================================================
-   12) DRAG & DROP components
+   15) DRAG & DROP components
    ============================================================ */
 const sceneEl=$('scene');
 sceneEl.addEventListener('dragover',e=>{e.preventDefault();sceneEl.classList.add('dragover')});
@@ -902,7 +1119,93 @@ sceneEl.addEventListener('drop',e=>{
 });
 
 /* ============================================================
-   13) INPUT EVENTS
+   16) APPLIANCE DRAG INSIDE HOUSE
+   ============================================================ */
+let dragAppliance=null;
+const dragPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0);
+const dragOffset=new THREE.Vector3();
+const raycaster=new THREE.Raycaster();
+const mouseNDC=new THREE.Vector2();
+
+function pointerToGround(e){
+  const rect=renderer.domElement.getBoundingClientRect();
+  mouseNDC.x=((e.clientX-rect.left)/rect.width)*2-1;
+  mouseNDC.y=-((e.clientY-rect.top)/rect.height)*2+1;
+  raycaster.setFromCamera(mouseNDC,camera);
+  const hit=new THREE.Vector3();
+  raycaster.ray.intersectPlane(dragPlane,hit);
+  return hit;
+}
+renderer.domElement.addEventListener('pointerdown',e=>{
+  // first: terminal clicks
+  const rect=renderer.domElement.getBoundingClientRect();
+  mouseNDC.x=((e.clientX-rect.left)/rect.width)*2-1;
+  mouseNDC.y=-((e.clientY-rect.top)/rect.height)*2+1;
+  raycaster.setFromCamera(mouseNDC,camera);
+  const termHits=raycaster.intersectObjects(termMeshes,false);
+  if(termHits.length){
+    const key=termHits[0].object.userData.term;
+    if(pend&&pend!==key){
+      if(!W.some(w=>(w.a===pend&&w.b===key)||(w.a===key&&w.b===pend)))
+        W.push({id:'w'+nid++,a:pend,b:key});
+      pend=null;sel=null;
+    }else pend=pend===key?null:key;
+    rebuildAll();renderSel();step(0);update3D();return;
+  }
+  // appliance drag start (only if inside house)
+  const appMeshes=applianceMeshes.map(x=>x.mesh);
+  const appHits=raycaster.intersectObjects(appMeshes,true);
+  if(appHits.length){
+    // find root appliance group
+    let obj=appHits[0].object;
+    while(obj.parent&&!applianceMeshes.some(x=>x.mesh===obj))obj=obj.parent;
+    const found=applianceMeshes.find(x=>x.mesh===obj);
+    if(found){
+      dragAppliance=found;
+      controls.enabled=false;
+      const ground=pointerToGround(e);
+      // For ceiling lamps, use XZ only
+      dragOffset.copy(found.mesh.position).sub(ground);
+      dragOffset.y=0;
+      renderer.domElement.setPointerCapture(e.pointerId);
+      return;
+    }
+  }
+  // else: component / wire selection
+  const list=[];
+  meshMap.forEach((g,id)=>{g.traverse(o=>{if(o.isMesh){o.userData.compId=id;list.push(o)}})});
+  const ch=raycaster.intersectObjects(list,false);
+  if(ch.length){sel=ch[0].object.userData.compId;pend=null;renderSel();update3D();return}
+  const wh=raycaster.intersectObjects([...wireMeshMap.values()],false);
+  if(wh.length){sel='w:'+wh[0].object.userData.wireId;pend=null;renderSel();update3D();return}
+  sel=null;pend=null;renderSel();update3D();
+});
+renderer.domElement.addEventListener('pointermove',e=>{
+  if(!dragAppliance)return;
+  const g=pointerToGround(e);
+  const hd=houseGroup.userData;
+  const W=hd.W||5,D=hd.D||3;
+  const nx=cl(g.x+dragOffset.x,-W/2+.3,W/2-.3);
+  const nz=cl(g.z+dragOffset.z,-D/2+.3,D/2-.3);
+  dragAppliance.mesh.position.x=nx;
+  dragAppliance.mesh.position.z=nz;
+});
+renderer.domElement.addEventListener('pointerup',e=>{
+  if(dragAppliance){
+    dragAppliance=null;
+    controls.enabled=true;
+    try{renderer.domElement.releasePointerCapture(e.pointerId)}catch(_){}
+  }
+});
+
+$('tamb').addEventListener('input',e=>{S.tamb=+e.target.value;step(0)});
+$('rooms').addEventListener('change',e=>{
+  numRooms=+e.target.value;
+  if(houseComp){buildHouse(numRooms);rebuildAll()}
+});
+
+/* ============================================================
+   17) CLICK EVENTS (buttons)
    ============================================================ */
 document.addEventListener('click',e=>{
   const b=e.target.closest('[data-a]');
@@ -921,36 +1224,9 @@ document.addEventListener('click',e=>{
   }
   rebuildAll();renderSel();step(0);update3D();
 });
-renderer.domElement.addEventListener('pointerdown',e=>{
-  const rect=renderer.domElement.getBoundingClientRect();
-  const mouse=new THREE.Vector2(((e.clientX-rect.left)/rect.width)*2-1,-((e.clientY-rect.top)/rect.height)*2+1);
-  const ray=new THREE.Raycaster();ray.setFromCamera(mouse,camera);
-  const hits=ray.intersectObjects(termMeshes,false);
-  if(hits.length){
-    const key=hits[0].object.userData.term;
-    if(pend&&pend!==key){
-      if(!W.some(w=>(w.a===pend&&w.b===key)||(w.a===key&&w.b===pend)))
-        W.push({id:'w'+nid++,a:pend,b:key});
-      pend=null;sel=null;
-    }else pend=pend===key?null:key;
-    rebuildAll();renderSel();step(0);update3D();return;
-  }
-  const list=[];
-  meshMap.forEach((g,id)=>{g.traverse(o=>{if(o.isMesh){o.userData.compId=id;list.push(o)}})});
-  const ch=ray.intersectObjects(list,false);
-  if(ch.length){sel=ch[0].object.userData.compId;pend=null;renderSel();update3D();return}
-  const wh=ray.intersectObjects([...wireMeshMap.values()],false);
-  if(wh.length){sel='w:'+wh[0].object.userData.wireId;pend=null;renderSel();update3D();return}
-  sel=null;pend=null;renderSel();update3D();
-});
-$('tamb').addEventListener('input',e=>{S.tamb=+e.target.value;step(0)});
-$('rooms').addEventListener('change',e=>{
-  numRooms=+e.target.value;
-  if(houseComp){buildHouse(numRooms);rebuildAll()}
-});
 
 /* ============================================================
-   14) PRESET + CLEAR
+   18) PRESET + CLEAR
    ============================================================ */
 function clearAll(){
   while(compGroup.children.length)compGroup.remove(compGroup.children[0]);
@@ -967,54 +1243,35 @@ function clearAll(){
 
 function preset(){
   clearAll();
-  // 1) house first (builds houseGroup + houseComp)
   const h=mk('house',0,new THREE.Vector3(0,0,3.2));
-  // 2) 4 panels (top row)
   const m1=mk('mod',0,new THREE.Vector3(-2.6,.35,-5.0));
   const m2=mk('mod',0,new THREE.Vector3(-1.3,.35,-5.0));
   const m3=mk('mod',0,new THREE.Vector3(0,.35,-5.0));
   const m4=mk('mod',0,new THREE.Vector3(1.3,.35,-5.0));
-  // 3) protection row
   const f=mk('fuse',0,new THREE.Vector3(-3.6,.35,-3.4));
   const sw=mk('sw',0,new THREE.Vector3(-2.4,.35,-3.4));
   const sp=mk('spd',0,new THREE.Vector3(-1.2,.35,-3.4));
-  // 4) controller
   const rg=mk('reg',2,new THREE.Vector3(.2,.35,-3.4));
-  // 5) junction
   const j=mk('jct',0,new THREE.Vector3(1.8,.35,-3.4));
-  // 6) battery + inverter + breaker
   const b=mk('bat',3,new THREE.Vector3(-3.6,.35,-1.6));
   const iv=mk('inv',2,new THREE.Vector3(-1.8,.35,-1.6));
   const bk=mk('brk',0,new THREE.Vector3(0,.35,-1.6));
 
-  // 7) wires
   const L=(a,b)=>W.push({id:'w'+nid++,a,b});
-  // series panels
   L(m1.id+'.p',m2.id+'.m');
   L(m2.id+'.p',m3.id+'.m');
   L(m3.id+'.p',m4.id+'.m');
-  // array to fuse
   L(m1.id+'.m',f.id+'.a');
-  // fuse to isolator
   L(f.id+'.b',sw.id+'.a');
-  // isolator to controller +
   L(sw.id+'.b',rg.id+'.p');
-  // array return to controller −
   L(m4.id+'.m',rg.id+'.n');
-  // SPD tap
   L(sp.id+'.a',sw.id+'.b');
-  // controller output to junction
   L(rg.id+'.o',j.id+'.a');
-  // battery to junction
   L(b.id+'.b',j.id+'.b');
-  // inverter DC in to junction
   L(iv.id+'.d',j.id+'.c');
-  // inverter AC out to breaker
   L(iv.id+'.a',bk.id+'.a');
-  // breaker to house
   L(bk.id+'.b',h.id+'.i');
 
-  // 8) appliances inside house
   [0,1,2,3].forEach(i=>spawnAppliance(i));
   A[0].sc=true;A[0].s=18;A[0].e=23;
   A[2].sc=true;A[2].s=19;A[2].e=23;
@@ -1025,7 +1282,7 @@ function preset(){
 }
 
 /* ============================================================
-   15) INIT
+   19) INIT
    ============================================================ */
 function init(){
   S={t:6,day:1,run:false,tamb:+$('tamb').value,sp:1,cloud:.9,ct:.9,storm:0,srv:0,pv:0,blk:0,flt:0,ovl:false};
@@ -1045,9 +1302,16 @@ function resize(){
 }
 addEventListener('resize',resize);
 
+let cloudDrift=0;
 function loop(ts){
   const dt=Math.min(.1,(ts-last)/1000||0);last=ts;
   if(S.run)step(dt);
+  // clouds drift
+  cloudDrift+=dt;
+  cloudMeshes.forEach(c=>{
+    c.position.x+=c.userData.speed*dt*(S.run?S.sp:1);
+    if(c.position.x>28)c.position.x=-28;
+  });
   ui();
   controls.update();
   renderer.render(scene,camera);
