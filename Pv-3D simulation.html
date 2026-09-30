@@ -1,584 +1,443 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>PV Wiring Lab 3D</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<title>PV Wiring Lab 3D — مختبر توصيلات الطاقة الشمسية</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#E8EEF2;--grid:#D3DCE3;--ink:#14263A;--mut:#54657A;--pan:#F7FAFC;--wall:#F1E8D6;--sun:#F2A900;--cu:#B4552D;--tl:#0F8B8D;--bad:#C0392B;--ok:#23804F;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E1822;--grid:#1B2A37;--ink:#DCE6EE;--mut:#8FA1B2;--pan:#15222E;--wall:#26323F;--sun:#FFC233;--cu:#E08A5E;--tl:#37C1C3;--bad:#FF6B5B;--ok:#5FCB8C}}
-:root[data-theme="dark"]{--bg:#0E1822;--grid:#1B2A37;--ink:#DCE6EE;--mut:#8FA1B2;--pan:#15222E;--wall:#26323F;--sun:#FFC233;--cu:#E08A5E;--tl:#37C1C3;--bad:#FF6B5B;--ok:#5FCB8C}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
-*,*:before,*:after{box-sizing:inherit}
-body{margin:0;font:15px/1.5 "IBM Plex Sans",system-ui,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:linear-gradient(var(--grid) 1px,transparent 1px) 0 0/24px 24px,linear-gradient(90deg,var(--grid) 1px,transparent 1px) 0 0/24px 24px,var(--bg)}
-main{max-width:900px;margin:0 auto;padding:12px 10px 28px}
-h1{font-size:20px;margin:4px 4px 2px}h2{font-size:15px;margin:16px 4px 6px}
-.hint{color:var(--mut);font-size:13px;margin:0 4px 10px}
-.bar{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 12px;background:var(--pan);border:1.5px solid var(--ink);border-radius:6px}
-button{font:inherit;color:var(--ink);background:var(--pan);border:1.5px solid var(--ink);border-radius:6px;min-height:40px;padding:0 8px;cursor:pointer}
+:root{
+  --bg:#E8EEF2;--grid:#D3DCE3;--ink:#14263A;--mut:#54657A;--pan:#F7FAFC;
+  --wall:#F1E8D6;--sun:#F2A900;--cu:#B4552D;--tl:#0F8B8D;--bad:#C0392B;--ok:#23804F;
+  --glass:rgba(120,180,220,.15);--glassEdge:rgba(60,120,160,.55);
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0E1822;--grid:#1B2A37;--ink:#DCE6EE;--mut:#8FA1B2;--pan:#15222E;
+  --wall:#26323F;--sun:#FFC233;--cu:#E08A5E;--tl:#37C1C3;--bad:#FF6B5B;--ok:#5FCB8C;
+  --glass:rgba(90,160,210,.18);--glassEdge:rgba(80,160,200,.6);
+}}
+:root[data-theme="dark"]{
+  --bg:#0E1822;--grid:#1B2A37;--ink:#DCE6EE;--mut:#8FA1B2;--pan:#15222E;
+  --wall:#26323F;--sun:#FFC233;--cu:#E08A5E;--tl:#37C1C3;--bad:#FF6B5B;--ok:#5FCB8C;
+  --glass:rgba(90,160,210,.18);--glassEdge:rgba(80,160,200,.6);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Tajawal","IBM Plex Sans",system-ui,sans-serif;color:var(--ink);
+  background:linear-gradient(var(--grid) 1px,transparent 1px) 0 0/24px 24px,
+             linear-gradient(90deg,var(--grid) 1px,transparent 1px) 0 0/24px 24px,var(--bg);
+  min-height:100vh}
+.layout{display:grid;grid-template-columns:280px 1fr;gap:10px;max-width:1400px;margin:0 auto;padding:10px}
+@media(max-width:820px){.layout{grid-template-columns:1fr}}
+h1{font-size:19px;margin:4px 6px}
+h2{font-size:14px;margin:12px 6px 6px;color:var(--mut)}
+.panel{background:var(--pan);border:1.5px solid var(--ink);border-radius:8px;padding:8px}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 10px;background:var(--pan);border:1.5px solid var(--ink);border-radius:8px;margin-bottom:8px;flex-wrap:wrap}
+button{font:inherit;color:var(--ink);background:var(--pan);border:1.5px solid var(--ink);border-radius:6px;min-height:36px;padding:0 10px;cursor:pointer;transition:transform .1s}
+button:active{transform:scale(.97)}
 button[aria-pressed=true]{background:var(--ink);color:var(--pan)}
-button:focus-visible,input:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
-#go{background:var(--sun);color:#14263A;font-weight:700;border-color:#14263A;min-width:84px}
-#alert,#diag,#sel{margin:8px 0;padding:6px 12px;border-left:5px solid var(--sun);background:var(--pan);font-size:14px;min-height:34px}
+#go{background:var(--sun);color:#14263A;font-weight:700;min-width:80px}
+#scene{width:100%;height:520px;background:var(--pan);border:1.5px solid var(--ink);border-radius:8px;overflow:hidden;position:relative;touch-action:none}
+@media(max-width:820px){#scene{height:380px}}
+#scene canvas{display:block}
+.scene-hint{position:absolute;bottom:8px;left:10px;font-size:11px;color:var(--mut);pointer-events:none;background:rgba(255,255,255,.5);padding:2px 6px;border-radius:4px;backdrop-filter:blur(4px)}
+.drop-hint{position:absolute;inset:0;border:3px dashed var(--sun);border-radius:8px;pointer-events:none;opacity:0;transition:opacity .15s}
+#scene.dragover .drop-hint{opacity:1}
+#alert,#diag,#sel{margin:8px 0;padding:8px 12px;border-left:5px solid var(--sun);background:var(--pan);font-size:13.5px;border-radius:6px;min-height:36px}
 #diag{border-color:var(--tl);font-weight:600}#sel{border-color:var(--mut);display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
-#scene{width:100%;height:420px;background:var(--pan);border:1.5px solid var(--ink);border-radius:6px;overflow:hidden;position:relative;touch-action:manipulation}
-#scene canvas{display:block;width:100%;height:100%}
-.scene-hint{position:absolute;bottom:6px;left:8px;font-size:11px;color:var(--mut);pointer-events:none}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0}
-.stats div{background:var(--pan);border:1.5px solid var(--ink);border-radius:6px;padding:6px 8px;text-align:center}
-.stats b{display:block;font-size:17px;font-variant-numeric:tabular-nums}.stats small{color:var(--mut);font-size:12px}
-.pal{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.pal button{font-size:12.5px;min-height:46px;line-height:1.25}
-.r{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 4px;border-bottom:1px dashed var(--mut);font-size:14px}
-.r>span{flex:1}.st{display:flex;align-items:center;gap:5px}.st b{min-width:20px;text-align:center}
-.info{font-size:12.5px;color:var(--mut);margin:4px}
-.top{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:10px 0}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0}
+.stats div{background:var(--pan);border:1.5px solid var(--ink);border-radius:6px;padding:6px 4px;text-align:center}
+.stats b{display:block;font-size:16px;font-variant-numeric:tabular-nums}.stats small{color:var(--mut);font-size:11px}
+.cat{margin:6px 0;border:1px solid var(--mut);border-radius:6px;overflow:hidden}
+.cat summary{padding:6px 10px;cursor:pointer;font-weight:700;font-size:13px;background:var(--pan);list-style:none}
+.cat summary::-webkit-details-marker{display:none}
+.cat summary:before{content:'▸ ';transition:transform .2s;display:inline-block}
+.cat[open] summary:before{content:'▾ '}
+.cat .items{display:grid;grid-template-columns:1fr;gap:4px;padding:6px}
+.item{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:6px 8px;background:var(--pan);border:1px solid var(--mut);border-radius:6px;cursor:grab;font-size:12.5px;user-select:none;transition:background .12s}
+.item:hover{background:var(--grid)}
+.item:active{cursor:grabbing}
+.item.dragging{opacity:.4}
+.item .spec{color:var(--mut);font-size:11px}
+.app-item{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:6px 8px;background:var(--pan);border:1px solid var(--mut);border-radius:6px;cursor:grab;font-size:12.5px;user-select:none;margin:3px 0}
+.app-item:hover{background:var(--grid)}
+.app-item:active{cursor:grabbing}
+.info{font-size:12px;color:var(--mut);margin:4px 6px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 4px;font-size:13.5px}
+input[type=range]{flex:1}
+.speed{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin:6px 0}
+.rooms{display:flex;align-items:center;gap:8px;padding:6px;flex-wrap:wrap}
+.rooms select{padding:4px 8px;font:inherit;border:1.5px solid var(--ink);border-radius:6px;background:var(--pan);color:var(--ink)}
 </style>
 </head>
 <body>
-<main>
-<h1>PV Wiring Lab 3D</h1>
-<p class="hint">Add a component below, then tap one terminal (dot) and another to wire them. Tap a wire or a component to select or delete it. Drag to rotate the view.</p>
-<div class="bar"><span>Day <b id="day">1</b></span><b id="clk">06:00</b><button id="go" data-a="go">Start</button></div>
-<div id="alert">Empty board. Try “Ready-made setup” to see a wired example.</div>
-<div id="scene"><div class="scene-hint">Drag to rotate · Scroll to zoom</div></div>
-<div id="sel"><span>Nothing selected</span></div>
-<div id="diag"></div>
-<div class="stats">
-<div><b id="vG">0</b><small>Irradiance W/m²</small></div>
-<div><b id="vTc">0</b><small>Cell temp °C</small></div>
-<div><b id="vP">0</b><small>PV power W</small></div>
-<div><b id="vV">0</b><small>Array Vmp V</small></div>
-<div><b id="vSoc">—</b><small>Battery %</small></div>
-<div><b id="vL">0</b><small>House load W</small></div>
-</div>
-<p class="info" id="eng"></p>
-<div class="top"><button data-a="pre">Ready-made setup</button><button data-a="clr">Empty board</button></div>
 
-<h2>Components</h2>
-<div class="pal" id="pal"></div>
-<h2>House appliances</h2>
-<div id="apl"></div>
-<h2>Weather and speed</h2>
-<div class="r"><span>Ambient temp <b id="vTa">20</b> °C</span><input type="range" id="tamb" min="0" max="40" value="20" aria-label="Ambient temperature"></div>
-<div class="top" style="grid-template-columns:repeat(3,1fr)"><button data-a="sp" data-v="1">1×</button><button data-a="sp" data-v="2">2×</button><button data-a="sp" data-v="4">4×</button></div>
-</main>
+<div class="layout">
+  <!-- ============ SIDEBAR ============ -->
+  <aside>
+    <h1>☀️ PV Wiring Lab 3D</h1>
+    <p class="info">اسحب أي مكوّن من اليمين وأسقطه في المشهد. اسحب الأجهزة المنزلية إلى داخل المنزل.</p>
+
+    <div class="panel" style="margin-bottom:8px">
+      <div class="bar" style="border:none;padding:0;background:transparent;margin:0">
+        <span>اليوم <b id="day">1</b></span>
+        <b id="clk">06:00</b>
+        <button id="go" data-a="go">تشغيل</button>
+      </div>
+    </div>
+
+    <h2>🏗️ مكونات النظام</h2>
+    <div id="catalog"></div>
+
+    <h2>🏠 أجهزة المنزل</h2>
+    <p class="info">اسحب الجهاز إلى داخل جدران المنزل لإضافته.</p>
+    <div id="appliances"></div>
+
+    <h2>🏠 إعدادات المنزل</h2>
+    <div class="panel">
+      <div class="rooms">
+        <label>عدد الغرف:</label>
+        <select id="rooms">
+          <option value="1">1</option>
+          <option value="2" selected>2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+        </select>
+      </div>
+      <div class="row">
+        <span>درجة الحرارة <b id="vTa">20</b>°C</span>
+        <input type="range" id="tamb" min="0" max="40" value="20">
+      </div>
+      <div class="speed">
+        <button data-a="sp" data-v="1" aria-pressed="true">1×</button>
+        <button data-a="sp" data-v="2" aria-pressed="false">2×</button>
+        <button data-a="sp" data-v="4" aria-pressed="false">4×</button>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:6px">
+        <button data-a="pre" style="flex:1">نظام جاهز</button>
+        <button data-a="clr" style="flex:1">تفريغ</button>
+      </div>
+    </div>
+
+    <h2>📊 القياسات</h2>
+    <div class="stats">
+      <div><b id="vG">0</b><small>إشعاع W/m²</small></div>
+      <div><b id="vTc">0</b><small>حرارة الخلية °C</small></div>
+      <div><b id="vP">0</b><small>قدرة PV W</small></div>
+      <div><b id="vV">0</b><small>Vmp V</small></div>
+      <div><b id="vSoc">—</b><small>بطارية %</small></div>
+      <div><b id="vL">0</b><small>حمل W</small></div>
+    </div>
+    <p class="info" id="eng"></p>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main>
+    <div id="alert">مرحباً! اسحب مكوّناً من القائمة الجانبية إلى المشهد لتبدأ.</div>
+    <div id="scene">
+      <div class="scene-hint">🖱️ اسحب للدوران · عجلة الفأرة للتقريب</div>
+      <div class="drop-hint"></div>
+    </div>
+    <div id="sel"><span>لا يوجد تحديد</span></div>
+    <div id="diag"></div>
+  </main>
+</div>
+
 <script type="importmap">
-{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}
+{"imports":{
+  "three":"https://unpkg.com/three@0.160.0/build/three.module.js",
+  "three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"
+}}
 </script>
+
 <script type="module">
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {CSS2DRenderer,CSS2DObject} from 'three/addons/renderers/CSS2DRenderer.js';
 
 const $=i=>document.getElementById(i),cl=(v,a,b)=>Math.max(a,Math.min(b,v));
-const MD=[{n:'Mono',P:320,Vm:33.6,Vo:40.8},{n:'Poly',P:250,Vm:30,Vo:37.2},{n:'Thin',P:175,Vm:39,Vo:51}];
-const BT=[0,{n:'Lead-acid',cap:9600,cut:.5,res:.6,eff:.8,v0:46,v1:52},{n:'LiFePO4',cap:4800,cut:.1,res:.25,eff:.96,v0:44,v1:54},{n:'LiFePO4',cap:9600,cut:.1,res:.25,eff:.96,v0:44,v1:54}];
-const IV=[0,1000,3000,5000];
-const A=[{n:'Lamp',w:10},{n:'Refrigerator',w:150},{n:'TV',w:100},{n:'Fan',w:60},{n:'Computer',w:80},{n:'Water pump',w:750},{n:'Washing machine',w:500},{n:'Air conditioner',w:1200}];
-const PAL=[['mod',0,'Solar panel Mono 320 W'],['mod',1,'Solar panel Poly 250 W'],['mod',2,'Solar panel Thin-film 175 W'],['fuse',0,'Fuse'],['sw',0,'DC isolator'],['spd',0,'Surge protector (SPD)'],['reg',1,'PWM charge controller'],['reg',2,'MPPT charge controller'],['jct',0,'Junction (DC bus)'],['bat',1,'Lead-acid battery 9.6 kWh'],['bat',2,'LiFePO4 battery 4.8 kWh'],['bat',3,'LiFePO4 battery 9.6 kWh'],['inv',1,'Inverter 1 kW'],['inv',2,'Inverter 3 kW'],['inv',3,'Inverter 5 kW'],['brk',0,'AC breaker'],['house',0,'House']];
-const Z={mod:'m',fuse:'p',sw:'p',spd:'p',reg:'r',jct:'b',bat:'b',inv:'i',brk:'k',house:'h'},MX={mod:12,fuse:3,sw:3,spd:3,reg:1,jct:3,bat:1,inv:1,brk:2,house:1};
-const TP={mod:{m:[-.22,.36,0],p:[.22,.36,0]},fuse:{a:[0,0,0],b:[0,-.36,0]},sw:{a:[0,0,0],b:[0,-.36,0]},brk:{a:[0,0,0],b:[0,-.36,0]},spd:{a:[0,0,0]},reg:{p:[-.2,.36,0],n:[.2,.36,0],o:[0,-.36,0]},bat:{b:[0,.36,0]},jct:{a:[-.36,0,0],b:[.36,0,0],c:[0,.36,0],d:[0,-.36,0]},inv:{d:[0,.36,0],a:[0,-.36,0]},house:{i:[0,0,0]}};
-const TL={mod:{m:'−',p:'+'},reg:{p:'+',n:'−'}},TC={mod:{p:0xc0392b,m:0x222222},reg:{p:0xc0392b,n:0x222222}};
-const WCOLS={mod:0x1e3a8a,bat:0x1a1a1a,reg:0x3a4550,inv:0xe6ebf0,house:0xc49a6c};
-let C=[],W=[],nid=1,sel=null,pend=null,S,last=0,fa=0;
 const msg=m=>$('alert').textContent=m;
-const act=a=>a.on&&(!a.sc||(a.s<a.e?S.t>=a.s&&S.t<a.e:S.t>=a.s||S.t<a.e));
-const hm=h=>String(h).padStart(2,'0')+':00';
-function nm(c){
- if(c.k=='mod')return `Solar panel ${MD[c.t].n} ${MD[c.t].P} W · Vmp ${MD[c.t].Vm} V · Voc ${MD[c.t].Vo} V`;
- if(c.k=='bat')return `${BT[c.t].n} battery ${BT[c.t].cap/1000} kWh`;
- if(c.k=='inv')return `Inverter ${IV[c.t]/1000} kW`;
- if(c.k=='reg')return ['','PWM','MPPT'][c.t]+' charge controller';
- return {fuse:'Fuse',sw:'DC isolator',spd:'Surge protector (SPD)',jct:'DC bus junction',brk:'AC breaker',house:'House'}[c.k];
-}
 
-/* ---------- Three.js scene ---------- */
+/* ============================================================
+   1) LIBRARY OF REAL PRODUCTS (categories + specs)
+   ============================================================ */
+const CATALOG=[
+ {id:'panels',name:'🔆 الألواح الشمسية',items:[
+   {k:'mod',t:0,name:'لوح أحادي 320W',spec:'Mono PERC · Vmp 33.6V · Voc 40.8V',P:320,Vm:33.6,Vo:40.8},
+   {k:'mod',t:1,name:'لوح متعدد 250W',spec:'Poly · Vmp 30V · Voc 37.2V',P:250,Vm:30,Vo:37.2},
+   {k:'mod',t:2,name:'لوح رقيق 175W',spec:'Thin-film · Vmp 39V · Voc 51V',P:175,Vm:39,Vo:51},
+ ]},
+ {id:'controllers',name:'🎛️ منظمات الشحن',items:[
+   {k:'reg',t:1,name:'منظم PWM 30A',spec:'12/24V · حتى 100V Voc'},
+   {k:'reg',t:2,name:'منظم MPPT 60A',spec:'12–48V · حتى 150V Voc'},
+ ]},
+ {id:'batteries',name:'🔋 البطاريات',items:[
+   {k:'bat',t:1,name:'رصاص حمضي 9.6kWh',spec:'48V 200Ah · DoD 50%'},
+   {k:'bat',t:2,name:'LiFePO4 4.8kWh',spec:'48V 100Ah · BMS مدمج'},
+   {k:'bat',t:3,name:'LiFePO4 9.6kWh',spec:'48V 200Ah · BMS مدمج'},
+ ]},
+ {id:'inverters',name:'⚡ العاكسات',items:[
+   {k:'inv',t:1,name:'عاكس 1kW',spec:'12/24/48V → 220V'},
+   {k:'inv',t:2,name:'عاكس 3kW',spec:'48V → 220V نقي'},
+   {k:'inv',t:3,name:'عاكس 5kW',spec:'48V → 220V نقي'},
+ ]},
+ {id:'protection',name:'🛡️ الحمايات',items:[
+   {k:'fuse',t:0,name:'منصهر DC 20A',spec:'1000V DC · gPV'},
+   {k:'sw',t:0,name:'عازل DC',spec:'قاطع فصل يدوي'},
+   {k:'spd',t:0,name:'مانعة صواعق SPD',spec:'Type 2 · 40kA'},
+   {k:'brk',t:0,name:'قاطع AC',spec:'MCB 16A · 220V'},
+ ]},
+ {id:'wires',name:'🔌 الموصلات والكابلات',items:[
+   {k:'jct',t:0,name:'نقطة تجميع DC Bus',spec:'موصل 4 مداخل'},
+ ]},
+];
+
+const MD=[{n:'Mono',P:320,Vm:33.6,Vo:40.8},{n:'Poly',P:250,Vm:30,Vo:37.2},{n:'Thin',P:175,Vm:39,Vo:51}];
+const BT=[0,{n:'Lead-acid',cap:9600,cut:.5,res:.6,eff:.8,v0:46,v1:52},
+          {n:'LiFePO4',cap:4800,cut:.1,res:.25,eff:.96,v0:44,v1:54},
+          {n:'LiFePO4',cap:9600,cut:.1,res:.25,eff:.96,v0:44,v1:54}];
+const IV=[0,1000,3000,5000];
+
+/* Home appliances (draggable into the house) */
+const A=[
+ {n:'مصباح LED',w:10,icon:'💡',hue:0xffd84a},
+ {n:'ثلاجة',w:150,icon:'🧊',hue:0xdfe8f0},
+ {n:'تلفاز',w:100,icon:'📺',hue:0x1c2733},
+ {n:'مروحة',w:60,icon:'🌀',hue:0x8fb3d4},
+ {n:'حاسوب',w:80,icon:'💻',hue:0x1c2733},
+ {n:'مضخة ماء',w:750,icon:'💧',hue:0x3b7bbf},
+ {n:'غسالة',w:500,icon:'🌀',hue:0xe9eef3},
+ {n:'مكيف',w:1200,icon:'❄️',hue:0xf1f4f7},
+];
+
+/* ============================================================
+   2) TOPOLOGY / TERMINALS (same electrical model)
+   ============================================================ */
+const Z={mod:'m',fuse:'p',sw:'p',spd:'p',reg:'r',jct:'b',bat:'b',inv:'i',brk:'k',house:'h'};
+const MX={mod:12,fuse:3,sw:3,spd:3,reg:1,jct:3,bat:1,inv:1,brk:2,house:1};
+const TP={
+  mod:{m:[-.24,.32,0],p:[.24,.32,0]},
+  fuse:{a:[0,.18,0],b:[0,-.18,0]},
+  sw:{a:[0,.22,0],b:[0,-.22,0]},
+  brk:{a:[0,.22,0],b:[0,-.22,0]},
+  spd:{a:[0,.20,0]},
+  reg:{p:[-.24,.20,0],n:[.24,.20,0],o:[0,-.22,0]},
+  bat:{b:[0,.24,0]},
+  jct:{a:[-.28,0,0],b:[.28,0,0],c:[0,.24,0],d:[0,-.24,0]},
+  inv:{d:[0,.20,0],a:[0,-.22,0]},
+  house:{i:[0,1.6,0]},
+};
+const TL={mod:{m:'−',p:'+'},reg:{p:'+',n:'−'}};
+const TC={mod:{p:0xc0392b,m:0x222222},reg:{p:0xc0392b,n:0x222222}};
+
+/* ============================================================
+   3) SCENE
+   ============================================================ */
 const scene=new THREE.Scene();
 scene.background=new THREE.Color(0xE8EEF2);
-const camera=new THREE.PerspectiveCamera(50,1,.1,200);
-camera.position.set(4,5,7);camera.lookAt(0,0,0);
+scene.fog=new THREE.Fog(0xE8EEF2,18,40);
+
+const camera=new THREE.PerspectiveCamera(45,1,.1,200);
+camera.position.set(6,6,9);
+
 const renderer=new THREE.WebGLRenderer({antialias:true});
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 $('scene').appendChild(renderer.domElement);
+
 const labelRenderer=new CSS2DRenderer();
-labelRenderer.setSize(1,1);
 Object.assign(labelRenderer.domElement.style,{position:'absolute',top:'0',left:'0',pointerEvents:'none'});
 $('scene').appendChild(labelRenderer.domElement);
+
 const controls=new OrbitControls(camera,renderer.domElement);
 controls.enableDamping=true;controls.dampingFactor=.08;
-controls.target.set(0,0,0);controls.maxPolarAngle=Math.PI/2.2;
-controls.minDistance=3;controls.maxDistance=20;
-const grid=new THREE.GridHelper(16,32,0xD3DCE3,0xD3DCE3);
-grid.position.y=-.5;scene.add(grid);
-const ground=new THREE.Mesh(new THREE.PlaneGeometry(40,40),new THREE.MeshStandardMaterial({color:0xe8eef2,side:THREE.DoubleSide}));
-ground.rotation.x=-Math.PI/2;ground.position.y=-.51;ground.receiveShadow=true;scene.add(ground);
-scene.add(new THREE.HemisphereLight(0xffffff,0x8899aa,.9));
-const sun=new THREE.DirectionalLight(0xffffff,1.2);
-sun.position.set(5,10,4);sun.castShadow=true;scene.add(sun);
+controls.target.set(0,.3,0);
+controls.maxPolarAngle=Math.PI/2.1;
+controls.minDistance=3;controls.maxDistance=22;
 
-const group=new THREE.Group();scene.add(group);
+/* Lights */
+scene.add(new THREE.HemisphereLight(0xffffff,0x8899aa,.85));
+const sunLight=new THREE.DirectionalLight(0xfff3c4,1.3);
+sunLight.position.set(8,14,6);
+sunLight.castShadow=true;
+sunLight.shadow.mapSize.set(1024,1024);
+sunLight.shadow.camera.left=-10;sunLight.shadow.camera.right=10;
+sunLight.shadow.camera.top=10;sunLight.shadow.camera.bottom=-10;
+scene.add(sunLight);
+
+/* Ground + grid */
+const ground=new THREE.Mesh(
+  new THREE.PlaneGeometry(60,60),
+  new THREE.MeshStandardMaterial({color:0xdbe4ec,roughness:1})
+);
+ground.rotation.x=-Math.PI/2;ground.position.y=-.01;ground.receiveShadow=true;scene.add(ground);
+const grid=new THREE.GridHelper(24,48,0xa8b6c4,0xc4d0da);
+grid.material.transparent=true;grid.material.opacity=.45;scene.add(grid);
+
+/* Groups */
+const compGroup=new THREE.Group();scene.add(compGroup);
 const wireGroup=new THREE.Group();scene.add(wireGroup);
-const tempGroup=new THREE.Group();scene.add(tempGroup);
-const meshMap=new Map(); // comp id -> {group, meshes[]}
-const wireMeshes=new Map(); // wire id -> line
-const tempMeshes=[];
+const termGroup=new THREE.Group();scene.add(termGroup);
+const houseGroup=new THREE.Group();scene.add(houseGroup);
+const applianceGroup=new THREE.Group();scene.add(applianceGroup);
 
-function resize(){
- const el=$('scene');
- const w=el.clientWidth,h=el.clientHeight;
- if(!w||!h)return;
- camera.aspect=w/h;camera.updateProjectionMatrix();
- renderer.setSize(w,h);
- labelRenderer.setSize(w,h);
-}
-addEventListener('resize',resize);
+/* ============================================================
+   4) COMPONENT MESH BUILDERS
+   ============================================================ */
+const M={
+  metal:new THREE.MeshStandardMaterial({color:0xb8c2cc,metalness:.7,roughness:.35}),
+  dark:new THREE.MeshStandardMaterial({color:0x2e343b,metalness:.5,roughness:.4}),
+  red:new THREE.MeshStandardMaterial({color:0xc0392b,metalness:.4,roughness:.4}),
+  black:new THREE.MeshStandardMaterial({color:0x111111,roughness:.6}),
+  frame:new THREE.MeshStandardMaterial({color:0xcfd6dd,metalness:.5,roughness:.35}),
+  glass:new THREE.MeshPhysicalMaterial({color:0xffffff,metalness:0,roughness:.05,transmission:.9,transparent:true,thickness:.1}),
+  screen:new THREE.MeshStandardMaterial({color:0x0d2a1a,emissive:0x0a3a1a,emissiveIntensity:.6}),
+};
+const cellMats=[
+  new THREE.MeshStandardMaterial({color:0x0f2a55,metalness:.25,roughness:.35}),
+  new THREE.MeshStandardMaterial({color:0x2d6cb8,metalness:.2,roughness:.4}),
+  new THREE.MeshStandardMaterial({color:0x0b1622,metalness:.3,roughness:.3}),
+];
 
-/* ---------- Build component meshes ---------- */
-const woodMat=new THREE.MeshStandardMaterial({color:0x8c4a2f,roughness:.9});
-const panelFrameMat=new THREE.MeshStandardMaterial({color:0xcfd6dd,metalness:.4,roughness:.4});
-const panelCellMats=[
- new THREE.MeshStandardMaterial({color:0x0f2a55,roughness:.35,metalness:.15}),
- new THREE.MeshStandardMaterial({color:0x2d6cb8,roughness:.4,metalness:.1}),
- new THREE.MeshStandardMaterial({color:0x0b1622,roughness:.3,metalness:.2})];
 function makePanel(t){
- const g=new THREE.Group();
- const frame=new THREE.Mesh(new THREE.BoxGeometry(.98,.06,.72),panelFrameMat);
- frame.castShadow=true;frame.receiveShadow=true;g.add(frame);
- const cell=new THREE.Mesh(new THREE.BoxGeometry(.92,.03,.66),panelCellMats[t]);
- cell.position.y=.045;cell.castShadow=true;g.add(cell);
- // grid lines via small bars
- const lineMat=new THREE.MeshStandardMaterial({color:0xffffff,transparent:true,opacity:.25});
- for(let i=0;i<5;i++){
-  const vx=(i-2)*.14;
-  const bar=new THREE.Mesh(new THREE.BoxGeometry(.015,.005,.66),lineMat);
-  bar.position.set(vx,.062,0);g.add(bar);
- }
- return g;
+  const g=new THREE.Group();
+  const frame=new THREE.Mesh(new THREE.BoxGeometry(1.05,.06,.75),M.frame);
+  frame.castShadow=true;frame.receiveShadow=true;g.add(frame);
+  const cell=new THREE.Mesh(new THREE.BoxGeometry(.98,.04,.68),cellMats[t]);
+  cell.position.y=.05;cell.castShadow=true;g.add(cell);
+  const glass=new THREE.Mesh(new THREE.BoxGeometry(.98,.01,.68),M.glass);
+  glass.position.y=.075;g.add(glass);
+  // grid lines
+  const lm=new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:.3});
+  for(let i=1;i<5;i++){
+    const x=(i-2.5)*.16;
+    const geo=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x,.08,-.34),new THREE.Vector3(x,.08,.34)]);
+    g.add(new THREE.Line(geo,lm));
+  }
+  const hy=new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:.3});
+  for(let i=1;i<3;i++){
+    const z=(i-1.5)*.22;
+    const geo=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-.49,.08,z),new THREE.Vector3(.49,.08,z)]);
+    g.add(new THREE.Line(geo,hy));
+  }
+  // label
+  const el=document.createElement('div');
+  el.style.cssText='font:700 10px sans-serif;color:#fff;background:rgba(20,40,70,.75);padding:1px 5px;border-radius:4px;white-space:nowrap';
+  el.textContent=`${MD[t].n} ${MD[t].P}W`;
+  const lbl=new CSS2DObject(el);lbl.position.set(0,.28,0);g.add(lbl);
+  return g;
 }
-function makeBox(w,h,d,color,metal=.2,rough=.5){
- const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshStandardMaterial({color,metalness:metal,roughness:rough}));
- m.castShadow=true;m.receiveShadow=true;return m;
-}
-function buildCompMesh(c){
- const g=new THREE.Group();
- const t=c.t;
- if(c.k=='mod'){
-  g.add(makePanel(t));
- }else if(c.k=='fuse'){
-  g.add(makeBox(.5,.12,.2,0xefe9d6,.1,.6));
-  const capL=makeBox(.1,.16,.22,0xd4b04a,.5,.3);capL.position.x=-.3;g.add(capL);
-  const capR=capL.clone();capR.position.x=.3;g.add(capR);
-  // fuse element
-  const el=new THREE.Mesh(new THREE.BoxGeometry(.4,.06,.06),new THREE.MeshStandardMaterial({color:0x666666,emissive:0x000000}));
-  el.position.y=.07;g.add(el);
- }else if(c.k=='sw'){
-  g.add(makeBox(.5,.36,.24,0x2e343b,.4,.4));
-  const handle=new THREE.Mesh(new THREE.BoxGeometry(.07,.28,.07),new THREE.MeshStandardMaterial({color:0xc0392b,metalness:.3,roughness:.4}));
-  handle.position.y=.05;g.add(handle);c._handle=handle;
- }else if(c.k=='spd'){
-  g.add(makeBox(.4,.36,.24,0x3d4a55,.3,.5));
-  const led=new THREE.Mesh(new THREE.SphereGeometry(.05),new THREE.MeshStandardMaterial({color:0x2ecc71,emissive:0x2ecc71,emissiveIntensity:1}));
-  led.position.set(0,.1,.13);g.add(led);c._led=led;
- }else if(c.k=='reg'){
-  g.add(makeBox(.6,.36,.26,0x3a4550,.4,.4));
-  const screen=new THREE.Mesh(new THREE.BoxGeometry(.32,.14,.02),new THREE.MeshStandardMaterial({color:0x0d2a1a,emissive:0x1b4a2a,emissiveIntensity:.5}));
-  screen.position.set(0,.06,.14);g.add(screen);
-  const textEl=document.createElement('div');
-  textEl.style.cssText='font:700 11px ui-monospace,monospace;color:#9dffb0;background:#0d2a1a;padding:1px 4px;border-radius:2px;white-space:nowrap';
-  textEl.textContent='';c._label=new CSS2DObject(textEl);
-  c._label.position.set(0,.06,.2);g.add(c._label);
- }else if(c.k=='jct'){
-  g.add(makeBox(.36,.12,.36,0xd08a3c,.5,.4));
- }else if(c.k=='bat'){
-  const col=t>1?0x33506e:0x22272e;
-  g.add(makeBox(.8,.36,.4,col,.2,.6));
-  // terminals
-  const red=new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,.08),new THREE.MeshStandardMaterial({color:0xc0392b}));
-  red.position.set(-.25,.22,0);g.add(red);
-  const blk=new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,.08),new THREE.MeshStandardMaterial({color:0x111111}));
-  blk.position.set(.25,.22,0);g.add(blk);
-  const socBg=new THREE.Mesh(new THREE.BoxGeometry(.6,.04,.04),new THREE.MeshStandardMaterial({color:0x111111}));
-  socBg.position.set(0,-.2,.18);g.add(socBg);
-  const socFill=new THREE.Mesh(new THREE.BoxGeometry(.6,.045,.045),new THREE.MeshStandardMaterial({color:0x2ecc71}));
-  socFill.position.set(-.3,-.2,.18);socFill.scale.x=0;g.add(socFill);c._socFill=socFill;
- }else if(c.k=='inv'){
-  g.add(makeBox(.8,.36,.4,0xe6ebf0,.3,.5));
-  const screen=new THREE.Mesh(new THREE.BoxGeometry(.3,.14,.02),new THREE.MeshStandardMaterial({color:0x0d2a1a,emissive:0x1b4a2a,emissiveIntensity:.5}));
-  screen.position.set(0,.06,.21);g.add(screen);
-  const textEl=document.createElement('div');
-  textEl.style.cssText='font:700 11px ui-monospace,monospace;color:#9dffb0;background:#0d2a1a;padding:1px 4px;border-radius:2px;white-space:nowrap';
-  textEl.textContent='';c._label=new CSS2DObject(textEl);
-  c._label.position.set(0,.06,.27);g.add(c._label);
- }else if(c.k=='brk'){
-  g.add(makeBox(.4,.4,.24,0xf1f3f5,.1,.5));
-  const lever=new THREE.Mesh(new THREE.BoxGeometry(.18,.12,.08),new THREE.MeshStandardMaterial({color:0xdddddd,metalness:.3}));
-  lever.position.set(0,.1,.15);g.add(lever);c._lever=lever;
- }else if(c.k=='house'){
-  // base
-  const base=makeBox(1.6,.8,1.2,0xc49a6c,.1,.8);base.position.y=.4;g.add(base);
-  // roof
-  const roof=new THREE.Mesh(new THREE.ConeGeometry(1.4,.6,4),new THREE.MeshStandardMaterial({color:0x8c4a2f,roughness:.9}));
-  roof.position.y=1.1;roof.rotation.y=Math.PI/4;roof.castShadow=true;g.add(roof);
-  // windows
-  const winMat=new THREE.MeshStandardMaterial({color:0xffd84a,emissive:0xffd84a,emissiveIntensity:0});
-  const w1=new THREE.Mesh(new THREE.BoxGeometry(.3,.3,.05),winMat);
-  w1.position.set(-.4,.5,.61);g.add(w1);c._win1=w1;
-  const w2=w1.clone();w2.position.x=.4;g.add(w2);c._win2=w2;
-  // door
-  const door=new THREE.Mesh(new THREE.BoxGeometry(.3,.45,.05),new THREE.MeshStandardMaterial({color:0x5a3a1a,roughness:.8}));
-  door.position.set(0,.22,.61);g.add(door);
- }
- // selection outline
- const outline=new THREE.Mesh(new THREE.BoxGeometry(1.05,1.05,1.05),new THREE.MeshBasicMaterial({color:0xF2A900,wireframe:true,transparent:true,opacity:0}));
- outline.visible=false;g.add(outline);c._outline=outline;
- return g;
-}
+function makeBox(w,h,d,mat){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.castShadow=true;m.receiveShadow=true;return m;}
 
-/* position a component in the 3D world based on its slot */
-function placeComp(c){
- const z=Z[c.k];
- let x,zpos;
- if(c.k=='house'){x=0;zpos=0;}
- else{
-  const col=c.slot%6, row=Math.floor(c.slot/6);
-  x=(col-2.5)*1.3;
-  const rows=['m','p','r','b','i','k'];
-  const ri=rows.indexOf(z);
-  zpos=ri!==-1?(ri-2.5)*1.3:0;
-  if(z=='m')zpos-=1.5;
- }
- if(!c._group){c._group=buildCompMesh(c);group.add(c._group);meshMap.set(c.id,c._group);}
- c.pos=new THREE.Vector3(x,c.k=='house'?.3:.35,zpos);
- c._group.position.copy(c.pos);
- if(c.k!='mod'&&c.k!='house')c._group.rotation.y=0;
- if(c.k=='house')c._group.rotation.y=Math.PI/4;
- return c.pos;
-}
-function termPos(key){
- const [id,t]=key.split('.'),c=C.find(x=>x.id==id);
- if(!c)return new THREE.Vector3();
- const off=TP[c.k]?.[t]||[0,0,0];
- const local=new THREE.Vector3(off[0],off[1],off[2]);
- if(c.k=='house'){
-  // house terminal is at top of house
-  local.set(0,.9,0);
- }
- return local.applyEuler(new THREE.Euler(0,c._group?.rotation.y||0,0)).add(c.pos);
-}
-function rebuildAll(){
- // clear groups
- while(group.children.length)group.remove(group.children[0]);
- while(wireGroup.children.length)wireGroup.remove(wireGroup.children[0]);
- while(tempGroup.children.length)tempGroup.remove(tempGroup.children[0]);
- meshMap.clear();wireMeshes.clear();tempMeshes.length=0;
- C.forEach(c=>{c._group=null;placeComp(c)});
- drawWires();
- drawTerminals();
-}
-function drawWires(){
- while(wireGroup.children.length)wireGroup.remove(wireGroup.children[0]);
- wireMeshes.clear();
- W.forEach(w=>{
-  const p=termPos(w.a),q=termPos(w.b);
-  const mid=p.clone().add(q).multiplyScalar(.5);
-  mid.y+=.4;
-  const curve=new THREE.QuadraticBezierCurve3(p,mid,q);
-  const pts=curve.getPoints(24);
-  const geo=new THREE.BufferGeometry().setFromPoints(pts);
-  const mat=new THREE.LineBasicMaterial({color:0xB4552D,linewidth:2});
-  const line=new THREE.Line(geo,mat);
-  line.userData={wireId:w.id,p,q};
-  wireGroup.add(line);wireMeshes.set(w.id,line);
- });
-}
-function drawTerminals(){
- while(tempGroup.children.length)tempGroup.remove(tempGroup.children[0]);
- tempMeshes.length=0;
- C.forEach(c=>{
-  Object.keys(TP[c.k]).forEach(t=>{
-   const key=c.id+'.'+t,p=termPos(key);
-   const isPend=pend==key;
-   const col=(TC[c.k]||{})[t]??0xE8EDF2;
-   const mat=new THREE.MeshStandardMaterial({color:isPend?0xF2A900:col,emissive:isPend?0xF2A900:0x000000,emissiveIntensity:isPend?.6:0});
-   const dot=new THREE.Mesh(new THREE.SphereGeometry(.07,12,12),mat);
-   dot.position.copy(p);
-   dot.userData={term:key};
-   tempGroup.add(dot);
-   // label
-   const lb=(TL[c.k]||{})[t];
-   if(lb){
+function buildMesh(c){
+  const g=new THREE.Group();
+  const t=c.t;
+  if(c.k==='mod'){ g.add(makePanel(t)); }
+  else if(c.k==='fuse'){
+    g.add(makeBox(.55,.16,.22,M.dark));
+    const cl=makeBox(.12,.20,.24,M.metal);cl.position.x=-.3;g.add(cl);
+    const cr=cl.clone();cr.position.x=.3;g.add(cr);
+    const el=makeBox(.42,.07,.07,new THREE.MeshStandardMaterial({color:0xd4b04a,metalness:.8,roughness:.2}));
+    el.position.y=.09;g.add(el);
+    label(g,'20A FUSE',0,.28);
+  }else if(c.k==='sw'){
+    g.add(makeBox(.55,.42,.28,M.dark));
+    const h=makeBox(.07,.30,.07,M.red);h.position.y=.05;g.add(h);c._handle=h;
+    label(g,'DC ISO',0,.34);
+  }else if(c.k==='spd'){
+    g.add(makeBox(.42,.42,.28,new THREE.MeshStandardMaterial({color:0x3d4a55,metalness:.4,roughness:.5})));
+    const led=new THREE.Mesh(new THREE.SphereGeometry(.05),new THREE.MeshStandardMaterial({color:0x2ecc71,emissive:0x2ecc71,emissiveIntensity:1.5}));
+    led.position.set(0,.12,.16);g.add(led);c._led=led;
+    label(g,'SPD 40kA',0,.32);
+  }else if(c.k==='reg'){
+    g.add(makeBox(.65,.42,.30,new THREE.MeshStandardMaterial({color:0x3a4550,metalness:.5,roughness:.4})));
+    const scr=makeBox(.36,.16,.02,M.screen);scr.position.set(0,.08,.16);g.add(scr);
+    // heat fins
+    for(let i=0;i<3;i++){
+      const fin=makeBox(.02,.30,.30,M.metal);
+      fin.position.x=-.28+i*.28;g.add(fin);
+    }
     const el=document.createElement('div');
-    el.style.cssText='font:700 10px sans-serif;color:#fff;background:rgba(0,0,0,.6);padding:0 3px;border-radius:3px';
-    el.textContent=lb;
-    const lbl=new CSS2DObject(el);
-    lbl.position.copy(p).add(new THREE.Vector3(0,.18,0));
-    tempGroup.add(lbl);
-   }
-   tempMeshes.push(dot);
+    el.style.cssText='font:700 11px ui-monospace,monospace;color:#9dffb0;background:#0d2a1a;padding:2px 6px;border-radius:3px;white-space:nowrap;border:1px solid #000';
+    el.textContent='—';
+    const lbl=new CSS2DObject(el);lbl.position.set(0,.08,.22);g.add(lbl);c._label=lbl;
+  }else if(c.k==='jct'){
+    g.add(makeBox(.42,.14,.42,new THREE.MeshStandardMaterial({color:0xd08a3c,metalness:.6,roughness:.4})));
+    const top=makeBox(.14,.42,.14,new THREE.MeshStandardMaterial({color:0xd08a3c,metalness:.6,roughness:.4}));
+    g.add(top);
+    label(g,'DC BUS',0,.32);
+  }else if(c.k==='bat'){
+    const isLi=t>1;
+    const col=isLi?0x33506e:0x22272e;
+    g.add(makeBox(.85,.42,.48,new THREE.MeshStandardMaterial({color:col,metalness:.3,roughness:.55})));
+    const red=makeBox(.08,.10,.08,M.red);red.position.set(-.28,.28,0);g.add(red);
+    const blk=makeBox(.08,.10,.08,M.black);blk.position.set(.28,.28,0);g.add(blk);
+    // terminals
+    const t1=new THREE.Mesh(new THREE.CylinderGeometry(.04,.04,.06),M.red);t1.position.set(-.28,.34,0);g.add(t1);
+    const t2=new THREE.Mesh(new THREE.CylinderGeometry(.04,.04,.06),M.black);t2.position.set(.28,.34,0);g.add(t2);
+    // soc bar
+    const bg=makeBox(.65,.06,.05,M.black);bg.position.set(0,-.24,.25);g.add(bg);
+    const fill=new THREE.Mesh(new THREE.BoxGeometry(.65,.07,.06),new THREE.MeshStandardMaterial({color:0x2ecc71,emissive:0x2ecc71,emissiveIntensity:.3}));
+    fill.position.set(-.325,-.24,.25);fill.scale.x=0;g.add(fill);c._socFill=fill;
+    label(g,isLi?'LiFePO4':'LEAD-ACID',0,.45);
+  }else if(c.k==='inv'){
+    g.add(makeBox(.85,.42,.42,new THREE.MeshStandardMaterial({color:0xe6ebf0,metalness:.4,roughness:.5})));
+    for(let i=0;i<3;i++){const fin=makeBox(.02,.32,.42,M.metal);fin.position.x=-.32+i*.32;g.add(fin);}
+    const scr=makeBox(.34,.16,.02,M.screen);scr.position.set(0,.08,.22);g.add(scr);
+    const el=document.createElement('div');
+    el.style.cssText='font:700 11px ui-monospace,monospace;color:#9dffb0;background:#0d2a1a;padding:2px 6px;border-radius:3px;white-space:nowrap;border:1px solid #000';
+    el.textContent='OFF';
+    const lbl=new CSS2DObject(el);lbl.position.set(0,.08,.28);g.add(lbl);c._label=lbl;
+    label(g,`INV ${IV[t]/1000}kW`,0,-.35);
+  }else if(c.k==='brk'){
+    g.add(makeBox(.42,.48,.28,new THREE.MeshStandardMaterial({color:0xf1f3f5,metalness:.2,roughness:.5})));
+    const lever=makeBox(.18,.14,.08,new THREE.MeshStandardMaterial({color:0xdddddd,metalness:.5}));
+    lever.position.set(0,.12,.18);g.add(lever);c._lever=lever;
+    label(g,'MCB 16A',0,.36);
+  }
+  // selection outline
+  const box=new THREE.Box3().setFromObject(g);
+  const size=box.getSize(new THREE.Vector3());
+  const outline=new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.BoxGeometry(size.x*1.15,size.y*1.15,size.z*1.15)),
+    new THREE.LineBasicMaterial({color:0xF2A900,linewidth:2})
+  );
+  outline.visible=false;g.add(outline);c._outline=outline;
+  return g;
+}
+function label(g,text,x,y){
+  const el=document.createElement('div');
+  el.style.cssText='font:700 9.5px sans-serif;color:#fff;background:rgba(20,40,70,.8);padding:1px 5px;border-radius:3px;white-space:nowrap';
+  el.textContent=text;
+  const lbl=new CSS2DObject(el);lbl.position.set(x,y,.28);g.add(lbl);
+}
+
+/* ============================================================
+   5) HOUSE (transparent walls) + ROOMS
+   ============================================================ */
+let houseMesh=null,numRooms=2;
+function buildHouse(rooms){
+  while(houseGroup.children.length)houseGroup.remove(houseGroup.children[0]);
+  const W=3.6+rooms*0.9, D=3.2, H=1.9;
+  // floor
+  const floor=new THREE.Mesh(
+    new THREE.BoxGeometry(W,.08,D),
+    new THREE.MeshStandardMaterial({color:0xc49a6c,roughness:.9})
+  );
+  floor.position.y=.04;floor.receiveShadow=true;houseGroup.add(floor);
+  // transparent glass walls
+  const glassMat=new THREE.MeshPhysicalMaterial({
+    color:0xa8cce0,metalness:0,roughness:.08,
+    transmission:.85,transparent:true,opacity:.35,thickness:.15,
+    side:THREE.DoubleSide
   });
- });
-}
-function updateSelectionVisual(){
- C.forEach(c=>{
-  if(c._outline)c._outline.visible=(sel==c.id);
- });
- if(sel&&sel.startsWith('w:')){
-  const id=sel.slice(2);
-  wireMeshes.forEach((line,wid)=>{
-   line.material.color.set(wid==id?0xF2A900:0xB4552D);
-   line.material.linewidth=wid==id?4:2;
-  });
- }else{
-  wireMeshes.forEach(line=>{line.material.color.set(0xB4552D);line.material.linewidth=2});
- }
- // highlight terminals
- tempMeshes.forEach(d=>{});
-}
-
-/* ---------- Simulation logic (unchanged) ---------- */
-function clr(){C=[];W=[];nid=1;sel=pend=null;Object.assign(S,{batDead:false,invOK:true,houseDead:false,bms:false,soc:.6,ovl:false});A.forEach(a=>{a.c=0;a.on=true;a.sc=false;a.s=8;a.e=18})}
-function mk(k,t=0){
- const z=Z[k];let sl=0;while(C.some(c=>Z[c.k]==z&&c.slot==sl))sl++;
- if(C.filter(c=>c.k==k).length>=MX[k]||sl>(z=='m'?11:5)){msg('No room for another component of this type.');return null}
- const c={id:'c'+nid++,k,t,slot:sl,open:false};
- C.push(c);
- if(k=='bat'){S.batDead=false;S.soc=.6;S.bms=false}if(k=='inv')S.invOK=true;if(k=='house')S.houseDead=false;
- placeComp(c);return c;
-}
-function del(id){
- const c=C.find(x=>x.id==id);if(!c)return;
- if(c._group)group.remove(c._group);
- C=C.filter(x=>x.id!=id);W=W.filter(w=>!w.a.startsWith(id+'.')&&!w.b.startsWith(id+'.'));
- if(c.k=='bat')S.batDead=false;if(c.k=='inv')S.invOK=true;if(c.k=='house')S.houseDead=false;
-}
-function preset(){
- clr();
- const m=[0,1,2,3].map(()=>mk('mod',0)),f=mk('fuse'),sw=mk('sw'),sp=mk('spd'),rg=mk('reg',2),j=mk('jct'),b=mk('bat',3),iv=mk('inv',2),bk=mk('brk'),h=mk('house');
- const L=(a,b)=>W.push({id:'w'+nid++,a,b}),i=c=>c.id+'.';
- L(i(m[0])+'p',i(m[1])+'m');L(i(m[2])+'p',i(m[3])+'m');L(i(m[0])+'m',i(m[2])+'m');L(i(m[1])+'p',i(m[3])+'p');
- L(i(m[1])+'p',i(f)+'a');L(i(f)+'b',i(sw)+'a');L(i(sw)+'b',i(rg)+'p');L(i(m[0])+'m',i(rg)+'n');L(i(sp)+'a',i(sw)+'b');
- L(i(rg)+'o',i(j)+'a');L(i(b)+'b',i(j)+'b');L(i(iv)+'d',i(j)+'c');L(i(iv)+'a',i(bk)+'a');L(i(bk)+'b',i(h)+'i');
- [3,1,1,1,0,0,0,0].forEach((v,n)=>A[n].c=v);Object.assign(A[0],{sc:true,s:18,e:0});Object.assign(A[2],{sc:true,s:19,e:23});
- msg('Ready-made 2S2P setup loaded. Press Start.');
- rebuildAll();
-}
-function topo(G,k){
- const id={},par=[],F=x=>{while(par[x]!=x){par[x]=par[par[x]];x=par[x]}return x},T=key=>{if(!(key in id)){id[key]=par.length;par.push(par.length)}return id[key]},N=key=>F(T(key)),U=(a,b)=>{par[F(T(a))]=F(T(b))};
- W.forEach(w=>U(w.a,w.b));
- C.forEach(c=>{const i=c.id+'.';if(c.k=='fuse'||((c.k=='sw'||c.k=='brk')&&!c.open))U(i+'a',i+'b');if(c.k=='jct'){U(i+'a',i+'b');U(i+'a',i+'c');U(i+'a',i+'d')}});
- const g=k=>C.find(c=>c.k==k),reg=g('reg'),bat=g('bat'),inv=g('inv'),house=g('house'),R={reg,bat,inv,house,N};
- R.edges=C.filter(c=>c.k=='mod').map(m=>{const d=MD[m.t];return{a:N(m.id+'.m'),b:N(m.id+'.p'),Vm:d.Vm*(1-.0035*k),Vo:G>30?d.Vo*(1-.0029*k):0,I:d.P/d.Vm*G/1000}});
- R.mn=new Set();R.edges.forEach(e=>{R.mn.add(e.a);R.mn.add(e.b)});
- if(reg){R.X=N(reg.id+'.p');R.Y=N(reg.id+'.n')}
- R.B=inv?N(inv.id+'.d'):reg?N(reg.id+'.o'):null;R.A=inv?N(inv.id+'.a'):null;
- R.regOn=!!reg&&R.B!==null&&N(reg.id+'.o')==R.B;R.batOn=!!bat&&R.B!==null&&N(bat.id+'.b')==R.B;R.hOn=!!house&&R.A!==null&&N(house.id+'.i')==R.A;
- R.spd=C.some(c=>c.k=='spd'&&[R.X,R.Y,R.B,R.A].includes(N(c.id+'.a')));R.fuse=C.some(c=>c.k=='fuse'&&[R.X,R.Y].includes(N(c.id+'.a')));
- R.batBad=!!bat&&R.mn.has(N(bat.id+'.b'));R.invBad=!!inv&&R.mn.has(N(inv.id+'.d'));
- R.houseBad=!!house&&(R.mn.has(N(house.id+'.i'))||(R.B!==null&&N(house.id+'.i')==R.B));
- return R;
-}
-function reduce(edges,X,Y,vk){
- let E=edges.map(e=>({a:e.a,b:e.b,V:e[vk],I:e.I})),ch=true,g=300;
- while(ch&&g--){ch=false;
-  for(let i=E.length-1;i>=0;i--)if(E[i].a==E[i].b){E.splice(i,1);ch=true}
-  for(let i=0;i<E.length&&!ch;i++)for(let j=i+1;j<E.length&&!ch;j++){const p=E[i],q=E[j];
-   if(p.a==q.a&&p.b==q.b){p.V=Math.min(p.V,q.V);p.I+=q.I;E.splice(j,1);ch=true}else if(p.a==q.b&&p.b==q.a)return{err:'short'}}
-  if(ch)continue;
-  const dg={};E.forEach(e=>{(dg[e.a]=dg[e.a]||[]).push(e);(dg[e.b]=dg[e.b]||[]).push(e)});
-  for(const n in dg){const nn=+n;if(nn==X||nn==Y||dg[n].length!=2)continue;const [p,q]=dg[n];let f,s;
-   if(p.b==nn&&q.a==nn){f=p;s=q}else if(q.b==nn&&p.a==nn){f=q;s=p}else return{err:'pol'};
-   E.splice(E.indexOf(f),1);E.splice(E.indexOf(s),1);E.push({a:f.a,b:s.b,V:f.V+s.V,I:Math.min(f.I,s.I)});ch=true;break}
- }
- const r=E.find(e=>e.a==Y&&e.b==X);
- if(r)return{V:r.V,I:r.I};
- return E.some(e=>e.a==X&&e.b==Y)?{err:'rev'}:{err:'none'};
-}
-function init(){
- S={t:6,day:1,run:false,tamb:+$('tamb').value,sp:1,cloud:.9,ct:.9,storm:0,srv:0,pv:0,blk:0,flt:0,ovl:false};
- clr();msg('Empty board. Try “Ready-made setup” to see a wired example.');$('go').textContent='Start';
- rebuildAll();step(0);renderSel();
-}
-function step(dt){
- const h=dt*.4*S.sp;S.t+=h;if(S.t>=24){S.t-=24;S.day++}
- if(S.storm>0){S.storm-=h;if(S.storm<=0){S.storm=0;S.ct=.7}}
- else{if(Math.random()<dt*.06)S.ct=Math.random()<.25?.2:.55+Math.random()*.45;
-  if(Math.random()<dt*.005){S.storm=2;S.ct=.08;
-   const R0=topo(0,25);
-   if(R0.spd)msg('⚡ Thunderstorm: the surge protector absorbed the strike.');else if(R0.inv&&S.invOK){S.invOK=false;msg('⚡ Lightning strike! With no connected surge protector the inverter burnt out.')}}}
- S.cloud+=(S.ct-S.cloud)*Math.min(1,dt*.8);
- const t=S.t,sun=t>6&&t<18?Math.pow(Math.sin(Math.PI*(t-6)/12),1.2):0,G=1000*sun*S.cloud,Tc=S.tamb+G/800*25,k=Tc-25;
- const R=topo(G,k),reg=R.reg;
- let Ppv=0,Vmp=0,Voc=0,Imp=0,perr='',low=false,flt=0,Pm=0;
- if(R.edges.length&&!reg)perr='noreg';
- if(reg){if(R.X==R.Y)perr='short';else{const a=reduce(R.edges,R.X,R.Y,'Vm'),b=reduce(R.edges,R.X,R.Y,'Vo');
-  if(a.err)perr=a.err;else{Vmp=a.V;Imp=a.I;Voc=b.V||0;Ppv=G>20?Vmp*Imp:0}}}
- if(R.batBad&&!S.batDead&&G>30){S.batDead=true;msg('💥 Battery wired straight to the panels with no charge controller: damaged.')}
- if(R.invBad&&S.invOK&&G>30){S.invOK=false;msg('💥 Panel voltage reached the inverter input: it burnt out.')}
- if(R.houseBad&&!S.houseDead){S.houseDead=true;msg('💥 DC reached the house: appliances burnt.')}
- if(!R.fuse&&Ppv>1200&&Math.random()<dt*.01){const m=C.filter(c=>c.k=='mod');if(m.length){del(m[m.length-1].id);sel=null;msg('🔥 With no fuse, a panel burnt out. Check the wiring and rebuild.')}}
- const bt=(R.batOn&&!S.batDead)?BT[R.bat.t]:null,soc=bt?S.soc:0,Vb=bt?bt.v0+(bt.v1-bt.v0)*soc:50;
- if(reg&&R.regOn&&!perr&&Voc>0){
-  if(reg.t==1){if(Voc>100)flt=1;else if(Vmp>Vb+2)Pm=Math.min(Imp,40)*Vb*.96;else low=true}
-  else{if(Voc>150)flt=1;else if(Vmp>Vb+4)Pm=Math.min(Ppv,3000,60*Vb)*.97;else low=true}
- }
- if(flt&&!S.flt)msg('⚠️ Voc = '+Math.round(Voc)+' V exceeds the controller limit: fault. Put fewer panels in series.');
- S.flt=flt;
- const inv=!!R.inv&&S.invOK&&R.B!==null,rated=inv?IV[R.inv.t]:0;
- if(bt&&S.bms&&soc>bt.res)S.bms=false;
- if(bt&&!S.bms&&soc<bt.cut){S.bms=true;msg('🔋 BMS cut the loads: battery empty.')}
- const hv=R.hOn&&!S.houseDead;let Pl=0;if(hv)A.forEach(a=>{if(act(a))Pl+=a.c*a.w});
- let pw=false,Ps=0,Pdc=0;
- if(inv){
-  pw=bt?!S.bms:(R.regOn&&Pm*.94>=30);
-  if(pw&&hv){
-   if(Pl>rated){if(!S.ovl){S.ovl=true;msg('⚡ Overload '+Pl+' W > '+rated+' W: protection tripped.');C.filter(c=>c.k=='brk').forEach(c=>c.open=true)}pw=false}
-   else{S.ovl=false;if(!bt&&Pl>Pm*.94-15)pw=false;else Ps=Pl}
-  }
-  if(pw)Pdc=Ps/.94+15;
- }
- let net=0;
- if(bt){if(soc>=.999)Pm=Math.min(Pm,Pdc);net=Pm-Pdc;S.soc=cl(S.soc+(net>0?net*bt.eff:net)*h/bt.cap,0,1)}else Pm=Math.min(Pm,Pdc);
- if(Pl>0&&Ps==0)S.blk+=h;S.srv+=Ps*h;S.pv+=Ppv*h;
- const live=new Set();if(Ppv>5){R.mn.forEach(n=>live.add(n))}
- if(R.B!==null&&(Pm>5||Pdc>5))live.add(R.B);if(R.A!==null&&Ps>0)live.add(R.A);
- S.P={G,Tc,Vmp,Voc,Ppv,Pm,Ps,Pdc,net,low,flt,pw,perr,bt,soc:S.soc,R,live,hv,inv};
-}
-function diag(P){
- const R=P.R;
- if(!R.inv)return 'Add an inverter and connect it to the battery (via a junction) to convert DC to AC.';
- if(!S.invOK)return 'The inverter is burnt out: delete it and add a new one.';
- if(!R.house)return 'Add the house.';
- if(S.houseDead)return 'The house appliances burnt: delete the house and add it again.';
- if(!R.hOn)return 'The house is not connected to the inverter AC output (or the breaker is open).';
- if(!R.batOn&&!R.regOn)return 'No source on the DC bus: connect a battery or a charge controller to the junction and the inverter.';
- if(P.bt&&S.bms)return 'The BMS cut the loads to protect the battery.';
- if(!P.pw)return P.hv&&!P.bt?'PV alone cannot carry the load: add a battery or switch appliances off.':'The house has no power right now.';
- let p='';
- if(P.perr=='noreg')p='panels are not connected to a charge controller';else if(P.perr=='rev')p='array polarity is reversed at the controller';
- else if(P.perr=='short')p='short circuit in the array';else if(P.perr=='pol')p='panels wired with mismatched polarity';
- else if(P.perr=='none'&&R.edges.length)p='panels not connected to the controller’s + and − inputs';
- else if(P.flt)p='overvoltage fault';else if(P.low)p='array voltage too low: add panels in series';
- else if(P.G<=20&&R.regOn)p='no sun right now';
- return '✔ Power available'+(p?' · '+p:'');
-}
-
-/* ---------- UI update ---------- */
-function update3D(){
- if(!S.P)return;
- const P=S.P;
- C.forEach(c=>{
-  if(c.k=='reg'&&c._label)c._label.element.textContent=P.flt?'FAULT':P.low?'LOW V':Math.round(P.Pm)+' W';
-  if(c.k=='inv'&&c._label)c._label.element.textContent=!S.invOK?'DEAD':P.pw?Math.round(P.Ps)+' W':'OFF';
-  if(c.k=='bat'&&c._socFill){c._socFill.scale.x=S.batDead?0:P.soc;c._socFill.position.x=-.3+.6*S.batDead?0:P.soc*.5;c._socFill.material.color.set(P.soc<.2?0xe74c3c:0x2ecc71)}
-  if(c.k=='sw'&&c._handle)c._handle.rotation.z=c.open?Math.PI/2:0;
-  if(c.k=='brk'&&c._lever)c._lever.position.y=c.open?.15:.1;
-  if(c.k=='spd'&&c._led)c._led.material.emissiveIntensity=1;
-  if(c.k=='house'){
-   const lit=P.pw&&P.hv;
-   if(c._win1)c._win1.material.emissiveIntensity=lit?1:0;
-   if(c._win2)c._win2.material.emissiveIntensity=lit?1:0;
-  }
- });
- // wire live colors
- wireMeshes.forEach((line,wid)=>{
-  const w=W.find(x=>x.id==wid);
-  if(!w)return;
-  const na=S.P.R.N(w.a);
-  const isLive=S.P.live.has(na);
-  line.material.color.set(isLive?0xF2A900:0xB4552D);
-  line.material.linewidth=isLive?3:2;
- });
- updateSelectionVisual();
-}
-function ui(){
- const P=S.P,t=S.t,hh=Math.floor(t),mm=Math.floor((t-hh)*60),R=P.R;
- $('day').textContent=S.day;$('clk').textContent=String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0');
- $('vG').textContent=Math.round(P.G);$('vTc').textContent=Math.round(P.Tc);$('vP').textContent=Math.round(P.Ppv);
- $('vV').textContent=P.G>20?Math.round(P.Vmp):0;$('vSoc').textContent=P.bt?Math.round(P.soc*100):'—';$('vL').textContent=Math.round(P.Ps);$('vTa').textContent=S.tamb;
- $('eng').textContent=`PV ${(S.pv/1000).toFixed(1)} kWh · Delivered to house ${(S.srv/1000).toFixed(1)} kWh · Outage ${S.blk.toFixed(1)} h`;
- document.querySelectorAll('[data-a=sp]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.v==S.sp));
- const lit=P.pw&&P.hv;fa=(fa+9)%360;
- A.forEach((a,i)=>{
-  const el=$('ac'+i);if(el)el.textContent=a.c;
-  const at=$('at'+i);if(at){at.textContent=a.on?'ON':'OFF';at.setAttribute('aria-pressed',a.on)}
-  const sc=$('sc'+i);if(sc)sc.textContent='Schedule: '+(a.sc?'on':'off');
-  const as=$('as'+i);if(as)as.textContent=(a.c>0&&a.on&&lit)?' ●':'';
- });
- update3D();
- $('diag').textContent=diag(P);
-}
-function renderSel(){
- const e=$('sel');
- if(sel&&sel.startsWith('w:')){e.innerHTML='<span>Wire selected</span><button data-a="delw">Delete wire</button>';return}
- const c=C.find(x=>x.id==sel);
- if(!c){e.innerHTML=pend?'<span>Tap the second terminal to finish the wire</span>':'<span>Nothing selected</span>';return}
- e.innerHTML=`<span>${nm(c)}</span><span>${(c.k=='sw'||c.k=='brk')?`<button data-a="tog">${c.open?'Close':'Open'}</button> `:''}<button data-a="del">Delete</button></span>`;
-}
-
-/* ---------- Events ---------- */
-document.addEventListener('click',e=>{
- const b=e.target.closest('[data-a]');
- if(b){const a=b.dataset.a,v=+b.dataset.v,i=+b.dataset.i;
-  switch(a){
-   case'go':S.run=!S.run;b.textContent=S.run?'Pause':'Start';return;
-   case'sp':S.sp=v;return;
-   case'add':{const c=mk(b.dataset.k,+b.dataset.t);if(c){sel=c.id;pend=null}break}
-   case'del':del(sel);sel=null;break;
-   case'delw':W=W.filter(w=>'w:'+w.id!=sel);sel=null;break;
-   case'tog':{const c=C.find(x=>x.id==sel);if(c){c.open=!c.open;S.ovl=false}break}
-   case'pre':preset();sel=null;break;
-   case'clr':clr();msg('Board cleared.');break;
-   case'ap':A[i].c=cl(A[i].c+v,0,6);break;
-   case'apt':A[i].on=!A[i].on;break;
-   case'sc':A[i].sc=!A[i].sc;break;
-   case'ss':A[i].s=(A[i].s+v+24)%24;break;
-   case'se':A[i].e=(A[i].e+v+24)%24;break;
-  }
-  rebuildAll();renderSel();step(0);update3D();return;
- }
-});
-// 3D click handling via raycaster
-renderer.domElement.addEventListener('pointerdown',e=>{
- const rect=renderer.domElement.getBoundingClientRect();
- const mouse=new THREE.Vector2(((e.clientX-rect.left)/rect.width)*2-1,-((e.clientY-rect.top)/rect.height)*2+1);
- const ray=new THREE.Raycaster();ray.setFromCamera(mouse,camera);
- // check terminals
- const hits=ray.intersectObjects(tempMeshes,false);
- if(hits.length){
-  const key=hits[0].object.userData.term;
-  if(pend&&pend!=key){
-   if(!W.some(w=>(w.a==pend&&w.b==key)||(w.a==key&&w.b==pend)))W.push({id:'w'+nid++,a:pend,b:key});
-   pend=null;sel=null;
-  }else pend=pend==key?null:key;
-  rebuildAll();renderSel();step(0);update3D();return;
- }
- // check components
- const compMeshes=[];
- meshMap.forEach((g,id)=>{g.traverse(o=>{if(o.isMesh){o.userData.compId=id;compMeshes.push(o)}})});
- const ch=ray.intersectObjects(compMeshes,false);
- if(ch.length){sel=ch[0].object.userData.compId;pend=null;renderSel();update3D();return}
- // check wires
- const wireLines=[...wireMeshes.values()];
- const wh=ray.intersectObjects(wireLines,false);
- if(wh.length){const wid=wh[0].object.userData.wireId;sel='w:'+wid;pend=null;renderSel();update3D();return}
- sel=null;pend=null;renderSel();update3D();
-});
-$('tamb').addEventListener('input',e=>{S.tamb=+e.target.value;step(0)});
-$('pal').innerHTML=PAL.map(p=>`<button data-a="add" data-k="${p[0]}" data-t="${p[1]}">${p[2]}</button>`).join('');
-$('apl').innerHTML=A.map((a,i)=>`<div class="r" style="flex-wrap:wrap"><span>${a.n} · ${a.w} W<i id="as${i}" style="color:var(--ok);font-style:normal"></i></span><div class="st"><button data-a="ap" data-i="${i}" data-v="-1" aria-label="fewer">−</button><b id="ac${i}">0</b><button data-a="ap" data-i="${i}" data-v="1" aria-label="more">+</button><button data-a="apt" data-i="${i}" id="at${i}">ON</button></div><div class="st" style="width:100%;justify-content:flex-end;flex-wrap:wrap"><button data-a="sc" data-i="${i}" id="sc${i}">Schedule: off</button><span id="sw${i}" class="st" hidden>from <button data-a="ss" data-i="${i}" data-v="-1" aria-label="earlier start">−</button><b id="s${i}" style="min-width:48px"></b><button data-a="ss" data-i="${i}" data-v="1" aria-label="later start">+</button> to <button data-a="se" data-i="${i}" data-v="-1" aria-label="earlier end">−</button><b id="e${i}" style="min-width:48px"></b><button data-a="se" data-i="${i}" data-v="1" aria-label="later end">+</button></span></div></div>`).join('');
-
-function loop(ts){
- const dt=Math.min(.1,(ts-last)/1000||0);last=ts;
- if(S.run)step(dt);
- ui();
- controls.update();
- renderer.render(scene,camera);
- labelRenderer.render(scene,camera);
- requestAnimationFrame(loop);
-}
-init();resize();requestAnimationFrame(loop);
-</script>
-</body>
- </html>
+  const edgeMat=new THREE.LineBasicMaterial({color:0x3c7898,linewidth:2});
+  // 4 walls (back, left, right transparent; front open)
+  const walls=[
+    {w:W,h:H,d:.05,x:0,y:H/2,z:-D/2,ry:0},
+    {w:.05,h:H,d:D,x:-W/2,y:H/2,z:0,ry:0},
+    {w:.05,h:H,d:D,x:W/2,y:H/2,z:0,ry:0},
+  ];
+  walls.forEach(wl=>{
+    const m=new THREE.Mesh(new THREE.BoxGeometry(wl.w,wl.h,wl.d),glassMat);
+    m.position.set(wl.x,wl.y,wl.z);houseGroup.add
