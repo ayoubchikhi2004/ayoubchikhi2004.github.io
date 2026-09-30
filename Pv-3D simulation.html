@@ -374,4 +374,211 @@ function topo(G,k){
  if(reg){R.X=N(reg.id+'.p');R.Y=N(reg.id+'.n')}
  R.B=inv?N(inv.id+'.d'):reg?N(reg.id+'.o'):null;R.A=inv?N(inv.id+'.a'):null;
  R.regOn=!!reg&&R.B!==null&&N(reg.id+'.o')==R.B;R.batOn=!!bat&&R.B!==null&&N(bat.id+'.b')==R.B;R.hOn=!!house&&R.A!==null&&N(house.id+'.i')==R.A;
- R.spd=C.some(c=>c.k=='spd'&&
+ R.spd=C.some(c=>c.k=='spd'&&[R.X,R.Y,R.B,R.A].includes(N(c.id+'.a')));R.fuse=C.some(c=>c.k=='fuse'&&[R.X,R.Y].includes(N(c.id+'.a')));
+ R.batBad=!!bat&&R.mn.has(N(bat.id+'.b'));R.invBad=!!inv&&R.mn.has(N(inv.id+'.d'));
+ R.houseBad=!!house&&(R.mn.has(N(house.id+'.i'))||(R.B!==null&&N(house.id+'.i')==R.B));
+ return R;
+}
+function reduce(edges,X,Y,vk){
+ let E=edges.map(e=>({a:e.a,b:e.b,V:e[vk],I:e.I})),ch=true,g=300;
+ while(ch&&g--){ch=false;
+  for(let i=E.length-1;i>=0;i--)if(E[i].a==E[i].b){E.splice(i,1);ch=true}
+  for(let i=0;i<E.length&&!ch;i++)for(let j=i+1;j<E.length&&!ch;j++){const p=E[i],q=E[j];
+   if(p.a==q.a&&p.b==q.b){p.V=Math.min(p.V,q.V);p.I+=q.I;E.splice(j,1);ch=true}else if(p.a==q.b&&p.b==q.a)return{err:'short'}}
+  if(ch)continue;
+  const dg={};E.forEach(e=>{(dg[e.a]=dg[e.a]||[]).push(e);(dg[e.b]=dg[e.b]||[]).push(e)});
+  for(const n in dg){const nn=+n;if(nn==X||nn==Y||dg[n].length!=2)continue;const [p,q]=dg[n];let f,s;
+   if(p.b==nn&&q.a==nn){f=p;s=q}else if(q.b==nn&&p.a==nn){f=q;s=p}else return{err:'pol'};
+   E.splice(E.indexOf(f),1);E.splice(E.indexOf(s),1);E.push({a:f.a,b:s.b,V:f.V+s.V,I:Math.min(f.I,s.I)});ch=true;break}
+ }
+ const r=E.find(e=>e.a==Y&&e.b==X);
+ if(r)return{V:r.V,I:r.I};
+ return E.some(e=>e.a==X&&e.b==Y)?{err:'rev'}:{err:'none'};
+}
+function init(){
+ S={t:6,day:1,run:false,tamb:+$('tamb').value,sp:1,cloud:.9,ct:.9,storm:0,srv:0,pv:0,blk:0,flt:0,ovl:false};
+ clr();msg('Empty board. Try “Ready-made setup” to see a wired example.');$('go').textContent='Start';
+ rebuildAll();step(0);renderSel();
+}
+function step(dt){
+ const h=dt*.4*S.sp;S.t+=h;if(S.t>=24){S.t-=24;S.day++}
+ if(S.storm>0){S.storm-=h;if(S.storm<=0){S.storm=0;S.ct=.7}}
+ else{if(Math.random()<dt*.06)S.ct=Math.random()<.25?.2:.55+Math.random()*.45;
+  if(Math.random()<dt*.005){S.storm=2;S.ct=.08;
+   const R0=topo(0,25);
+   if(R0.spd)msg('⚡ Thunderstorm: the surge protector absorbed the strike.');else if(R0.inv&&S.invOK){S.invOK=false;msg('⚡ Lightning strike! With no connected surge protector the inverter burnt out.')}}}
+ S.cloud+=(S.ct-S.cloud)*Math.min(1,dt*.8);
+ const t=S.t,sun=t>6&&t<18?Math.pow(Math.sin(Math.PI*(t-6)/12),1.2):0,G=1000*sun*S.cloud,Tc=S.tamb+G/800*25,k=Tc-25;
+ const R=topo(G,k),reg=R.reg;
+ let Ppv=0,Vmp=0,Voc=0,Imp=0,perr='',low=false,flt=0,Pm=0;
+ if(R.edges.length&&!reg)perr='noreg';
+ if(reg){if(R.X==R.Y)perr='short';else{const a=reduce(R.edges,R.X,R.Y,'Vm'),b=reduce(R.edges,R.X,R.Y,'Vo');
+  if(a.err)perr=a.err;else{Vmp=a.V;Imp=a.I;Voc=b.V||0;Ppv=G>20?Vmp*Imp:0}}}
+ if(R.batBad&&!S.batDead&&G>30){S.batDead=true;msg('💥 Battery wired straight to the panels with no charge controller: damaged.')}
+ if(R.invBad&&S.invOK&&G>30){S.invOK=false;msg('💥 Panel voltage reached the inverter input: it burnt out.')}
+ if(R.houseBad&&!S.houseDead){S.houseDead=true;msg('💥 DC reached the house: appliances burnt.')}
+ if(!R.fuse&&Ppv>1200&&Math.random()<dt*.01){const m=C.filter(c=>c.k=='mod');if(m.length){del(m[m.length-1].id);sel=null;msg('🔥 With no fuse, a panel burnt out. Check the wiring and rebuild.')}}
+ const bt=(R.batOn&&!S.batDead)?BT[R.bat.t]:null,soc=bt?S.soc:0,Vb=bt?bt.v0+(bt.v1-bt.v0)*soc:50;
+ if(reg&&R.regOn&&!perr&&Voc>0){
+  if(reg.t==1){if(Voc>100)flt=1;else if(Vmp>Vb+2)Pm=Math.min(Imp,40)*Vb*.96;else low=true}
+  else{if(Voc>150)flt=1;else if(Vmp>Vb+4)Pm=Math.min(Ppv,3000,60*Vb)*.97;else low=true}
+ }
+ if(flt&&!S.flt)msg('⚠️ Voc = '+Math.round(Voc)+' V exceeds the controller limit: fault. Put fewer panels in series.');
+ S.flt=flt;
+ const inv=!!R.inv&&S.invOK&&R.B!==null,rated=inv?IV[R.inv.t]:0;
+ if(bt&&S.bms&&soc>bt.res)S.bms=false;
+ if(bt&&!S.bms&&soc<bt.cut){S.bms=true;msg('🔋 BMS cut the loads: battery empty.')}
+ const hv=R.hOn&&!S.houseDead;let Pl=0;if(hv)A.forEach(a=>{if(act(a))Pl+=a.c*a.w});
+ let pw=false,Ps=0,Pdc=0;
+ if(inv){
+  pw=bt?!S.bms:(R.regOn&&Pm*.94>=30);
+  if(pw&&hv){
+   if(Pl>rated){if(!S.ovl){S.ovl=true;msg('⚡ Overload '+Pl+' W > '+rated+' W: protection tripped.');C.filter(c=>c.k=='brk').forEach(c=>c.open=true)}pw=false}
+   else{S.ovl=false;if(!bt&&Pl>Pm*.94-15)pw=false;else Ps=Pl}
+  }
+  if(pw)Pdc=Ps/.94+15;
+ }
+ let net=0;
+ if(bt){if(soc>=.999)Pm=Math.min(Pm,Pdc);net=Pm-Pdc;S.soc=cl(S.soc+(net>0?net*bt.eff:net)*h/bt.cap,0,1)}else Pm=Math.min(Pm,Pdc);
+ if(Pl>0&&Ps==0)S.blk+=h;S.srv+=Ps*h;S.pv+=Ppv*h;
+ const live=new Set();if(Ppv>5){R.mn.forEach(n=>live.add(n))}
+ if(R.B!==null&&(Pm>5||Pdc>5))live.add(R.B);if(R.A!==null&&Ps>0)live.add(R.A);
+ S.P={G,Tc,Vmp,Voc,Ppv,Pm,Ps,Pdc,net,low,flt,pw,perr,bt,soc:S.soc,R,live,hv,inv};
+}
+function diag(P){
+ const R=P.R;
+ if(!R.inv)return 'Add an inverter and connect it to the battery (via a junction) to convert DC to AC.';
+ if(!S.invOK)return 'The inverter is burnt out: delete it and add a new one.';
+ if(!R.house)return 'Add the house.';
+ if(S.houseDead)return 'The house appliances burnt: delete the house and add it again.';
+ if(!R.hOn)return 'The house is not connected to the inverter AC output (or the breaker is open).';
+ if(!R.batOn&&!R.regOn)return 'No source on the DC bus: connect a battery or a charge controller to the junction and the inverter.';
+ if(P.bt&&S.bms)return 'The BMS cut the loads to protect the battery.';
+ if(!P.pw)return P.hv&&!P.bt?'PV alone cannot carry the load: add a battery or switch appliances off.':'The house has no power right now.';
+ let p='';
+ if(P.perr=='noreg')p='panels are not connected to a charge controller';else if(P.perr=='rev')p='array polarity is reversed at the controller';
+ else if(P.perr=='short')p='short circuit in the array';else if(P.perr=='pol')p='panels wired with mismatched polarity';
+ else if(P.perr=='none'&&R.edges.length)p='panels not connected to the controller’s + and − inputs';
+ else if(P.flt)p='overvoltage fault';else if(P.low)p='array voltage too low: add panels in series';
+ else if(P.G<=20&&R.regOn)p='no sun right now';
+ return '✔ Power available'+(p?' · '+p:'');
+}
+
+/* ---------- UI update ---------- */
+function update3D(){
+ if(!S.P)return;
+ const P=S.P;
+ C.forEach(c=>{
+  if(c.k=='reg'&&c._label)c._label.element.textContent=P.flt?'FAULT':P.low?'LOW V':Math.round(P.Pm)+' W';
+  if(c.k=='inv'&&c._label)c._label.element.textContent=!S.invOK?'DEAD':P.pw?Math.round(P.Ps)+' W':'OFF';
+  if(c.k=='bat'&&c._socFill){c._socFill.scale.x=S.batDead?0:P.soc;c._socFill.position.x=-.3+.6*S.batDead?0:P.soc*.5;c._socFill.material.color.set(P.soc<.2?0xe74c3c:0x2ecc71)}
+  if(c.k=='sw'&&c._handle)c._handle.rotation.z=c.open?Math.PI/2:0;
+  if(c.k=='brk'&&c._lever)c._lever.position.y=c.open?.15:.1;
+  if(c.k=='spd'&&c._led)c._led.material.emissiveIntensity=1;
+  if(c.k=='house'){
+   const lit=P.pw&&P.hv;
+   if(c._win1)c._win1.material.emissiveIntensity=lit?1:0;
+   if(c._win2)c._win2.material.emissiveIntensity=lit?1:0;
+  }
+ });
+ // wire live colors
+ wireMeshes.forEach((line,wid)=>{
+  const w=W.find(x=>x.id==wid);
+  if(!w)return;
+  const na=S.P.R.N(w.a);
+  const isLive=S.P.live.has(na);
+  line.material.color.set(isLive?0xF2A900:0xB4552D);
+  line.material.linewidth=isLive?3:2;
+ });
+ updateSelectionVisual();
+}
+function ui(){
+ const P=S.P,t=S.t,hh=Math.floor(t),mm=Math.floor((t-hh)*60),R=P.R;
+ $('day').textContent=S.day;$('clk').textContent=String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0');
+ $('vG').textContent=Math.round(P.G);$('vTc').textContent=Math.round(P.Tc);$('vP').textContent=Math.round(P.Ppv);
+ $('vV').textContent=P.G>20?Math.round(P.Vmp):0;$('vSoc').textContent=P.bt?Math.round(P.soc*100):'—';$('vL').textContent=Math.round(P.Ps);$('vTa').textContent=S.tamb;
+ $('eng').textContent=`PV ${(S.pv/1000).toFixed(1)} kWh · Delivered to house ${(S.srv/1000).toFixed(1)} kWh · Outage ${S.blk.toFixed(1)} h`;
+ document.querySelectorAll('[data-a=sp]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.v==S.sp));
+ const lit=P.pw&&P.hv;fa=(fa+9)%360;
+ A.forEach((a,i)=>{
+  const el=$('ac'+i);if(el)el.textContent=a.c;
+  const at=$('at'+i);if(at){at.textContent=a.on?'ON':'OFF';at.setAttribute('aria-pressed',a.on)}
+  const sc=$('sc'+i);if(sc)sc.textContent='Schedule: '+(a.sc?'on':'off');
+  const as=$('as'+i);if(as)as.textContent=(a.c>0&&a.on&&lit)?' ●':'';
+ });
+ update3D();
+ $('diag').textContent=diag(P);
+}
+function renderSel(){
+ const e=$('sel');
+ if(sel&&sel.startsWith('w:')){e.innerHTML='<span>Wire selected</span><button data-a="delw">Delete wire</button>';return}
+ const c=C.find(x=>x.id==sel);
+ if(!c){e.innerHTML=pend?'<span>Tap the second terminal to finish the wire</span>':'<span>Nothing selected</span>';return}
+ e.innerHTML=`<span>${nm(c)}</span><span>${(c.k=='sw'||c.k=='brk')?`<button data-a="tog">${c.open?'Close':'Open'}</button> `:''}<button data-a="del">Delete</button></span>`;
+}
+
+/* ---------- Events ---------- */
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-a]');
+ if(b){const a=b.dataset.a,v=+b.dataset.v,i=+b.dataset.i;
+  switch(a){
+   case'go':S.run=!S.run;b.textContent=S.run?'Pause':'Start';return;
+   case'sp':S.sp=v;return;
+   case'add':{const c=mk(b.dataset.k,+b.dataset.t);if(c){sel=c.id;pend=null}break}
+   case'del':del(sel);sel=null;break;
+   case'delw':W=W.filter(w=>'w:'+w.id!=sel);sel=null;break;
+   case'tog':{const c=C.find(x=>x.id==sel);if(c){c.open=!c.open;S.ovl=false}break}
+   case'pre':preset();sel=null;break;
+   case'clr':clr();msg('Board cleared.');break;
+   case'ap':A[i].c=cl(A[i].c+v,0,6);break;
+   case'apt':A[i].on=!A[i].on;break;
+   case'sc':A[i].sc=!A[i].sc;break;
+   case'ss':A[i].s=(A[i].s+v+24)%24;break;
+   case'se':A[i].e=(A[i].e+v+24)%24;break;
+  }
+  rebuildAll();renderSel();step(0);update3D();return;
+ }
+});
+// 3D click handling via raycaster
+renderer.domElement.addEventListener('pointerdown',e=>{
+ const rect=renderer.domElement.getBoundingClientRect();
+ const mouse=new THREE.Vector2(((e.clientX-rect.left)/rect.width)*2-1,-((e.clientY-rect.top)/rect.height)*2+1);
+ const ray=new THREE.Raycaster();ray.setFromCamera(mouse,camera);
+ // check terminals
+ const hits=ray.intersectObjects(tempMeshes,false);
+ if(hits.length){
+  const key=hits[0].object.userData.term;
+  if(pend&&pend!=key){
+   if(!W.some(w=>(w.a==pend&&w.b==key)||(w.a==key&&w.b==pend)))W.push({id:'w'+nid++,a:pend,b:key});
+   pend=null;sel=null;
+  }else pend=pend==key?null:key;
+  rebuildAll();renderSel();step(0);update3D();return;
+ }
+ // check components
+ const compMeshes=[];
+ meshMap.forEach((g,id)=>{g.traverse(o=>{if(o.isMesh){o.userData.compId=id;compMeshes.push(o)}})});
+ const ch=ray.intersectObjects(compMeshes,false);
+ if(ch.length){sel=ch[0].object.userData.compId;pend=null;renderSel();update3D();return}
+ // check wires
+ const wireLines=[...wireMeshes.values()];
+ const wh=ray.intersectObjects(wireLines,false);
+ if(wh.length){const wid=wh[0].object.userData.wireId;sel='w:'+wid;pend=null;renderSel();update3D();return}
+ sel=null;pend=null;renderSel();update3D();
+});
+$('tamb').addEventListener('input',e=>{S.tamb=+e.target.value;step(0)});
+$('pal').innerHTML=PAL.map(p=>`<button data-a="add" data-k="${p[0]}" data-t="${p[1]}">${p[2]}</button>`).join('');
+$('apl').innerHTML=A.map((a,i)=>`<div class="r" style="flex-wrap:wrap"><span>${a.n} · ${a.w} W<i id="as${i}" style="color:var(--ok);font-style:normal"></i></span><div class="st"><button data-a="ap" data-i="${i}" data-v="-1" aria-label="fewer">−</button><b id="ac${i}">0</b><button data-a="ap" data-i="${i}" data-v="1" aria-label="more">+</button><button data-a="apt" data-i="${i}" id="at${i}">ON</button></div><div class="st" style="width:100%;justify-content:flex-end;flex-wrap:wrap"><button data-a="sc" data-i="${i}" id="sc${i}">Schedule: off</button><span id="sw${i}" class="st" hidden>from <button data-a="ss" data-i="${i}" data-v="-1" aria-label="earlier start">−</button><b id="s${i}" style="min-width:48px"></b><button data-a="ss" data-i="${i}" data-v="1" aria-label="later start">+</button> to <button data-a="se" data-i="${i}" data-v="-1" aria-label="earlier end">−</button><b id="e${i}" style="min-width:48px"></b><button data-a="se" data-i="${i}" data-v="1" aria-label="later end">+</button></span></div></div>`).join('');
+
+function loop(ts){
+ const dt=Math.min(.1,(ts-last)/1000||0);last=ts;
+ if(S.run)step(dt);
+ ui();
+ controls.update();
+ renderer.render(scene,camera);
+ labelRenderer.render(scene,camera);
+ requestAnimationFrame(loop);
+}
+init();resize();requestAnimationFrame(loop);
+</script>
+</body>
+ </html>
