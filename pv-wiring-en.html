@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PV Wiring Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#E8EEF2;--grid:#D3DCE3;--ink:#14263A;--mut:#54657A;--pan:#F7FAFC;--wall:#F1E8D6;--sun:#F2A900;--cu:#B4552D;--tl:#0F8B8D;--bad:#C0392B;--ok:#23804F;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E1822;--grid:#1B2A37;--ink:#DCE6EE;--mut:#8FA1B2;--pan:#15222E;--wall:#26323F;--sun:#FFC233;--cu:#E08A5E;--tl:#37C1C3;--bad:#FF6B5B;--ok:#5FCB8C}}
+:root[data-theme="dark"]{--bg:#0E1822;--grid:#1B2A37;--ink:#DCE6EE;--mut:#8FA1B2;--pan:#15222E;--wall:#26323F;--sun:#FFC233;--cu:#E08A5E;--tl:#37C1C3;--bad:#FF6B5B;--ok:#5FCB8C}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+,:before,*:after{box-sizing:inherit}
+body{margin:0;font:15px/1.5 "IBM Plex Sans",system-ui,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:linear-gradient(var(--grid) 1px,transparent 1px) 0 0/24px 24px,linear-gradient(90deg,var(--grid) 1px,transparent 1px) 0 0/24px 24px,var(--bg)}
+main{max-width:520px;margin:0 auto;padding:12px 10px 28px}
+h1{font-size:20px;margin:4px 4px 2px}h2{font-size:15px;margin:16px 4px 6px}
+.hint{color:var(--mut);font-size:13px;margin:0 4px 10px}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 12px;background:var(--pan);border:1.5px solid var(--ink);border-radius:6px}
+button{font:inherit;color:var(--ink);background:var(--pan);border:1.5px solid var(--ink);border-radius:6px;min-height:40px;padding:0 8px;cursor:pointer}
+button[aria-pressed=true]{background:var(--ink);color:var(--pan)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+#go{background:var(--sun);color:#14263A;font-weight:700;border-color:#14263A;min-width:84px}
+#alert,#diag,#sel{margin:8px 0;padding:6px 12px;border-left:5px solid var(--sun);background:var(--pan);font-size:14px;min-height:34px}
+#diag{border-color:var(--tl);font-weight:600}#sel{border-color:var(--mut);display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+svg{width:100%;height:auto;display:block;background:var(--pan);border:1.5px solid var(--ink);border-radius:6px;touch-action:manipulation}
+svg text{fill:var(--ink);font-size:10px;font-family:inherit;pointer-events:none}
+.c{fill:var(--wall);stroke:var(--ink);stroke-width:1.5}
+.tm{stroke:var(--ink);stroke-width:1.5}.tm.pd{stroke:var(--sun);stroke-width:4}
+.wr{fill:none;stroke:var(--cu);stroke-width:2.5}.wr.sl{stroke:var(--sun);stroke-width:4}
+.wr.live{stroke-dasharray:6 6;animation:f 1s linear infinite}
+@keyframes f{to{stroke-dashoffset:-12}}
+@media(prefers-reduced-motion:reduce){.wr.live{animation:none}}
+.h{font-weight:700}.bad{fill:var(--bad)!important}.ok{fill:var(--ok)!important}
+.wt{fill:#fff!important;stroke:rgba(0,0,0,.65);stroke-width:2.2;paint-order:stroke;font-size:8.5px;font-weight:700}
+.w2{fill:#fff!important;font-size:6.5px;font-weight:700}
+.k6{fill:#1b2733!important;font-size:7px;font-weight:700}
+.lcd{fill:#9dffb0!important;font-family:ui-monospace,Menlo,monospace;font-size:8.5px;font-weight:700}
+.ap .led{fill:#5b6773}.ap.on .led{fill:#2ecc71}
+.ap .scr{fill:#2b3b4a}.ap.on .scr{fill:#5ec8ff}
+.ap .gl,.ap .airw{opacity:0}.ap.on .gl{opacity:.6}.ap.on .airw{opacity:1}
+.ap.dim{opacity:.45}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0}
+.stats div{background:var(--pan);border:1.5px solid var(--ink);border-radius:6px;padding:6px 8px;text-align:center}
+.stats b{display:block;font-size:17px;font-variant-numeric:tabular-nums}.stats small{color:var(--mut);font-size:12px}
+.pal{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.pal button{font-size:12.5px;min-height:46px;line-height:1.25}
+.r{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 4px;border-bottom:1px dashed var(--mut);font-size:14px}
+.r>span{flex:1}.st{display:flex;align-items:center;gap:5px}.st b{min-width:20px;text-align:center}
+.info{font-size:12.5px;color:var(--mut);margin:4px}
+.top{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:10px 0}
+</style>
+</head>
+<body>
+<main>
+<h1>PV Wiring Lab</h1>
+<p class="hint">Add a component below, then tap one terminal (dot) and another to wire them. Tap a wire or a component to select or delete it. Switch appliances on and they appear in the house.</p>
+<div class="bar"><span>Day <b id="day">1</b></span><b id="clk">06:00</b><button id="go" data-a="go">Start</button></div>
+<div id="alert">Empty board. Try “Ready-made setup” to see a wired example.</div>
+<svg id="bd" viewBox="0 0 360 540" role="img" aria-label="PV wiring board with house"></svg>
+<div id="sel"><span>Nothing selected</span></div>
+<div id="diag"></div>
+<div class="stats">
+<div><b id="vG">0</b><small>Irradiance W/m²</small></div>
+<div><b id="vTc">0</b><small>Cell temp °C</small></div>
+<div><b id="vP">0</b><small>PV power W</small></div>
+<div><b id="vV">0</b><small>Array Vmp V</small></div>
+<div><b id="vSoc">—</b><small>Battery %</small></div>
+<div><b id="vL">0</b><small>House load W</small></div>
+</div>
+<p class="info" id="eng"></p>
+<div class="top"><button data-a="pre">Ready-made setup</button><button data-a="clr">Empty board</button></div>
+
+<h2>Components</h2>
+<div class="pal" id="pal"></div>
+<h2>House appliances</h2>
+<div id="apl"></div>
+<h2>Weather and speed</h2>
+<div class="r"><span>Ambient temp <b id="vTa">20</b> °C</span><input type="range" id="tamb" min="0" max="40" value="20" aria-label="Ambient temperature"></div>
+<div class="top" style="grid-template-columns:repeat(3,1fr)"><button data-a="sp" data-v="1">1×</button><button data-a="sp" data-v="2">2×</button><button data-a="sp" data-v="4">4×</button></div>
+</main>
+<script>
+const $=i=>document.getElementById(i),cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+const MD=[{n:'Mono',P:320,Vm:33.6,Vo:40.8},{n:'Poly',P:250,Vm:30,Vo:37.2},{n:'Thin',P:175,Vm:39,Vo:51}];
+const BT=[0,{n:'Lead-acid',cap:9600,cut:.5,res:.6,eff:.8,v0:46,v1:52},{n:'LiFePO4',cap:4800,cut:.1,res:.25,eff:.96,v0:44,v1:54},{n:'LiFePO4',cap:9600,cut:.1,res:.25,eff:.96,v0:44,v1:54}];
+const IV=[0,1000,3000,5000];
+const A=[{n:'Lamp',w:10},{n:'Refrigerator',w:150},{n:'TV',w:100},{n:'Fan',w:60},{n:'Computer',w:80},{n:'Water pump',w:750},{n:'Washing machine',w:500},{n:'Air conditioner',w:1200}];
+const ICON=[
+'<circle class="gl" cx="18" cy="14" r="17" fill="#ffd84a"/><path d="M18 3a9 9 0 0 0-5 16.5V23h10v-3.5A9 9 0 0 0 18 3z" fill="#ffe27a" stroke="#7a6a20" stroke-width="1.3"/><rect x="13" y="23" width="10" height="7" rx="1" fill="#8a8f98" stroke="#444"/><path d="M14 33h8" stroke="#444" stroke-width="2"/>',
+'<rect x="8" y="1" width="20" height="34" rx="2" fill="#dfe8f0" stroke="#4a5b6c" stroke-width="1.4"/><path d="M8 13h20" stroke="#4a5b6c"/><rect x="23" y="5" width="2" height="5" fill="#4a5b6c"/><rect x="23" y="16" width="2" height="9" fill="#4a5b6c"/><circle class="led" cx="12" cy="7" r="1.8"/>',
+'<rect x="1" y="5" width="34" height="22" rx="2" fill="#1c2733" stroke="#4a5b6c" stroke-width="1.4"/><rect class="scr" x="3" y="7" width="30" height="18"/><path d="M11 32h14M18 27v5" stroke="#4a5b6c" stroke-width="2.5"/>',
+'<g id="bl3"><ellipse cx="18" cy="8" rx="4.5" ry="7.5" fill="#8fb3d4" stroke="#3a5a7a"/><ellipse cx="18" cy="8" rx="4.5" ry="7.5" fill="#8fb3d4" stroke="#3a5a7a" transform="rotate(120 18 16)"/><ellipse cx="18" cy="8" rx="4.5" ry="7.5" fill="#8fb3d4" stroke="#3a5a7a" transform="rotate(240 18 16)"/></g><circle cx="18" cy="16" r="3.2" fill="#3a4a5a"/><path d="M18 19v11M10 33h16" stroke="#3a4a5a" stroke-width="2.5"/>',
+'<rect x="7" y="4" width="22" height="16" rx="1.5" fill="#1c2733" stroke="#4a5b6c" stroke-width="1.3"/><rect class="scr" x="9" y="6" width="18" height="12"/><path d="M2 25h32l-3 5H5z" fill="#9aa8b6" stroke="#4a5b6c"/>',
+'<rect x="2" y="15" width="17" height="13" rx="2" fill="#3b7bbf" stroke="#1d3f66" stroke-width="1.3"/><circle cx="26" cy="22" r="8" fill="#6aa3d8" stroke="#1d3f66" stroke-width="1.3"/><path d="M26 14v-6h6M2 22H0M34 22h2" stroke="#1d3f66" stroke-width="2.5" fill="none"/><circle class="led" cx="7" cy="19" r="1.8"/>',
+'<rect x="5" y="2" width="26" height="32" rx="2" fill="#e9eef3" stroke="#4a5b6c" stroke-width="1.4"/><circle cx="18" cy="21" r="9" fill="#5b7f9e" stroke="#3a4a5a" stroke-width="1.5"/><g id="bl6"><path d="M11 21h14M18 14v14" stroke="#cfe6f7" stroke-width="1.6"/></g><rect x="14" y="5" width="13" height="4" fill="#c5ced8"/><circle class="led" cx="9" cy="7" r="1.8"/>',
+'<rect x="1" y="4" width="34" height="14" rx="3" fill="#f1f4f7" stroke="#4a5b6c" stroke-width="1.4"/><path d="M5 14h26" stroke="#9aa8b6" stroke-width="2"/><circle class="led" cx="30" cy="8" r="1.6"/><path class="airw" d="M8 22q3 5 0 10M18 22q3 5 0 10M28 22q3 5 0 10" stroke="#5ab4e6" stroke-width="2" fill="none"/>'];
+const PAL=[['mod',0,'Solar panel Mono 320 W'],['mod',1,'Solar panel Poly 250 W'],['mod',2,'Solar panel Thin-film 175 W'],['fuse',0,'Fuse'],['sw',0,'DC isolator'],['spd',0,'Surge protector (SPD)'],['reg',1,'PWM charge controller'],['reg',2,'MPPT charge controller'],['jct',0,'Junction (DC bus)'],['bat',1,'Lead-acid battery 9.6 kWh'],['bat',2,'LiFePO4 battery 4.8 kWh'],['bat',3,'LiFePO4 battery 9.6 kWh'],['inv',1,'Inverter 1 kW'],['inv',2,'Inverter 3 kW'],['inv',3,'Inverter 5 kW'],['brk',0,'AC breaker'],['house',0,'House']];
+const Z={mod:'m',fuse:'p',sw:'p',spd:'p',reg:'r',jct:'b',bat:'b',inv:'i',brk:'k',house:'h'},ZY={p:104,r:156,b:208,i:260,k:312},MX={mod:12,fuse:3,sw:3,spd:3,reg:1,jct:3,bat:1,inv:1,brk:2,house:1};
+const TP={mod:{m:[14,36],p:[40,36]},fuse:{a:[27,0],b:[27,36]},sw:{a:[27,0],b:[27,36]},brk:{a:[27,0],b:[27,36]},spd:{a:[27,0]},reg:{p:[14,0],n:[40,0],o:[27,36]},bat:{b:[27,0]},jct:{a:[0,18],b:[54,18],c:[27,0],d:[27,36]},inv:{d:[27,0],a:[27,36]},house:{i:[170,0]}};
+const TL={mod:{m:'−',p:'+'},reg:{p:'+',n:'−'}},TC={mod:{p:'#c0392b',m:'#222'},reg:{p:'#c0392b',n:'#222'}};
+let C=[],W=[],nid=1,sel=null,pend=null,S,last=0,fa=0;
+const msg=m=>$('alert').textContent=m;
+const act=a=>a.on&&(!a.sc||(a.s<a.e?S.t>=a.s&&S.t<a.e:S.t>=a.s||S.t<a.e));
+const hm=h=>String(h).padStart(2,'0')+':00';
+function nm(c){
+ if(c.k=='mod')return Solar panel ${MD[c.t].n} ${MD[c.t].P} W · Vmp ${MD[c.t].Vm} V · Voc ${MD[c.t].Vo} V;
+ if(c.k=='bat')return ${BT[c.t].n} battery ${BT[c.t].cap/1000} kWh;
+ if(c.k=='inv')return Inverter ${IV[c.t]/1000} kW;
+ if(c.k=='reg')return ['','PWM','MPPT'][c.t]+' charge controller';
+ return {fuse:'Fuse',sw:'DC isolator',spd:'Surge protector (SPD)',jct:'DC bus junction',brk:'AC breaker',house:'House'}[c.k];
+}
+function art(c){
+ const t=c.t,id=c.id,cu='stroke="#b87333" stroke-width="3"';let s='';
+ if(c.k=='mod'){
+  const col=['#0f2a55','#2d6cb8','#0b1622'][t],vx=t==2?[16,30,44]:[11,20,29,38,47],hy=t==2?[]:[10,18,26];
+  s=<rect width="54" height="36" rx="2" fill="#cfd6dd" stroke="#5b6773"/><rect x="2" y="2" width="50" height="32" fill="${col}"/><g stroke="rgba(255,255,255,.38)" stroke-width=".8">${vx.map(x=><path d="M${x} 2V34"/>).join('')}${hy.map(y=><path d="M2 ${y}H52"/>).join('')}</g><text x="27" y="15" text-anchor="middle" class="wt">${MD[t].n}</text><text x="27" y="27" text-anchor="middle" class="wt">${MD[t].P} W</text>;
+ }else if(c.k=='fuse'){
+  s=<path d="M27 0V13M27 23V36" ${cu}/><rect x="6" y="13" width="6" height="10" rx="1" fill="#d4b04a" stroke="#7a6320"/><rect x="42" y="13" width="6" height="10" rx="1" fill="#d4b04a" stroke="#7a6320"/><rect x="12" y="14" width="30" height="8" fill="#efe9d6" stroke="#8a8266"/><path d="M14 18h3l2-3 3 6 3-6 3 6 2-3h4" stroke="#666" fill="none"/><text x="27" y="10" text-anchor="middle" class="k6">FUSE</text>;
+ }else if(c.k=='sw'){
+  s=<path d="M27 0V3M27 33V36" ${cu}/><rect x="10" y="2" width="34" height="32" rx="3" fill="#2e343b" stroke="#111"/><circle cx="27" cy="16" r="10" fill="#f2c200" stroke="#7a6100"/><g id="hd${id}"><rect x="24" y="7" width="6" height="18" rx="2" fill="#c0392b" stroke="#600"/></g><text x="27" y="31" text-anchor="middle" class="w2">DC ISO</text>;
+ }else if(c.k=='spd'){
+  s=<path d="M27 0V2" ${cu}/><rect x="13" y="2" width="28" height="32" rx="2" fill="#3d4a55" stroke="#111"/><rect x="17" y="6" width="20" height="9" fill="#111"/><circle cx="27" cy="10.5" r="3" fill="#2ecc71"/><text x="27" y="26" text-anchor="middle" class="w2">SPD</text>;
+ }else if(c.k=='reg'){
+  s=<path d="M14 0V4M40 0V4M27 32V36" ${cu}/><rect x="2" y="4" width="50" height="28" rx="3" fill="#3a4550" stroke="#111"/><path d="M5 8v20M8 8v20M11 8v20M43 8v20M46 8v20M49 8v20" stroke="#7b8896" stroke-width="1.2"/><rect x="15" y="9" width="24" height="11" fill="#0d2a1a" stroke="#000"/><text id="v${id}" x="27" y="18" text-anchor="middle" class="lcd"></text><text x="27" y="28" text-anchor="middle" class="w2">${['','PWM','MPPT'][t]}</text>;
+ }else if(c.k=='jct'){
+  s=<rect x="0" y="13" width="54" height="10" rx="2" fill="#d08a3c" stroke="#7a4a14"/><rect x="22" y="0" width="10" height="36" rx="2" fill="#d08a3c" stroke="#7a4a14"/><circle cx="8" cy="18" r="2.2" fill="#8a5a20"/><circle cx="46" cy="18" r="2.2" fill="#8a5a20"/><text x="27" y="20.5" text-anchor="middle" class="w2" style="font-size:5.5px">BUS</text>;
+ }else if(c.k=='bat'){
+  const li=t>1;
+  s=<path d="M27 0V8" ${cu}/><rect x="3" y="8" width="48" height="27" rx="2" fill="${li?'#33506e':'#22272e'}" stroke="#000"/><rect x="11" y="4" width="9" height="5" fill="#c0392b"/><rect x="34" y="4" width="9" height="5" fill="#111"/><text x="27" y="18" text-anchor="middle" class="w2">${li?'LiFePO4':'LEAD-ACID'}</text><text id="v${id}" x="27" y="26" text-anchor="middle" class="w2" style="font-size:7.5px"></text><rect x="8" y="29" width="38" height="4" fill="#111"/><rect id="sf${id}" x="8" y="29" width="0" height="4" fill="#2ecc71"/>;
+ }else if(c.k=='inv'){
+  s=<path d="M27 0V4M27 32V36" ${cu}/><rect x="2" y="4" width="50" height="28" rx="3" fill="#e6ebf0" stroke="#5b6773"/><path d="M5 8v20M8 8v20M46 8v20M49 8v20" stroke="#aab5c0" stroke-width="1.2"/><rect x="13" y="8" width="28" height="11" fill="#0d2a1a" stroke="#000"/><text id="v${id}" x="27" y="17" text-anchor="middle" class="lcd"></text><text x="27" y="28" text-anchor="middle" class="k6">INV ${IV[t]/1000} kW</text>;
+ }else if(c.k=='brk'){
+  s=<path d="M27 0V2M27 34V36" ${cu}/><rect x="14" y="2" width="26" height="32" rx="2" fill="#f1f3f5" stroke="#5b6773"/><rect x="19" y="6" width="16" height="17" fill="#222"/><rect id="lv${id}" x="22" y="8" width="10" height="6" rx="1" fill="#ddd"/><text x="27" y="30" text-anchor="middle" class="k6">MCB</text>;
+ }
+ return s;
+}
+function houseSvg(c){
+ const x=c.x,y=c.y;
+ let s=<g data-c="${c.id}"><polygon points="${x-6},${y+40} ${x+170},${y} ${x+346},${y+40}" fill="#8c4a2f" stroke="${sel==c.id?'var(--sun)':'var(--ink)'}" stroke-width="${sel==c.id?3.5:1.5}"/><rect class="c" x="${x+10}" y="${y+40}" width="320" height="132"/>;
+ [22,274].forEach((dx,n)=>{s+=<rect id="hw${n+1}" x="${x+dx}" y="${y+50}" width="44" height="22" stroke="var(--ink)" fill="var(--grid)"/><path d="M${x+dx+22} ${y+50}v22M${x+dx} ${y+61}h44" stroke="var(--ink)"/>});
+ s+=<rect id="rg" x="${x+10}" y="${y+40}" width="320" height="132" fill="#ffd84a" opacity="0"/><path d="M${x+10} ${y+168}H${x+330}" stroke="#8a6a3a" stroke-width="4"/><text id="hs" x="${x+170}" y="${y+64}" text-anchor="middle" class="h" style="font-size:11px"></text>;
+ A.forEach((a,i)=>{const ax=x+38+(i%4)*76,ay=y+74+Math.floor(i/4)*44;
+  s+=<g id="ap${i}" class="ap dim" transform="translate(${ax} ${ay})" style="display:none">${ICON[i]}<text id="ak${i}" x="18" y="44" text-anchor="middle" class="k6" style="font-size:8px"></text></g>});
+ return s+'</g>';
+}
+function clr(){C=[];W=[];nid=1;sel=pend=null;Object.assign(S,{batDead:false,invOK:true,houseDead:false,bms:false,soc:.6,ovl:false});A.forEach(a=>{a.c=0;a.on=true;a.sc=false;a.s=8;a.e=18})}
+function mk(k,t=0){
+ const z=Z[k];let sl=0;while(C.some(c=>Z[c.k]==z&&c.slot==sl))sl++;
+ if(C.filter(c=>c.k==k).length>=MX[k]||sl>(z=='m'?11:5)){msg('No room for another component of this type.');return null}
+ const c={id:'c'+nid++,k,t,slot:sl,open:false};
+ c.x=k=='house'?10:6+(sl%6)*58;c.y=k=='house'?358:z=='m'?(sl<6?8:52):ZY[z];
+ C.push(c);
+ if(k=='bat'){S.batDead=false;S.soc=.6;S.bms=false}if(k=='inv')S.invOK=true;if(k=='house')S.houseDead=false;
+ return c;
+}
+function del(id){
+ const c=C.find(x=>x.id==id);if(!c)return;
+ C=C.filter(x=>x.id!=id);W=W.filter(w=>!w.a.startsWith(id+'.')&&!w.b.startsWith(id+'.'));
+ if(c.k=='bat')S.batDead=false;if(c.k=='inv')S.invOK=true;if(c.k=='house')S.houseDead=false;
+}
+function preset(){
+ clr();const m=[0,1,2,3].map(()=>mk('mod',0)),f=mk('fuse'),sw=mk('sw'),sp=mk('spd'),rg=mk('reg',2),j=mk('jct'),b=mk('bat',3),iv=mk('inv',2),bk=mk('brk'),h=mk('house');
+ const L=(a,b)=>W.push({id:'w'+nid++,a,b}),i=c=>c.id+'.';
+ L(i(m[0])+'p',i(m[1])+'m');L(i(m[2])+'p',i(m[3])+'m');L(i(m[0])+'m',i(m[2])+'m');L(i(m[1])+'p',i(m[3])+'p');
+ L(i(m[1])+'p',i(f)+'a');L(i(f)+'b',i(sw)+'a');L(i(sw)+'b',i(rg)+'p');L(i(m[0])+'m',i(rg)+'n');L(i(sp)+'a',i(sw)+'b');
+ L(i(rg)+'o',i(j)+'a');L(i(b)+'b',i(j)+'b');L(i(iv)+'d',i(j)+'c');L(i(iv)+'a',i(bk)+'a');L(i(bk)+'b',i(h)+'i');
+ [3,1,1,1,0,0,0,0].forEach((v,n)=>A[n].c=v);Object.assign(A[0],{sc:true,s:18,e:0});Object.assign(A[2],{sc:true,s:19,e:23});
+ msg('Ready-made 2S2P setup loaded. Press Start.');
+}
+function tpos(key){const [id,t]=key.split('.'),c=C.find(x=>x.id==id),p=TP[c.k][t];return[c.x+p[0],c.y+p[1]]}
+function render(){
+ let s='';
+ C.forEach(c=>{
+  if(c.k=='house')s+=houseSvg(c);
+  else s+=<g data-c="${c.id}" transform="translate(${c.x} ${c.y})">${art(c)}<rect width="54" height="36" rx="3" fill="transparent" ${sel==c.id?'stroke="var(--sun)" stroke-width="3.5"':''}/></g>;
+ });
+ W.forEach(w=>{const p=tpos(w.a),q=tpos(w.b),d=M${p[0]} ${p[1]}C${p[0]} ${p[1]+34} ${q[0]} ${q[1]-34} ${q[0]} ${q[1]};
+  s+=<path id="${w.id}" class="wr${sel=='w:'+w.id?' sl':''}" d="${d}"/><path data-w="${w.id}" d="${d}" fill="none" stroke="transparent" stroke-width="16"/>});
+ C.forEach(c=>Object.keys(TP[c.k]).forEach(t=>{const key=c.id+'.'+t,p=tpos(key),lb=(TL[c.k]||{})[t],col=(TC[c.k]||{})[t]||'#e8edf2';
+  s+=<circle class="tm${pend==key?' pd':''}" cx="${p[0]}" cy="${p[1]}" r="5" fill="${col}"/>${lb?<text x="${p[0]}" y="${p[1]+(p[1]>c.y+18?-9:13)}" text-anchor="middle" class="wt">${lb}</text>:''}<circle data-t="${key}" cx="${p[0]}" cy="${p[1]}" r="13" fill="transparent"/>}));
+ $('bd').innerHTML=s;
+}
+function renderSel(){
+ const e=$('sel');
+ if(sel&&sel.startsWith('w:')){e.innerHTML='<span>Wire selected</span><button data-a="delw">Delete wire</button>';return}
+ const c=C.find(x=>x.id==sel);
+ if(!c){e.innerHTML=pend?'<span>Tap the second terminal to finish the wire</span>':'<span>Nothing selected</span>';return}
+ e.innerHTML=<span>${nm(c)}</span><span>${(c.k=='sw'||c.k=='brk')?<button data-a="tog">${c.open?'Close':'Open'}</button> :''}<button data-a="del">Delete</button></span>;
+}
+function topo(G,k){
+ const id={},par=[],F=x=>{while(par[x]!=x){par[x]=par[par[x]];x=par[x]}return x},T=key=>{if(!(key in id)){id[key]=par.length;par.push(par.length)}return id[key]},N=key=>F(T(key)),U=(a,b)=>{par[F(T(a))]=F(T(b))};
+ W.forEach(w=>U(w.a,w.b));
+ C.forEach(c=>{const i=c.id+'.';if(c.k=='fuse'||((c.k=='sw'||c.k=='brk')&&!c.open))U(i+'a',i+'b');if(c.k=='jct'){U(i+'a',i+'b');U(i+'a',i+'c');U(i+'a',i+'d')}});
+ const g=k=>C.find(c=>c.k==k),reg=g('reg'),bat=g('bat'),inv=g('inv'),house=g('house'),R={reg,bat,inv,house,N};
+ R.edges=C.filter(c=>c.k=='mod').map(m=>{const d=MD[m.t];return{a:N(m.id+'.m'),b:N(m.id+'.p'),Vm:d.Vm*(1-.0035*k),Vo:G>30?d.Vo*(1-.0029*k):0,I:d.P/d.Vm*G/1000}});
+ R.mn=new Set();R.edges.forEach(e=>{R.mn.add(e.a);R.mn.add(e.b)});
+ if(reg){R.X=N(reg.id+'.p');R.Y=N(reg.id+'.n')}
+ R.B=inv?N(inv.id+'.d'):reg?N(reg.id+'.o'):null;R.A=inv?N(inv.id+'.a'):null;
+ R.regOn=!!reg&&R.B!==null&&N(reg.id+'.o')==R.B;R.batOn=!!bat&&R.B!==null&&N(bat.id+'.b')==R.B;R.hOn=!!house&&R.A!==null&&N(house.id+'.i')==R.A;
+ R.spd=C.some(c=>c.k=='spd'&&[R.X,R.Y,R.B,R.A].includes(N(c.id+'.a')));R.fuse=C.some(c=>c.k=='fuse'&&[R.X,R.Y].includes(N(c.id+'.a')));
+ R.batBad=!!bat&&R.mn.has(N(bat.id+'.b'));R.invBad=!!inv&&R.mn.has(N(inv.id+'.d'));
+ R.houseBad=!!house&&(R.mn.has(N(house.id+'.i'))||(R.B!==null&&N(house.id+'.i')==R.B));
+ return R;
+}
+function reduce(edges,X,Y,vk){
+ let E=edges.map(e=>({a:e.a,b:e.b,V:e[vk],I:e.I})),ch=true,g=300;
+ while(ch&&g--){ch=false;
+  for(let i=E.length-1;i>=0;i--)if(E[i].a==E[i].b){E.splice(i,1);ch=true}
+  for(let i=0;i<E.length&&!ch;i++)for(let j=i+1;j<E.length&&!ch;j++){const p=E[i],q=E[j];
+   if(p.a==q.a&&p.b==q.b){p.V=Math.min(p.V,q.V);p.I+=q.I;E.splice(j,1);ch=true}else if(p.a==q.b&&p.b==q.a)return{err:'short'}}
+  if(ch)continue;
+  const dg={};E.forEach(e=>{(dg[e.a]=dg[e.a]||[]).push(e);(dg[e.b]=dg[e.b]||[]).push(e)});
+  for(const n in dg){const nn=+n;if(nn==X||nn==Y||dg[n].length!=2)continue;const [p,q]=dg[n];let f,s;
+   if(p.b==nn&&q.a==nn){f=p;s=q}else if(q.b==nn&&p.a==nn){f=q;s=p}else return{err:'pol'};
+   E.splice(E.indexOf(f),1);E.splice(E.indexOf(s),1);E.push({a:f.a,b:s.b,V:f.V+s.V,I:Math.min(f.I,s.I)});ch=true;break}
+ }
+ const r=E.find(e=>e.a==Y&&e.b==X);
+ if(r)return{V:r.V,I:r.I};
+ return E.some(e=>e.a==X&&e.b==Y)?{err:'rev'}:{err:'none'};
+}
+function init(){
+ S={t:6,day:1,run:false,tamb:+$('tamb').value,sp:1,cloud:.9,ct:.9,storm:0,srv:0,pv:0,blk:0,flt:0,ovl:false};
+ clr();msg('Empty board. Try “Ready-made setup” to see a wired example.');$('go').textContent='Start';render();renderSel();step(0);
+}
+function step(dt){
+ const h=dt*.4*S.sp;S.t+=h;if(S.t>=24){S.t-=24;S.day++}
+ if(S.storm>0){S.storm-=h;if(S.storm<=0){S.storm=0;S.ct=.7}}
+ else{if(Math.random()<dt*.06)S.ct=Math.random()<.25?.2:.55+Math.random()*.45;
+  if(Math.random()<dt*.005){S.storm=2;S.ct=.08;
+   const R0=topo(0,25);
+   if(R0.spd)msg('⚡ Thunderstorm: the surge protector absorbed the strike.');else if(R0.inv&&S.invOK){S.invOK=false;msg('⚡ Lightning strike! With no connected surge protector the inverter burnt out.')}}}
+ S.cloud+=(S.ct-S.cloud)Math.min(1,dt.8);
+ const t=S.t,sun=t>6&&t<18?Math.pow(Math.sin(Math.PI*(t-6)/12),1.2):0,G=1000*sun*S.cloud,Tc=S.tamb+G/800*25,k=Tc-25;
+ const R=topo(G,k),reg=R.reg;
+ let Ppv=0,Vmp=0,Voc=0,Imp=0,perr='',low=false,flt=0,Pm=0;
+ if(R.edges.length&&!reg)perr='noreg';
+ if(reg){if(R.X==R.Y)perr='short';else{const a=reduce(R.edges,R.X,R.Y,'Vm'),b=reduce(R.edges,R.X,R.Y,'Vo');
+  if(a.err)perr=a.err;else{Vmp=a.V;Imp=a.I;Voc=b.V||0;Ppv=G>20?Vmp*Imp:0}}}
+ if(R.batBad&&!S.batDead&&G>30){S.batDead=true;msg('💥 Battery wired straight to the panels with no charge controller: damaged.')}
+ if(R.invBad&&S.invOK&&G>30){S.invOK=false;msg('💥 Panel voltage reached the inverter input: it burnt out.')}
+ if(R.houseBad&&!S.houseDead){S.houseDead=true;msg('💥 DC reached the house: appliances burnt.')}
+ if(!R.fuse&&Ppv>1200&&Math.random()<dt*.01){const m=C.filter(c=>c.k=='mod');if(m.length){del(m[m.length-1].id);sel=null;render();renderSel();msg('🔥 With no fuse, a panel burnt out. Check the wiring and rebuild.')}}
+ const bt=(R.batOn&&!S.batDead)?BT[R.bat.t]:null,soc=bt?S.soc:0,Vb=bt?bt.v0+(bt.v1-bt.v0)*soc:50;
+ if(reg&&R.regOn&&!perr&&Voc>0){
+  if(reg.t==1){if(Voc>100)flt=1;else if(Vmp>Vb+2)Pm=Math.min(Imp,40)Vb.96;else low=true}
+  else{if(Voc>150)flt=1;else if(Vmp>Vb+4)Pm=Math.min(Ppv,3000,60*Vb)*.97;else low=true}
+ }
+ if(flt&&!S.flt)msg('⚠️ Voc = '+Math.round(Voc)+' V exceeds the controller limit: fault. Put fewer panels in series.');
+ S.flt=flt;
+ const inv=!!R.inv&&S.invOK&&R.B!==null,rated=inv?IV[R.inv.t]:0;
+ if(bt&&S.bms&&soc>bt.res)S.bms=false;
+ if(bt&&!S.bms&&soc<bt.cut){S.bms=true;msg('🔋 BMS cut the loads: battery empty.')}
+ const hv=R.hOn&&!S.houseDead;let Pl=0;if(hv)A.forEach(a=>{if(act(a))Pl+=a.c*a.w});
+ let pw=false,Ps=0,Pdc=0;
+ if(inv){
+  pw=bt?!S.bms:(R.regOn&&Pm*.94>=30);
+  if(pw&&hv){
+   if(Pl>rated){if(!S.ovl){S.ovl=true;msg('⚡ Overload '+Pl+' W > '+rated+' W: protection tripped.');C.filter(c=>c.k=='brk').forEach(c=>c.open=true);renderSel()}pw=false}
+   else{S.ovl=false;if(!bt&&Pl>Pm*.94-15)pw=false;else Ps=Pl}
+  }
+  if(pw)Pdc=Ps/.94+15;
+ }
+ let net=0;
+ if(bt){if(soc>=.999)Pm=Math.min(Pm,Pdc);net=Pm-Pdc;S.soc=cl(S.soc+(net>0?net*bt.eff:net)*h/bt.cap,0,1)}else Pm=Math.min(Pm,Pdc);
+ if(Pl>0&&Ps==0)S.blk+=h;S.srv+=Ps*h;S.pv+=Ppv*h;
+ const live=new Set();if(Ppv>5){R.mn.forEach(n=>live.add(n))}
+ if(R.B!==null&&(Pm>5||Pdc>5))live.add(R.B);if(R.A!==null&&Ps>0)live.add(R.A);
+ S.P={G,Tc,Vmp,Voc,Ppv,Pm,Ps,Pdc,net,low,flt,pw,perr,bt,soc:S.soc,R,live,hv,inv};
+}
+function diag(P){
+ const R=P.R;
+ if(!R.inv)return 'Add an inverter and connect it to the battery (via a junction) to convert DC to AC.';
+ if(!S.invOK)return 'The inverter is burnt out: delete it and add a new one.';
+ if(!R.house)return 'Add the house.';
+ if(S.houseDead)return 'The house appliances burnt: delete the house and add it again.';
+ if(!R.hOn)return 'The house is not connected to the inverter AC output (or the breaker is open).';
+ if(!R.batOn&&!R.regOn)return 'No source on the DC bus: connect a battery or a charge controller to the junction and the inverter.';
+ if(P.bt&&S.bms)return 'The BMS cut the loads to protect the battery.';
+ if(!P.pw)return P.hv&&!P.bt?'PV alone cannot carry the load: add a battery or switch appliances off.':'The house has no power right now.';
+ let p='';
+ if(P.perr=='noreg')p='panels are not connected to a charge controller';else if(P.perr=='rev')p='array polarity is reversed at the controller';
+ else if(P.perr=='short')p='short circuit in the array';else if(P.perr=='pol')p='panels wired with mismatched polarity';
+ else if(P.perr=='none'&&R.edges.length)p='panels not connected to the controller’s + and − inputs';
+ else if(P.flt)p='overvoltage fault';else if(P.low)p='array voltage too low: add panels in series';
+ else if(P.G<=20&&R.regOn)p='no sun right now';
+ return '✔️ Power available'+(p?' · '+p:'');
+}
+function fl(a,i){return a}
+function ui(){
+ const P=S.P,t=S.t,hh=Math.floor(t),mm=Math.floor((t-hh)*60),R=P.R;
+ $('day').textContent=S.day;$('clk').textContent=String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0');
+ $('vG').textContent=Math.round(P.G);$('vTc').textContent=Math.round(P.Tc);$('vP').textContent=Math.round(P.Ppv);
+ $('vV').textContent=P.G>20?Math.round(P.Vmp):0;$('vSoc').textContent=P.bt?Math.round(P.soc*100):'—';$('vL').textContent=Math.round(P.Ps);$('vTa').textContent=S.tamb;
+ $('eng').textContent=PV ${(S.pv/1000).toFixed(1)} kWh · Delivered to house ${(S.srv/1000).toFixed(1)} kWh · Outage ${S.blk.toFixed(1)} h;
+ document.querySelectorAll('[data-a=sp]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.v==S.sp));
+ const lit=P.pw&&P.hv;let lamp=false,spin=false;fa=(fa+9)%360;
+ A.forEach((a,i)=>{
+  $('ac'+i).textContent=a.c;$('at'+i).textContent=a.on?'ON':'OFF';$('at'+i).setAttribute('aria-pressed',a.on);
+  $('sc'+i).textContent='Schedule: '+(a.sc?'on':'off');$('sc'+i).setAttribute('aria-pressed',a.sc);$('sw'+i).hidden=!a.sc;$('s'+i).textContent=hm(a.s);$('e'+i).textContent=hm(a.e);
+  const show=a.c>0&&a.on,ac=act(a),on=show&&ac&&lit;
+  $('as'+i).textContent=on?' ●':'';
+  const g=$('ap'+i);if(!g)return;
+  g.style.display=show?'':'none';g.classList.toggle('on',on);g.classList.toggle('dim',!on);
+  $('ak'+i).textContent='×'+a.c+' · '+(on?'ON':!ac?'scheduled off':'no power');
+  if(on&&i==0)lamp=true;
+  if(on&&i==3&&$('bl3'))$('bl3').setAttribute('transform',rotate(${fa*2} 18 16));
+  if(on&&i==6&&$('bl6'))$('bl6').setAttribute('transform',rotate(${fa} 18 21));
+ });
+ C.forEach(c=>{const e=$('v'+c.id);let v='';
+  if(c.k=='reg')v=P.flt?'FAULT':P.low?'LOW V':Math.round(P.Pm)+' W';
+  else if(c.k=='bat')v=S.batDead?'DEAD':Math.round(P.soc*100)+' %';
+  else if(c.k=='inv')v=!S.invOK?'DEAD':P.pw?Math.round(P.Ps)+' W':'OFF';
+  if(e)e.textContent=v;
+  if(c.k=='sw'&&$('hd'+c.id))$('hd'+c.id).setAttribute('transform',rotate(${c.open?90:0} 27 16));
+  if(c.k=='brk'&&$('lv'+c.id)){const l=$('lv'+c.id);l.setAttribute('y',c.open?15:8);l.setAttribute('fill',c.open?'#e05a4a':'#ddd')}
+  if(c.k=='bat'&&$('sf'+c.id)){const f=$('sf'+c.id);f.setAttribute('width',S.batDead?0:38*P.soc);f.setAttribute('fill',P.soc<.2?'#e74c3c':'#2ecc71')}
+ });
+ W.forEach(w=>{const e=$(w.id);if(e)e.classList.toggle('live',P.live.has(R.N(w.a)))});
+ if($('hw1')){$('hw1').style.fill=$('hw2').style.fill=lit?'var(--sun)':'var(--grid)';
+  $('rg').setAttribute('opacity',lamp?.16:0);
+  const hs=$('hs');hs.textContent=S.houseDead?'Appliances burnt':lit?'⚡ Power on':'No power';hs.setAttribute('class',lit?'ok h':'bad h')}
+ $('diag').textContent=diag(P);
+}
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-a]');
+ if(b){const a=b.dataset.a,v=+b.dataset.v,i=+b.dataset.i;
+  switch(a){
+   case'go':S.run=!S.run;b.textContent=S.run?'Pause':'Start';return;
+   case'sp':S.sp=v;return;
+   case'add':{const c=mk(b.dataset.k,+b.dataset.t);if(c){sel=c.id;pend=null}break}
+   case'del':del(sel);sel=null;break;
+   case'delw':W=W.filter(w=>'w:'+w.id!=sel);sel=null;break;
+   case'tog':{const c=C.find(x=>x.id==sel);if(c){c.open=!c.open;S.ovl=false}break}
+   case'pre':preset();sel=null;break;
+   case'clr':clr();msg('Board cleared.');break;
+   case'ap':A[i].c=cl(A[i].c+v,0,6);break;
+   case'apt':A[i].on=!A[i].on;break;
+   case'sc':A[i].sc=!A[i].sc;break;
+   case'ss':A[i].s=(A[i].s+v+24)%24;break;
+   case'se':A[i].e=(A[i].e+v+24)%24;break;
+  }
+  render();renderSel();step(0);return;
+ }
+ const bd=e.target.closest('#bd');if(!bd)return;
+ const tm=e.target.closest('[data-t]'),wr=e.target.closest('[data-w]'),cm=e.target.closest('[data-c]');
+ if(tm){const k=tm.dataset.t;
+  if(pend&&pend!=k){if(!W.some(w=>(w.a==pend&&w.b==k)||(w.a==k&&w.b==pend)))W.push({id:'w'+nid++,a:pend,b:k});pend=null;sel=null}
+  else pend=pend==k?null:k}
+ else if(wr){sel='w:'+wr.dataset.w;pend=null}
+ else if(cm){sel=cm.dataset.c;pend=null}
+ else{sel=null;pend=null}
+ render();renderSel();step(0);
+});
+$('tamb').addEventListener('input',e=>{S.tamb=+e.target.value;step(0)});
+$('pal').innerHTML=PAL.map(p=><button data-a="add" data-k="${p[0]}" data-t="${p[1]}">${p[2]}</button>).join('');
+$('apl').innerHTML=A.map((a,i)=><div class="r" style="flex-wrap:wrap"><span>${a.n} · ${a.w} W<i id="as${i}" style="color:var(--ok);font-style:normal"></i></span><div class="st"><button data-a="ap" data-i="${i}" data-v="-1" aria-label="fewer">−</button><b id="ac${i}">0</b><button data-a="ap" data-i="${i}" data-v="1" aria-label="more">+</button><button data-a="apt" data-i="${i}" id="at${i}">ON</button></div><div class="st" style="width:100%;justify-content:flex-end;flex-wrap:wrap"><button data-a="sc" data-i="${i}" id="sc${i}">Schedule: off</button><span id="sw${i}" class="st" hidden>from <button data-a="ss" data-i="${i}" data-v="-1" aria-label="earlier start">−</button><b id="s${i}" style="min-width:48px"></b><button data-a="ss" data-i="${i}" data-v="1" aria-label="later start">+</button> to <button data-a="se" data-i="${i}" data-v="-1" aria-label="earlier end">−</button><b id="e${i}" style="min-width:48px"></b><button data-a="se" data-i="${i}" data-v="1" aria-label="later end">+</button></span></div></div>).join('');
+function loop(ts){const dt=Math.min(.1,(ts-last)/1000||0);last=ts;if(S.run)step(dt);ui();requestAnimationFrame(loop)}
+init();requestAnimationFrame(loop);
+</script>
+</body>
+</html>
