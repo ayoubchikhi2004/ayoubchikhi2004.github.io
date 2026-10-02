@@ -7,24 +7,39 @@ h2{color:#0f172a;border-bottom:2px solid #0ea5e9;padding-bottom:5px;margin-top:3
 </head><body>
 <a href="index.html">← Retour</a>
 <h1>Projet Python : Analyse Physique du ZnO</h1>
-<p>Analyse complète de l'oxyde de zinc (ZnO) : de la préparation des données jusqu'aux résultats.</p>
+<p>De la préparation des données jusqu'aux résultats finaux.</p>
 
-<h2>1. Calcul de la taille d'échantillon</h2>
+<h2>1. Données initiales</h2>
+<div class="box">
+<b>Échantillon :</b> Poudre ZnO analysée par EDX / DRX<br>
+<b>Spectre de travail :</b> O Kα (0.52 keV), Zn Lα (1.01 keV), Zn Kα (8.63 keV)<br>
+<b>Fichier généré :</b> ZnO_realistic.csv avec 200 mesures<br>
+Colonnes : Time_s, Voltage_V, Current_mA, Resistance_Ohm, Temp_C
+</div>
+<pre>Exemple données initiales :
+Time_s,Voltage_V,Current_mA,Resistance_Ohm,Temp_C
+0,5.02,11.8,425.4,25.1
+1,5.05,11.5,439.1,25.3
+2,5.10,11.2,455.3,24.9
+3,5.08,10.9,466.0,25.2
+4,5.12,10.5,487.6,25.4</pre>
+
+<h2>2. Calcul de la taille d'échantillon</h2>
 <div class="box">
 Formule : n = Z² * p(1-p) / e²<br>
-Z=1.96 (95% confiance), p=0.5, e=0.07<br>
-<b>n = 196 → on a choisi n = 200 mesures</b>
+Z=1.96 (95%), p=0.5, e=0.07<br>
+<b>Résultat : n = 196 → on a choisi n = 200</b>
 </div>
 
-<h2>2. Composition chimique et distribution des éléments</h2>
+<h2>3. Spectre analysé - Distribution des éléments</h2>
 <div class="box">
-M(Zn)=65.38 g/mol, M(O)=16.00 g/mol, M(ZnO)=81.38 g/mol<br>
+M(Zn)=65.38, M(O)=16.00, M(ZnO)=81.38<br>
 <b>Zn = 80.34% , O = 19.66%</b>
 </div>
-<img src="spectre_elements.png" alt="Distribution éléments ZnO">
-<p>Distribution des éléments dans le spectre EDX : pic O Kα (0.52 keV) et pics Zn Lα (1.01 keV) + Kα (8.63 keV).</p>
+<img src="spectre_elements.png" alt="Spectre ZnO distribution">
+<p>Spectre EDX sur lequel on a travaillé : distribution des éléments dans ZnO.</p>
 
-<h2>3. Code 1 : create_csv.py - Génération des données</h2>
+<h2>4. Code 1 : create_csv.py</h2>
 <pre>import pandas as pd
 import numpy as np
 n=200
@@ -35,52 +50,33 @@ resistance=voltage/(current/1000)
 temp=25+0.05*time+np.random.normal(0,0.5,n)
 df=pd.DataFrame({'Time_s':time,'Voltage_V':voltage,'Current_mA':current,'Resistance_Ohm':resistance,'Temp_C':temp})
 df.to_csv('ZnO_realistic.csv',index=False)
-print("CSV créé avec 200 lignes")</pre>
+print("CSV cree avec 200 lignes")</pre>
 
-<h2>4. Code 2 : RDX.py - Analyse</h2>
+<h2>5. Code 2 : RDX.py</h2>
 <pre>import pandas as pd
 import matplotlib.pyplot as plt
 df=pd.read_csv('ZnO_realistic.csv')
 print(df.describe())
-plt.figure(); plt.plot(df['Time_s'],df['Voltage_V'])
-plt.xlabel('Time (s)'); plt.ylabel('Voltage (V)')
-plt.savefig('plot_voltage_time.png')
+plt.figure(); plt.plot(df['Time_s'],df['Voltage_V']); plt.savefig('plot_voltage_time.png')
+plt.figure(); plt.scatter(df['Temp_C'],df['Resistance_Ohm']); plt.savefig('plot_resistance_temp.png')
+plt.figure(); plt.hist(df['Resistance_Ohm'],bins=20); plt.savefig('plot_hist_resistance.png')
+print("3 graphiques sauvegardés")</pre>
 
-plt.figure(); plt.scatter(df['Temp_C'],df['Resistance_Ohm'])
-plt.xlabel('Temp (C)'); plt.ylabel('Resistance (Ohm)')
-plt.savefig('plot_resistance_temp.png')
-
-plt.figure(); plt.hist(df['Resistance_Ohm'],bins=20)
-plt.xlabel('Resistance (Ohm)')
-plt.savefig('plot_hist_resistance.png')</pre>
-
-<h2>5. Code 3 : analyse_complete.py - Taille + Spectre</h2>
+<h2>6. Code 3 : analyse_complete.py</h2>
 <pre>import math
 import matplotlib.pyplot as plt
 Z=1.96; p=0.5; e=0.07
 n=math.ceil((Z**2*p*(1-p))/(e**2))
-print(f"Taille calculée: n = {n}")
-
-elements={'O (Kα: 0.52 keV)':19.66,'Zn (Lα: 1.01 keV)':25.0,'Zn (Kα: 8.63 keV)':55.34}
+print(f"Taille: n = {n}") # 196
+elements={'O (Ka: 0.52 keV)':19.66,'Zn (La: 1.01 keV)':25.0,'Zn (Ka: 8.63 keV)':55.34}
 plt.bar(elements.keys(),elements.values(),color=['skyblue','orange','red'])
 plt.title('Distribution des elements dans le spectre EDX (ZnO)')
-plt.ylabel('Pourcentage massique (%)')
-plt.tight_layout()
 plt.savefig('spectre_elements.png')</pre>
 
-<h2>6. Résultats</h2>
-<img src="plot_voltage_time.png" alt="Voltage vs Time">
-<img src="plot_resistance_temp.png" alt="Resistance vs Temp">
-<img src="plot_hist_resistance.png" alt="Histogramme">
-<img src="spectre_elements.png" alt="Spectre">
-
-<div class="box">
-<b>Conclusion :</b> Échantillon de 200 mesures statistiquement valide. ZnO confirmé (80.34% Zn). Résistance stable en fonction de la température.
-</div>
-
-<p><i>Commandes :</i><br>
-<code>python create_csv.py</code><br>
-<code>python RDX.py</code><br>
-<code>python analyse_complete.py</code></p>
-
+<h2>7. Résultats finaux</h2>
+<img src="plot_voltage_time.png">
+<img src="plot_resistance_temp.png">
+<img src="plot_hist_resistance.png">
+<img src="spectre_elements.png">
+<div class="box"><b>Conclusion :</b> 200 mesures valides. ZnO confirmé à 80.34% Zn / 19.66% O.</div>
 </body></html>
