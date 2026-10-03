@@ -55,13 +55,14 @@ const BTS=[{n:'None'},{n:'Li-ion 5 kWh',cap:5,dod:.9,e:.96,pr:2500},{n:'Lead-aci
 const ITM={fuse:['DC fuses',60],breaker:['Breakers',90],spd:['Surge protector (SPD)',120],ground:['Grounding kit',70],clean:['Auto-cleaning system',300]};
 const PROF={res:[.35,.3,.3,.3,.3,.4,.7,1,.8,.6,.5,.5,.6,.5,.5,.6,.8,1.2,1.6,1.7,1.5,1.2,.8,.5],ind:[.2,.2,.2,.2,.2,.3,.6,1,1.2,1.3,1.3,1.2,1.1,1.3,1.3,1.2,1,.7,.4,.3,.2,.2,.2,.2],farm:[.2,.2,.2,.2,.2,.3,.5,.8,1.2,1.6,1.8,1.8,1.7,1.6,1.4,.9,.6,.5,.6,.6,.5,.4,.3,.2],hosp:[.8,.8,.8,.8,.8,.85,.9,1,1.1,1.15,1.2,1.2,1.2,1.2,1.15,1.1,1.05,1,1,.95,.9,.85,.85,.8]};
 const ST=[
-{n:'Family house',em:'🏠',lat:34,dec:0,ground:'#6b9b4d',b:[0,0,9,3,7],m:{w:9,d:7,y:3},ob:[['t',-8,3,6.5],['t',-7,-3,5.5],['t',9,5,5]],dem:14,pr:'res',bud:7500,grid:1,pay:1800,ta:26,soil:.004,req:['breaker','ground'],out:0,r:26,info:'Flat-roof home, grid-tied. Trees to the west will shade the afternoon.'},
-{n:'Desert farm',em:'🏜️',lat:30,dec:23.4,ground:'#d9c08a',b:[-14,0,4,3,4],m:{w:16,d:9,y:.3},ob:[['b',9,-10,2,8,2],['b',-6,10,3,3,3]],dem:30,pr:'farm',bud:15000,grid:0,pay:3500,ta:38,soil:.05,req:['spd','ground','breaker'],out:0,r:36,info:'Off-grid irrigation farm. Heat and dust are severe. It needs batteries and a hybrid inverter.'},
-{n:'Factory',em:'🏭',lat:36,dec:23.4,ground:'#8d949c',b:[0,0,24,8,14],m:{w:20,d:12,y:8},ob:[['b',-16,4,2,14,2],['b',17,-6,4,12,4]],dem:70,pr:'ind',bud:28000,grid:1,pay:5000,ta:32,soil:.01,req:['fuse','breaker','ground'],out:0,r:52,info:'Large flat roof, daytime load. Chimneys create moving shadows.'},
-{n:'Hospital',em:'🏥',lat:33,dec:-15,ground:'#7aa06a',b:[0,0,26,10,12],m:{w:22,d:10,y:10},ob:[['b',-19,0,8,16,12],['t',12,12,8]],dem:90,pr:'hosp',bud:38000,grid:1,pay:7000,ta:22,soil:.006,req:['fuse','breaker','spd','ground'],out:[17,21],r:56,info:'Critical load. A grid outage hits on day 2 from 17:00 to 21:00. You need battery backup and every safety item.'}];
+{n:'Family house — Casablanca',em:'🏠',lat:33.6,dec:0,ground:'#6b9b4d',b:[0,0,9,3,7],m:{w:9,d:7,y:3},ob:[['t',-8,3,6.5],['t',-7,-3,5.5],['t',9,5,5]],dem:14,pr:'res',bud:7500,grid:1,pay:1800,ta:26,soil:.004,req:['breaker','ground'],out:0,r:26,info:'Flat-roof home, grid-tied. Trees to the west will shade the afternoon.'},
+{n:'Desert farm — Zagora',em:'🏜️',lat:30.3,dec:23.4,ground:'#d9c08a',b:[-14,0,4,3,4],m:{w:16,d:9,y:.3},ob:[['b',9,-10,2,8,2],['b',-6,10,3,3,3]],dem:30,pr:'farm',bud:15000,grid:0,pay:3500,ta:38,soil:.05,req:['spd','ground','breaker'],out:0,r:36,info:'Off-grid irrigation farm. Heat and dust are severe. It needs batteries and a hybrid inverter.'},
+{n:'Factory — Tangier',em:'🏭',lat:35.8,dec:23.4,ground:'#8d949c',b:[0,0,24,8,14],m:{w:20,d:12,y:8},ob:[['b',-16,4,2,14,2],['b',17,-6,4,12,4]],dem:70,pr:'ind',bud:28000,grid:1,pay:5000,ta:32,soil:.01,req:['fuse','breaker','ground'],out:0,r:52,info:'Large flat roof, daytime load. Chimneys create moving shadows.'},
+{n:'Hospital — Marrakech',em:'🏥',lat:31.6,dec:-15,ground:'#7aa06a',b:[0,0,26,10,12],m:{w:22,d:10,y:10},ob:[['b',-19,0,8,16,12],['t',12,12,8]],dem:90,pr:'hosp',bud:38000,grid:1,pay:7000,ta:22,soil:.006,req:['fuse','breaker','spd','ground'],out:[17,21],r:56,info:'Critical load. A grid outage hits on day 2 from 17:00 to 21:00. You need battery backup and every safety item.'}];
+const dh=n=>Math.round(n*10).toLocaleString('en-US')+' DH';
 const EV={clear:['Clear sky',{cloud:1,dT:0,soil:0}],cloud:['Cloudy',{cloud:.45,dT:-3,soil:0}],heat:['Heat wave',{cloud:1,dT:12,soil:0}],dust:['Dust storm',{cloud:.85,dT:2,soil:.12}],storm:['Thunderstorm',{cloud:.3,dT:-4,soil:0,st:14}]};
 let G={mode:'career',site:0,ph:0,stars:[],bank:0,cfg:null,v:null,sim:null};
-let sc,cam,ren,sunL,sunM,world,arr,pth,obs=[],panels=[],cm={a:.6,e:.5,r:30};
+let sc,cam,ren,sunL,sunM,hemi,skyM,cloudM,FG,FM,GG,world,arr,pth,obs=[],panels=[],cm={a:.6,e:.5,r:30};const PT={};
 const ray=new THREE.Raycaster(),QQ=new THREE.Quaternion();
 
 /* ---------- physics helpers ---------- */
@@ -69,7 +70,7 @@ function sunPos(lat,dec,t){const H=15*(t-12)*D,l=lat*D,d=dec*D,se=Math.sin(l)*Ma
 function sdir(s){const e=s.el*D,a=s.az*D;return new THREE.Vector3(Math.sin(a)*Math.cos(e),Math.sin(e),-Math.cos(a)*Math.cos(e))}
 function layout(tilt){const S=ST[G.site],b=tilt*D,pitch=1.7*Math.cos(b)+1.7*Math.sin(b)*1.2+.15,cols=Math.max(1,Math.floor(S.m.w/1.05)),rows=Math.max(1,1+Math.floor((S.m.d-1.7*Math.cos(b))/pitch));return{cols,rows,pitch,cap:cols*rows}}
 function design(){
- const c=G.cfg,P=PN[c.panel],I=IVS[c.inv],S=ST[G.site],micro=I.t=='m',s=micro?1:c.S,n=c.n,str=Math.ceil(n/s),par=Math.max(1,Math.floor(n/s));
+ const c=G.cfg,P=PN[c.panel],I=IVS[c.inv],S=ST[G.site],micro=I.t=='m',s=micro?1:Math.min(c.S,c.n),n=c.n,str=Math.ceil(n/s),par=Math.max(1,Math.floor(n/s));
  const Voc=s*P.Voc*(1+.003*(25-(S.ta-12))),Vmp=s*P.Vmp*(1-.0035*(S.ta+30-25)),m=[];let st='ok';
  if(!micro){if(Voc>I.vmax){st='over';m.push(['bad',`Cold-morning string voltage ${Math.round(Voc)} V exceeds the inverter limit (${I.vmax} V). Use fewer panels in series.`])}
   else if(Vmp<I.vmin){st='under';m.push(['bad',`Hot-day string voltage ${Math.round(Vmp)} V is below the inverter MPPT minimum (${I.vmin} V). Add panels in series.`])}
@@ -83,16 +84,25 @@ function design(){
 function cost(){const c=G.cfg,P=PN[c.panel],I=IVS[c.inv];let t=c.n*(P.pr+40)+(I.t=='m'?c.n*I.pr:I.pr);if(c.bt)t+=c.bq*BTS[c.bt].pr;for(const k in c.items)if(c.items[k])t+=ITM[k][1];return t}
 
 /* ---------- 3D ---------- */
-function mesh(g,c,cast=true){const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:c,roughness:.85}));m.castShadow=cast;m.receiveShadow=true;return m}
+const col=c=>new THREE.Color(c).convertSRGBToLinear();
+function mesh(g,c,cast=true,rough=.85){const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:col(c),roughness:rough}));m.castShadow=cast;m.receiveShadow=true;return m}
+function tex(base,sp,rep,n=900){const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');x.fillStyle=base;x.fillRect(0,0,128,128);x.globalAlpha=.3;for(let i=0;i<n;i++){x.fillStyle=sp[i%sp.length];x.fillRect(Math.random()*128,Math.random()*128,1+Math.random()*3,1+Math.random()*3)}const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(rep,rep);t.encoding=THREE.sRGBEncoding;t.anisotropy=8;return t}
 function initGL(){
- sc=new THREE.Scene();cam=new THREE.PerspectiveCamera(50,1,.1,500);
- ren=new THREE.WebGLRenderer({antialias:true});ren.shadowMap.enabled=true;$('view').prepend(ren.domElement);
- sc.add(new THREE.HemisphereLight(0xffffff,0x667755,.6));
- sunL=new THREE.DirectionalLight(0xfff2d6,.9);sunL.castShadow=true;const s=sunL.shadow.camera;s.left=-45;s.right=45;s.top=45;s.bottom=-45;s.far=200;sunL.shadow.mapSize.set(2048,2048);sc.add(sunL);sc.add(sunL.target);
- sunM=new THREE.Mesh(new THREE.SphereGeometry(2,16,16),new THREE.MeshBasicMaterial({color:0xffd23f}));sc.add(sunM);
+ sc=new THREE.Scene();cam=new THREE.PerspectiveCamera(50,1,.1,700);
+ ren=new THREE.WebGLRenderer({antialias:true});ren.outputEncoding=THREE.sRGBEncoding;ren.shadowMap.enabled=true;ren.shadowMap.type=THREE.PCFSoftShadowMap;$('view').prepend(ren.domElement);
+ sc.fog=new THREE.Fog(0xdbeaf7,140,420);
+ hemi=new THREE.HemisphereLight(0xdfeeff,0x6a6a55,.7);sc.add(hemi);
+ const big=Math.min(screen.width,screen.height)>700?4096:2048;
+ sunL=new THREE.DirectionalLight(0xfff2d6,1);sunL.castShadow=true;sunL.shadow.mapSize.set(big,big);sunL.shadow.bias=-.0003;sunL.shadow.normalBias=.03;sunL.shadow.camera.far=250;sc.add(sunL);sc.add(sunL.target);
+ sunM=new THREE.Mesh(new THREE.SphereGeometry(14,16,16),new THREE.MeshBasicMaterial({color:0xffe27a,fog:false}));sc.add(sunM);
+ const sg=new THREE.SphereGeometry(500,32,16),p=sg.attributes.position,cs=[],a=col('#e3eef8'),b=col('#3f86d0');
+ for(let i=0;i<p.count;i++){const h=Math.pow(cl(p.getY(i)/500,0,1),.55);cs.push(a.r+(b.r-a.r)*h,a.g+(b.g-a.g)*h,a.b+(b.b-a.b)*h)}
+ sg.setAttribute('color',new THREE.Float32BufferAttribute(cs,3));skyM=new THREE.MeshBasicMaterial({vertexColors:true,side:THREE.BackSide,fog:false});sc.add(new THREE.Mesh(sg,skyM));
+ cloudM=new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.92,fog:false});
+ for(let i=0;i<9;i++){const g=new THREE.Group();for(let j=0;j<4;j++){const q=new THREE.Mesh(new THREE.SphereGeometry(10+j%2*5,10,8),cloudM);q.position.set(j*11,j%2*3,0);q.scale.y=.5;g.add(q)}g.position.set(-250+i*62,110+(i%3)*20,-200+(i*97)%300);sc.add(g)}
  world=new THREE.Group();sc.add(world);
- const el=ren.domElement,pt=new Map();let pd=0;
- el.addEventListener('pointerdown',e=>{el.setPointerCapture(e.pointerId);pt.set(e.pointerId,[e.clientX,e.clientY]);pd=0});
+ const el=ren.domElement,pt=new Map();
+ el.addEventListener('pointerdown',e=>{el.setPointerCapture(e.pointerId);pt.set(e.pointerId,[e.clientX,e.clientY])});
  el.addEventListener('pointerup',e=>pt.delete(e.pointerId));el.addEventListener('pointercancel',e=>pt.delete(e.pointerId));
  el.addEventListener('pointermove',e=>{if(!pt.has(e.pointerId))return;const o=pt.get(e.pointerId);
   if(pt.size==1){cm.a-=(e.clientX-o[0])*.008;cm.e=cl(cm.e+(e.clientY-o[1])*.006,.05,1.5)}
@@ -101,22 +111,78 @@ function initGL(){
  el.addEventListener('wheel',e=>{e.preventDefault();cm.r=cl(cm.r*(1+e.deltaY*.001),8,120)},{passive:false});
  new ResizeObserver(rs).observe($('view'));rs();
 }
-function rs(){const v=$('view'),w=v.clientWidth,h=v.clientHeight;ren.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
+function rs(){const v=$('view'),w=v.clientWidth,h=v.clientHeight;ren.setPixelRatio(Math.min(window.devicePixelRatio||1,2));ren.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
+const rnd=i=>{const x=Math.sin(i*127.1)*43758.5;return x-Math.floor(x)};
+function palm(x,z,H=7){const tr=mesh(new THREE.CylinderGeometry(.18,.3,H,8),'#8a6a45',false);tr.position.set(x,H/2,z);world.add(tr);
+ for(let j=0;j<7;j++){const f=mesh(new THREE.BoxGeometry(.5,.05,3.4),'#3f8a3a',false);const a=j/7*Math.PI*2;f.rotation.order='YXZ';f.position.set(x+Math.sin(a)*1.4,H+.1,z+Math.cos(a)*1.4);f.rotation.set(.45,a,0);world.add(f)}}
+function glassM(i){if(PT[i])return PT[i];const c=document.createElement('canvas');c.width=128;c.height=224;const x=c.getContext('2d'),cc=[['#0b1b34','#16315a'],['#1f5ba8','#2b74c9'],['#1a1d26','#272c38']][i],nc=i==2?2:6,nr=i==2?1:10,cw=128/nc,ch=224/nr;
+ x.fillStyle=cc[0];x.fillRect(0,0,128,224);
+ for(let r=0;r<nr;r++)for(let k=0;k<nc;k++){x.fillStyle=cc[1];x.fillRect(k*cw+2,r*ch+2,cw-4,ch-4);x.strokeStyle='rgba(215,225,245,.55)';x.lineWidth=1;x.beginPath();[1,2].forEach(q=>{x.moveTo(k*cw+q*cw/3,r*ch+2);x.lineTo(k*cw+q*cw/3,(r+1)*ch-2)});x.stroke()}
+ const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=8;return PT[i]=new THREE.MeshStandardMaterial({map:t,metalness:.55,roughness:.28})}
 function buildSite(){
- while(world.children.length)world.remove(world.children[0]);obs=[];const S=ST[G.site];
- const g=mesh(new THREE.PlaneGeometry(200,200),S.ground,false);g.rotation.x=-Math.PI/2;world.add(g);
- const [cx,cz,w,h,d]=S.b,bd=mesh(new THREE.BoxGeometry(w,h,d),'#d8d2c4');bd.position.set(cx,h/2,cz);world.add(bd);obs.push(bd);
- S.ob.forEach(o=>{if(o[0]=='t'){const[,x,z,H]=o,tr=mesh(new THREE.CylinderGeometry(.25,.3,H*.45),'#6b4a2b'),cn=mesh(new THREE.SphereGeometry(H*.32,12,10),'#2e7d32');tr.position.set(x,H*.22,z);cn.position.set(x,H*.68,z);world.add(tr,cn);obs.push(tr,cn)}
-  else{const[,x,z,bw,bh,bdp]=o,b=mesh(new THREE.BoxGeometry(bw,bh,bdp),'#b9b2a3');b.position.set(x,bh/2,z);world.add(b);obs.push(b)}});
+ while(world.children.length)world.remove(world.children[0]);obs=[];
+ const S=ST[G.site],k=G.site,Rr=S.r*.85,sh=sunL.shadow.camera;sh.left=-Rr;sh.right=Rr;sh.top=Rr;sh.bottom=-Rr;sh.updateProjectionMatrix();
+ const T=[tex('#5f9142',['#4d7f35','#79a85a','#6aa04a'],110),tex('#d6bc84',['#c9ad70','#e4cf9d','#bf9f62'],110),tex('#8a9096',['#7b8187','#999fa5','#868b91'],110),tex('#648f48',['#4f7c37','#7aa85c','#6a9a4c'],110)][k];
+ const g=new THREE.Mesh(new THREE.PlaneGeometry(700,700),new THREE.MeshStandardMaterial({map:T,roughness:1}));g.rotation.x=-Math.PI/2;g.receiveShadow=true;world.add(g);
+ const [cx,cz,w,h,d]=S.b,fc=['#efe6d4','#cfae7a','#a3b0bb','#eef2f5'][k];
+ const bd=mesh(new THREE.BoxGeometry(w,h,d),fc);bd.position.set(cx,h/2,cz);world.add(bd);obs.push(bd);
+ if(S.m.y>1){const rf=mesh(new THREE.PlaneGeometry(w-.1,d-.1),'#5b6066',false);rf.rotation.x=-Math.PI/2;rf.position.set(cx,h+.01,cz);world.add(rf);
+  [[0,d/2,w+.3,.3],[0,-d/2,w+.3,.3],[w/2,0,.3,d],[-w/2,0,.3,d]].forEach(q=>{const p=mesh(new THREE.BoxGeometry(q[2],.55,q[3]),fc,false);p.position.set(cx+q[0],h+.27,cz+q[1]);world.add(p)})}
+ const wm=new THREE.MeshStandardMaterial({color:col('#2b4f73'),metalness:.7,roughness:.15}),fm=new THREE.MeshStandardMaterial({color:col('#f3f4f6'),roughness:.8}),fl=Math.max(1,Math.floor(h/3.2));
+ const win=(x,y,z,ry)=>{const q=new THREE.Group(),f=new THREE.Mesh(new THREE.PlaneGeometry(1.45,1.3),fm),gl=new THREE.Mesh(new THREE.PlaneGeometry(1.2,1.05),wm);gl.position.z=.01;q.add(f,gl);q.position.set(x,y,z);q.rotation.y=ry;world.add(q)};
+ [[w,0],[w,Math.PI],[d,Math.PI/2],[d,-Math.PI/2]].forEach(([len,ry],fi)=>{const nc=Math.max(2,Math.floor(len/3));
+  for(let f=0;f<fl;f++)for(let i=0;i<nc;i++){if(k==0&&fi==0&&f==0&&i==1)continue;const u=-len/2+(i+.5)*len/nc,y=(f+.55)*h/fl;
+   if(fi==0)win(cx+u,y,cz+d/2+.02,0);else if(fi==1)win(cx-u,y,cz-d/2-.02,Math.PI);else if(fi==2)win(cx+w/2+.02,y,cz-u,Math.PI/2);else win(cx-w/2-.02,y,cz+u,-Math.PI/2)}});
+ S.ob.forEach((o,i)=>{
+  if(o[0]=='t'){const[,x,z,H]=o,R=H*.32,gc=['#2e7d32','#3a8f3e','#276b2b'],tr=mesh(new THREE.CylinderGeometry(.22,.32,H*.5,8),'#6b4a2b');tr.position.set(x,H*.25,z);world.add(tr);obs.push(tr);
+   const cn=mesh(new THREE.SphereGeometry(R,16,12),gc[0]);cn.position.set(x,H*.68,z);world.add(cn);obs.push(cn);
+   for(let j=0;j<4;j++){const q=mesh(new THREE.SphereGeometry(R*.62,12,10),gc[1+j%2]);q.position.set(x+(rnd(i*9+j)-.5)*R*1.1,H*.68+(rnd(i*5+j)-.3)*R*.9,z+(rnd(i*3+j)-.5)*R*1.1);world.add(q)}}
+  else{const[,x,z,bw,bh,bdp]=o,tall=bw<=2.5,b=mesh(new THREE.BoxGeometry(bw,bh,bdp),tall?'#a9aeb4':'#bdb6a6');b.position.set(x,bh/2,z);world.add(b);obs.push(b);
+   if(tall){const cap=mesh(new THREE.CylinderGeometry(bw*.7,bw*.7,.4,12),'#6b7480',false);cap.position.set(x,bh+.2,z);world.add(cap)}}});
+ if(k==0){
+  const pa=mesh(new THREE.PlaneGeometry(1.8,13),'#c9c3b4',false);pa.rotation.x=-Math.PI/2;pa.position.set(cx,.02,cz+d/2+6.5);world.add(pa);
+  const dr=mesh(new THREE.BoxGeometry(1.2,2.2,.12),'#5a3a22',false);dr.position.set(cx,1.1,cz+d/2+.05);world.add(dr);
+  const wall=(x,z,ww,dd)=>{const b=mesh(new THREE.BoxGeometry(ww,1.3,dd),'#f4eee2');b.position.set(x,.65,z);world.add(b);const c2=mesh(new THREE.BoxGeometry(ww+.1,.12,dd+.1),'#b5532e',false);c2.position.set(x,1.36,z);world.add(c2)};
+  wall(0,-12,30,.3);wall(-15,0,.3,24);wall(15,0,.3,24);wall(-8.5,12,13,.3);wall(8.5,12,13,.3);
+  for(let i=0;i<9;i++){const x=-13+i*3.2;if(Math.abs(x)<2.2)continue;const bs=mesh(new THREE.SphereGeometry(.55,10,8),'#3c8a3e',false);bs.position.set(x,.5,10.5);world.add(bs)}
+  palm(12.5,9);
+ }
+ if(k==1){
+  for(let i=0;i<5;i++){const r=mesh(new THREE.BoxGeometry(18,.35,.9),'#4f8f3a',false);r.position.set(-2,.18,17+i*2.2);world.add(r)}
+  for(let i=0;i<7;i++){const a=i/7*Math.PI+.2,q=mesh(new THREE.SphereGeometry(30+rnd(i)*20,16,10),'#d9c08a',false,1);q.scale.y=.22;q.position.set(Math.cos(a)*-120,0,Math.sin(a)*-90-60);world.add(q)}
+  palm(-18,5);palm(-10,-8);palm(12,3);
+ }
+ if(k==2){
+  [[14,13],[18,13]].forEach(([x,z])=>{const t=mesh(new THREE.CylinderGeometry(2,2,5,16),'#b8c0c8');t.position.set(x,2.5,z);world.add(t)});
+  for(let i=0;i<6;i++){const q=new THREE.Mesh(new THREE.PlaneGeometry(.25,5),new THREE.MeshBasicMaterial({color:col('#f2c200')}));q.rotation.x=-Math.PI/2;q.position.set(-10+i*4,.03,cz+d/2+4);world.add(q)}
+ }
+ if(k==3){
+  const pl=mesh(new THREE.PlaneGeometry(24,9),'#b9bec4',false);pl.rotation.x=-Math.PI/2;pl.position.set(cx,.02,cz+d/2+5);world.add(pl);
+  const cr=(wd,ht,c)=>{const p=new THREE.Mesh(new THREE.PlaneGeometry(wd,ht),new THREE.MeshBasicMaterial({color:col(c)}));p.position.set(cx,7.3,cz+d/2+.04);world.add(p)};
+  cr(2.6,2.6,'#ffffff');cr(.7,2,'#d62828');cr(2,.7,'#d62828');
+  palm(-9,16);palm(9,16);palm(16,12);
+ }
+ for(let i=0;i<9;i++){const a=i/9*Math.PI*2+.3,r=230+rnd(i)*60,hh=45+rnd(i+3)*50,m=mesh(new THREE.ConeGeometry(55+rnd(i+7)*35,hh,6),i%3?'#8b7a66':'#7a6b5a',false,1);m.position.set(Math.cos(a)*r,hh/2-2,Math.sin(a)*r);m.rotation.y=i;world.add(m);
+  if(hh>70){const sn=mesh(new THREE.ConeGeometry(18,hh*.28,6),'#f4f6f8',false,1);sn.position.set(m.position.x,hh*.86,m.position.z);sn.rotation.y=i;world.add(sn)}}
  arr=new THREE.Group();arr.position.set(0,S.m.y,0);world.add(arr);pth=new THREE.Group();world.add(pth);
  cm.r=S.r;buildPanels();buildPath();
 }
 function buildPanels(){
  while(arr.children.length)arr.remove(arr.children[0]);panels=[];
- const c=G.cfg,P=PN[c.panel],{cols,pitch}=layout(c.tilt),ur=Math.ceil(c.n/cols);
- for(let i=0;i<c.n;i++){const r=Math.floor(i/cols),k=i%cols,m=mesh(new THREE.BoxGeometry(1,.05,1.7),P.c);m.material.metalness=.5;m.material.roughness=.35;
-  m.position.set((k-(Math.min(cols,c.n)-1)/2)*1.05,.3+.85*Math.sin(c.tilt*D),(r-(ur-1)/2)*pitch);m.rotation.x=c.tilt*D;arr.add(m);panels.push(m)}
+ if(!FG){FG=new THREE.BoxGeometry(1,.06,1.7);FM=new THREE.MeshStandardMaterial({color:col('#b3bcc5'),metalness:.8,roughness:.4});GG=new THREE.PlaneGeometry(.92,1.62)}
+ const c=G.cfg,{cols,pitch}=layout(c.tilt),n=c.n,cc=Math.min(cols,n),ur=Math.ceil(n/cols),b=c.tilt*D,gm=glassM(c.panel),pos=[];
+ for(let i=0;i<n;i++){const r=Math.floor(i/cols),rc=Math.min(cols,n-r*cols);let k=i%cols;if(r%2)k=rc-1-k;
+  const m=new THREE.Mesh(FG,FM);m.castShadow=m.receiveShadow=true;m.position.set((k-(cc-1)/2)*1.05,.3+.85*Math.sin(b),(r-(ur-1)/2)*pitch);m.rotation.x=b;
+  const gl=new THREE.Mesh(GG,gm);gl.rotation.x=-Math.PI/2;gl.position.y=.033;gl.receiveShadow=true;m.add(gl);arr.add(m);panels.push(m);pos.push(m.position.clone())}
  arr.rotation.y=(180-c.az)*D;
+ if(IVS[c.inv].t!='m'){
+  const s=Math.min(c.S,n),up=new THREE.Vector3(0,Math.cos(b),Math.sin(b)).multiplyScalar(.1);
+  for(let g=0;g*s<n;g++){
+   const mat=new THREE.MeshBasicMaterial({color:new THREE.Color().setHSL((g*.19)%1,.9,.55)}),i0=g*s,i1=Math.min(n,(g+1)*s)-1;
+   for(let i=i0;i<i1;i++){const A=pos[i].clone().add(up),B=pos[i+1].clone().add(up),dv=new THREE.Vector3().subVectors(B,A),cb=new THREE.Mesh(new THREE.CylinderGeometry(.035,.035,dv.length(),6),mat);cb.position.copy(A).add(B).multiplyScalar(.5);cb.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dv.normalize());arr.add(cb)}
+   const t1=new THREE.Mesh(new THREE.SphereGeometry(.13,8,8),new THREE.MeshBasicMaterial({color:0xff2d2d})),t2=new THREE.Mesh(new THREE.SphereGeometry(.13,8,8),new THREE.MeshBasicMaterial({color:0x2d6bff}));
+   t1.position.copy(pos[i0]).add(up).add(new THREE.Vector3(-.3,0,0));t2.position.copy(pos[i1]).add(up).add(new THREE.Vector3(.3,0,0));arr.add(t1,t2)}
+ }
 }
 function buildPath(){
  while(pth.children.length)pth.remove(pth.children[0]);if(!G.v.path)return;const S=ST[G.site];
@@ -134,9 +200,10 @@ function shadeHours(dec){
  return res;
 }
 function setSun(t,dec){
- const S=ST[G.site],sp=sunPos(S.lat,dec,t),sd=sdir(sp),day=sp.el>1.5;
- sunL.position.copy(sd.clone().multiplyScalar(80));sunL.intensity=day?.4+Math.min(.6,sp.el/40):.05;sunM.position.copy(sd.clone().multiplyScalar(85));sunM.visible=day;
- sc.background=new THREE.Color(day?0x9fc9ee:0x101a2c);
+ const S=ST[G.site],sp=sunPos(S.lat,dec,t),sd=sdir(sp),el=sp.el,f=cl((el+5)/16,.06,1),day=el>1.5;
+ sunL.position.copy(sd.clone().multiplyScalar(90));sunL.intensity=day?.45+Math.min(.75,el/35):.03;sunL.color.set(el<14?0xffc78f:0xfff4e0);
+ hemi.intensity=.12+.6*f;sunM.position.copy(sd.clone().multiplyScalar(400));sunM.visible=day;
+ skyM.color.setScalar(f);cloudM.color.setScalar(.25+.75*f);sc.fog.color.copy(col('#dbeaf7')).multiplyScalar(f);
 }
 function camUpd(){const S=ST[G.site],t=new THREE.Vector3(0,S.m.y/2+1,0);cam.position.set(t.x+cm.r*Math.cos(cm.e)*Math.sin(cm.a),t.y+cm.r*Math.sin(cm.e),t.z+cm.r*Math.cos(cm.e)*Math.cos(cm.a));cam.lookAt(t)}
 
@@ -163,7 +230,7 @@ function pvKw(t){
  M.shFrac=p.filter(x=>x.sh).length/p.length;M.poa=dif+dni*cs;M.tc=p[0].tc;
  let dc=0;
  if(I.t=='m')p.forEach(x=>dc+=x.w);
- else{const s=c.S;for(let i=0;i<p.length;i+=s){const gp=p.slice(i,i+s);let sum=0,mn=1e9,mx=0,ns=0;gp.forEach(x=>{sum+=x.w;mn=Math.min(mn,x.w);mx=Math.max(mx,x.w);if(x.sh)ns++});dc+=ns?Math.max(mn*gp.length,(gp.length-ns)*mx*.55):sum}
+ else{const s=Math.min(c.S,c.n);for(let i=0;i<p.length;i+=s){const gp=p.slice(i,i+s);let sum=0,mn=1e9,mx=0,ns=0;gp.forEach(x=>{sum+=x.w;mn=Math.min(mn,x.w);mx=Math.max(mx,x.w);if(x.sh)ns++});dc+=ns?Math.max(mn*gp.length,(gp.length-ns)*mx*.55):sum}
   if(p.length%s)dc*=.93;if(s*P.Vmp*(1-.0035*(p[0].tc-25))<I.vmin)dc=0}
  let ac=dc*I.e/1000;ac=I.t=='m'?Math.min(ac,c.n*.4):Math.min(ac,I.kw);
  return M.d.st=='over'?0:ac;
@@ -197,7 +264,7 @@ function finish(){
 /* ---------- UI ---------- */
 const btn=(k,l,on)=>`<button data-set="${k}" aria-pressed="${!!on}">${l}</button>`;
 function head(){const S=ST[G.site],co=cost();$('hC').textContent=`${S.em} ${S.n} · ${{career:'Career',sandbox:'Sandbox',edu:'Educational'}[G.mode]}`;
- $('hB').innerHTML=G.mode=='sandbox'?`$${co} (unlimited)`:`<span style="color:${co>S.bud?'#fca5a5':'#bbf7d0'}">$${co} / $${S.bud}</span>`+(G.mode=='career'?` · bank $${G.bank}`:'')}
+ $('hB').innerHTML=G.mode=='sandbox'?`${dh(co)} (unlimited)`:`<span style="color:${co>S.bud?'#fca5a5':'#bbf7d0'}">${dh(co)} / ${dh(S.bud)}</span>`+(G.mode=='career'?` · bank ${dh(G.bank)}`:'')}
 function nav(){$('nv').innerHTML=['1 Survey','2 Shop','3 Install','4 Run'].map((l,i)=>`<button data-ph="${i}" class="${G.ph==i?'on':''}">${l}</button>`).join('')}
 function msgs(d){return d.m.map(x=>`<div class="${x[0]}">${x[0]=='ok'?'✔':x[0]=='bad'?'✖':'▲'} ${x[1]}</div>`).join('')}
 function edu(){
@@ -218,19 +285,19 @@ function pSurvey(){
 function updShade(){const h=shadeHours(G.v.dec);$('shd').innerHTML=h.length?`<b class="warn">Shade at the mount centre:</b> ${h.map(x=>x+':00').join(', ')}. Consider microinverters or fewer panels in shaded rows.`:'<b class="ok">No shading at the mount centre for this sun path.</b>'}
 function pShop(){
  const c=G.cfg;
- return `<h3>Solar panels</h3><div class="row">${PN.map((p,i)=>btn('panel:'+i,`${p.n}<small>$${p.pr} · ${p.g*100}%/°C</small>`,c.panel==i)).join('')}</div>
- <h3>Inverter</h3><div class="row">${IVS.map((p,i)=>btn('inv:'+i,`${p.n}<small>$${p.pr}${p.t=='m'?' each':''}</small>`,c.inv==i)).join('')}</div>
- <h3>Batteries</h3><div class="row">${BTS.map((p,i)=>btn('bt:'+i,`${p.n}<small>${p.pr?'$'+p.pr+' each':''}</small>`,c.bt==i)).join('')}</div>
+ return `<h3>Solar panels</h3><div class="row">${PN.map((p,i)=>btn('panel:'+i,`${p.n}<small>${dh(p.pr)} · ${p.g*100}%/°C</small>`,c.panel==i)).join('')}</div>
+ <h3>Inverter</h3><div class="row">${IVS.map((p,i)=>btn('inv:'+i,`${p.n}<small>${dh(p.pr)}${p.t=='m'?' each':''}</small>`,c.inv==i)).join('')}</div>
+ <h3>Batteries</h3><div class="row">${BTS.map((p,i)=>btn('bt:'+i,`${p.n}<small>${p.pr?dh(p.pr)+' each':''}</small>`,c.bt==i)).join('')}</div>
  <div class="row" style="margin-top:6px"><button data-inc="bq:-1">−</button><button disabled style="flex:2">${c.bq} battery unit(s)</button><button data-inc="bq:1">+</button></div>
- <h3>Safety and upkeep</h3><div class="row">${Object.keys(ITM).map(k=>btn('item:'+k,`${ITM[k][0]}<small>$${ITM[k][1]}</small>`,c.items[k])).join('')}</div>
+ <h3>Safety and upkeep</h3><div class="row">${Object.keys(ITM).map(k=>btn('item:'+k,`${ITM[k][0]}<small>${dh(ITM[k][1])}</small>`,c.items[k])).join('')}</div>
  <div class="k" id="cs"></div>${edu()}<button class="go" data-ph="2">Continue to install →</button>`}
 function pInstall(){
  const c=G.cfg,L=layout(c.tilt);c.n=Math.min(c.n,L.cap);
  return `<label>Panels: <b id="v_n">${c.n}</b> (max ${L.cap})<input type="range" data-r="n" min="1" max="${L.cap}" value="${c.n}"></label>
  <label>Tilt: <b id="v_tilt">${c.tilt}</b>°<input type="range" data-r="tilt" min="0" max="60" value="${c.tilt}"></label>
  <label>Azimuth: <b id="v_az">${c.az}</b>° (180 = south)<input type="range" data-r="az" min="90" max="270" value="${c.az}"></label>
- <label>Panels per string (series): <b id="v_S">${c.S}</b><input type="range" data-r="S" min="1" max="20" value="${c.S}"></label>
- <div class="k" id="dz"></div>${edu()}<button class="go" data-ph="3">Continue to run →</button>`}
+ <label>Panels per string (series): <b id="v_S">${c.S}</b><input type="range" data-r="S" min="1" max="${Math.min(20,c.n)}" value="${c.S}"></label>
+ <div class="row"><button data-str="-1">− one string</button><button data-str="1">+ one string</button></div><div class="k">Each coloured cable is one <b>string</b> of panels in series: voltage adds up. Strings are connected in parallel: current adds up. Red dot = string +, blue dot = string −.</div><div class="k" id="dz"></div>${edu()}<button class="go" data-ph="3">Continue to run →</button>`}
 function updInstall(){const d=design(),c=G.cfg;$('dz').innerHTML=`<b>Wiring:</b> ${d.str} string(s) of ${d.s}, ${(d.Pdc/1000).toFixed(1)} kWp<br>${msgs(d)}`}
 function pRun(){
  const M=G.sim;
@@ -238,12 +305,12 @@ function pRun(){
  if(M.done)return report();
  return `<div class="stat"><div><b id="r_day">1</b><small>Day / 3</small></div><div><b id="r_pv">0</b><small>PV kW</small></div><div><b id="r_ld">0</b><small>Load kW</small></div><div><b id="r_e">0</b><small>PV kWh</small></div><div><b id="r_soc">—</b><small>Battery %</small></div><div><b id="r_cov">0</b><small>Covered %</small></div></div>
  <div class="k" id="r_msg"></div><canvas id="ch" width="360" height="150"></canvas>
- <div class="row" style="margin-top:6px">${[1,3,8].map(s=>`<button data-spd="${s}" aria-pressed="${M.speed==s}">${s}×</button>`).join('')}<button data-clean="1">Clean panels ($40)</button></div><div id="flt"></div>${edu()}`}
+ <div class="row" style="margin-top:6px">${[1,3,8].map(s=>`<button data-spd="${s}" aria-pressed="${M.speed==s}">${s}×</button>`).join('')}<button data-clean="1">Clean panels (400 DH)</button></div><div id="flt"></div>${edu()}`}
 function fltUI(){
  const M=G.sim,f=M.fault,el=$('flt');if(!el)return;let h='';
- if(M.dead)h=`<div class="k bad"><b>Inverter destroyed.</b> <button data-fix="dead">Replace inverter ($${IVS[G.cfg.inv].pr})</button></div>`;
+ if(M.dead)h=`<div class="k bad"><b>Inverter destroyed.</b> <button data-fix="dead">Replace inverter (${dh(IVS[G.cfg.inv].pr)})</button></div>`;
  if(f&&!f.fixed){const vm=Math.round(M.d.Vmp);
-  h+=`<div class="k"><b class="bad">Fault!</b> Probe the test points with the multimeter:<div class="row">${[['A','Panel terminals'],['B','After cable'],['C','After fuse'],['D','Inverter AC output']].map(x=>`<button data-tp="${x[0]}">${x[0]}: ${x[1]}</button>`).join('')}</div><div id="rd" style="margin:6px 0"><b>${M.read||'Tap a test point.'}</b></div><div class="row"><button data-fix="cable">Replace cable ($60)</button>${G.cfg.items.fuse?'<button data-fix="fuse">Replace fuse ($25)</button>':''}<button data-fix="inverter">Replace inverter ($${IVS[G.cfg.inv].pr})</button></div></div>`}
+  h+=`<div class="k"><b class="bad">Fault!</b> Probe the test points with the multimeter:<div class="row">${[['A','Panel terminals'],['B','After cable'],['C','After fuse'],['D','Inverter AC output']].map(x=>`<button data-tp="${x[0]}">${x[0]}: ${x[1]}</button>`).join('')}</div><div id="rd" style="margin:6px 0"><b>${M.read||'Tap a test point.'}</b></div><div class="row"><button data-fix="cable">Replace cable (600 DH)</button>${G.cfg.items.fuse?'<button data-fix="fuse">Replace fuse (250 DH)</button>':''}<button data-fix="inverter">Replace inverter (${dh(IVS[G.cfg.inv].pr)})</button></div></div>`}
  if(el.dataset.h!==h){el.innerHTML=h;el.dataset.h=h}
 }
 function report(){
@@ -255,7 +322,7 @@ function report(){
  if(!R.okB)tips.push('You went over the client budget.');
  if(M.wrong)tips.push('You replaced '+M.wrong+' healthy part(s) while troubleshooting. Measure first!');
  return `<div class="k"><h3 style="margin:0">Result: ${'★'.repeat(R.stars)}${'☆'.repeat(3-R.stars)}</h3>
- Solar produced <b>${T.pv.toFixed(1)} kWh</b> · load <b>${T.load.toFixed(1)} kWh</b><br>Covered by solar/battery: <b>${Math.round(R.cov*100)}%</b> · imported ${T.imp.toFixed(1)} · exported ${T.exp.toFixed(1)} · unmet ${T.un.toFixed(1)} kWh<br>Safety: ${Math.round(R.saf*100)}% · repairs $${M.rep}<br><b>Payment: $${Math.max(0,R.pay)}</b></div>
+ Solar produced <b>${T.pv.toFixed(1)} kWh</b> · load <b>${T.load.toFixed(1)} kWh</b><br>Covered by solar/battery: <b>${Math.round(R.cov*100)}%</b> · imported ${T.imp.toFixed(1)} · exported ${T.exp.toFixed(1)} · unmet ${T.un.toFixed(1)} kWh<br>Safety: ${Math.round(R.saf*100)}% · repairs ${dh(M.rep)}<br><b>Payment: ${dh(Math.max(0,R.pay))}</b></div>
  ${tips.map(t=>`<div class="k warn">▲ ${t}</div>`).join('')}<button class="go" data-ph="1">Improve my design</button><button class="go" style="background:#fff" data-menu="1">Choose another client</button>`}
 function uiRun(){
  const M=G.sim;if(!M||M.done)return;
@@ -276,7 +343,7 @@ function chart(){
 }
 function menu(){
  const m=$('menu');m.style.display='flex';
- m.innerHTML=`<div class="card"><h1>SolarCraft 3D</h1><p>Energy Architect</p><h3>Mode</h3><div class="row">${[['career','Career'],['sandbox','Sandbox'],['edu','Educational']].map(([k,l])=>`<button data-mode="${k}" aria-pressed="${G.mode==k}">${l}</button>`).join('')}</div><h3>Choose a client</h3>${ST.map((s,i)=>{const lock=G.mode=='career'&&i>0&&!(G.stars[i-1]>0);return `<button class="cl" data-site="${i}" ${lock?'disabled':''}>${s.em} ${s.n}<small>${s.dem} kWh/day · ${s.grid?'grid-tied':'off-grid'} · budget $${s.bud}${G.stars[i]?' · '+'★'.repeat(G.stars[i]):''}${lock?' · finish the previous client first':''}</small></button>`}).join('')}</div>`;
+ m.innerHTML=`<div class="card"><h1>SolarCraft 3D</h1><p>Energy Architect</p><h3>Mode</h3><div class="row">${[['career','Career'],['sandbox','Sandbox'],['edu','Educational']].map(([k,l])=>`<button data-mode="${k}" aria-pressed="${G.mode==k}">${l}</button>`).join('')}</div><h3>Choose a client</h3>${ST.map((s,i)=>{const lock=G.mode=='career'&&i>0&&!(G.stars[i-1]>0);return `<button class="cl" data-site="${i}" ${lock?'disabled':''}>${s.em} ${s.n}<small>${s.dem} kWh/day · ${s.grid?'grid-tied':'off-grid'} · budget ${dh(s.bud)}${G.stars[i]?' · '+'★'.repeat(G.stars[i]):''}${lock?' · finish the previous client first':''}</small></button>`}).join('')}</div>`;
 }
 function pickSite(i){
  G.site=i;const L=layout(25);G.cfg={panel:0,n:Math.min(8,L.cap),S:4,inv:0,bt:1,bq:0,tilt:25,az:180,items:{fuse:0,breaker:0,spd:0,ground:0,clean:0}};
@@ -300,6 +367,7 @@ document.addEventListener('click',e=>{
   if(d.fix=='dead'){M.dead=0;M.msg='Inverter replaced.'}
   else if(f&&f.type==d.fix){f.fixed=1;M.read='';M.msg='✔ Fault fixed. Production resumes.'}
   else{M.wrong++;M.msg='That part was fine. Money wasted.'}return}
+ if(d.str){const L=layout(c.tilt),st=IVS[c.inv].t=='m'?1:Math.min(c.S,c.n);c.n=cl(c.n+ +d.str*st,1,L.cap);go(2);return}
  if(d.set){const[k,v]=d.set.split(':');
   if(k=='dec'){G.v.dec=+v;buildPath();go(0)}else if(k=='path'){G.v.path=!G.v.path;buildPath();go(0)}
   else if(k=='item'){c.items[v]=c.items[v]?0:1;go(1)}else{c[k]=+v;if(k=='bt'&&!c.bq)c.bq=+v?1:0;if(k=='bt'&&!+v)c.bq=0;if(k=='panel')buildPanels();go(1)}return}
@@ -310,9 +378,10 @@ document.addEventListener('input',e=>{
  if(t.id=='tm'){G.v.t=+t.value;$('tv').textContent=t.value;return}
  if(t.dataset.r){const k=t.dataset.r;G.cfg[k]=+t.value;$('v_'+k).textContent=t.value;
   if(k=='tilt'){const L=layout(G.cfg.tilt);if(G.cfg.n>L.cap){G.cfg.n=L.cap;go(2);return}}
+  if(k=='n'){const sl=document.querySelector('[data-r="S"]');if(sl){sl.max=Math.min(20,G.cfg.n);if(G.cfg.S>G.cfg.n){G.cfg.S=G.cfg.n;sl.value=G.cfg.S;$('v_S').textContent=G.cfg.S}}}
   buildPanels();updInstall();head()}
 });
-function upd(){if(G.ph==2)updInstall();if(G.ph==1){const d=design(),S=ST[G.site],el=$('cs');if(el)el.innerHTML=`<b>Total: $${cost()}</b> of $${S.bud}<br>${msgs(d)}`}if(G.ph==3&&!G.sim){const el=$('dz');if(el)el.innerHTML=msgs(design())}}
+function upd(){if(G.ph==2)updInstall();if(G.ph==1){const d=design(),S=ST[G.site],el=$('cs');if(el)el.innerHTML=`<b>Total: ${dh(cost())}</b> of ${dh(S.bud)}<br>${msgs(d)}`}if(G.ph==3&&!G.sim){const el=$('dz');if(el)el.innerHTML=msgs(design())}}
 let last=performance.now(),fc=0;
 function loop(now){
  const dt=Math.min(.1,(now-last)/1000);last=now;tick(dt);
