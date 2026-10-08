@@ -56,7 +56,7 @@ th{background:#1a365d;color:#fff}
 <div class="explain">
 <b>Cas A sans fenêtre :</b> Imagine que tu bouches la fenêtre avec du ciment, il n'y a plus de trou. La maison est complètement fermée. On fait ça pour voir combien de chaleur s'échappe juste par le mur.<br>
 <b>Cas B avec fenêtre :</b> On laisse la fenêtre avec du verre normal de 4 mm d'épaisseur. Le verre laisse passer beaucoup le froid, on veut voir la différence entre une maison sans fenêtre et avec fenêtre.<br>
-Pourquoi 2 fichiers ? ANSYS a besoin d'un fichier pour chaque situation, comme prendre une photo de la même maison une fois avec fenêtre et une fois sans.
+Pourquoi 2 fichiers ? ANSYS a besoin d'un fichier pour chaque situation.
 </div>
 <h2>4. Paramètres et Solution Animations</h2>
 <div class="explain">
@@ -83,11 +83,11 @@ On dit à l'ordinateur : dehors il fait 5°C, le radiateur 26°C, le mur en briq
 <h2>7-8. Température parois et Flux thermique </h2>
 <img src="avec.jpeg" alt="Avec isolation">
 <div class="explain">
-<b>Formules corrigées avec T_moy exact :</b><br>
+<b>Flux thermique et perte totale :</b><br>
 q = λ/ep * (T_moy - Tamb)<br>
 - Brique 0% Cas B : q = 1.0/0.10 * (12.5-5) = <b>75 W/m²</b> → simu Fluent 82 W/m² avec convection<br>
 - Brique isol Cas B : q = 0.025/0.10 * (20.1-5) = <b>3.775 W/m²</b> → simu 4.1 W/m²<br>
-- Verre Cas B 0% : q = 1.2/0.004 * (12.5-5) = <b>2250 W/m² th</b> → simu 210 W/m² avec h=10<br>
+- Verre Cas B 0% : q = 1.2/0.004 * (12.5-5) = <b>2250 W/m² th</b> → simu 210 W/m² <br>
 - Verre Cas B isol : q = 1.2/0.004 * (20.1-5) = <b>4530 W/m² th</b> → simu 210 W/m²<br><br>
 <b>Perte totale Q = q_mur*9.5 + q_fen*0.5</b><br>
 Sans isol : 82*9.5 + 210*0.5 = 884W → Fluent 1450W<br>
@@ -114,13 +114,13 @@ Avec isol : 4.1*9.5 + 210*0.5 = 144W → Fluent 155W<br>
   </div>
 </div>
 
-<h2>10. Interprétation - Conclusion</h2>
+<h2>10. Interprétation - Conclusion </h2>
 <div class="box">
-<b>1. Isolant héros :</b> λ 1.0 → 0.025 = 40x plus isolant. T 12.5→20.1°C. Économie 89.3%.<br>
-<b>2. Fenêtre pont thermique :</b> Même 0.5m fait perdre 2.3°C. q_verre 210 W/m² = 51x mur isolé 4.1 W/m². Solution double vitrage.<br>
-<b>3. Hiver/Été même loi :</b> Isolant garde chaud dedans l'hiver et dehors l'été (thermos).<br>
-<b>4. Conseil :</b> Brique+Isolation rho1600 c800 λ0.025 Ep10cm + double vitrage = 22°C hiver 25°C été facture mini.<br>
-<b>Valeurs source :</b> Tableau officiel rho 2530/2000/1600 c 720/1000/800 λ 1.2/1.0/0.025
+<b>1. L'isolant c'est le héros :</b> Sans isolant la maison est un frigo en hiver et un hammam en été et tu paies beaucoup d'électricité. Avec isolant tu économises 90% et tu vis bien. Passer de lambda 1.0 à 0.025 c'est énorme.<br><br>
+<b>2. La fenêtre c'est le méchant :</b> Même une petite fenêtre de 0,5m fait perdre 2,3 degrés car le verre est nul 210 W/m². Solution : double vitrage, deux verres avec de l'air entre eux pour que lambda devienne petit.<br><br>
+<b>3. Hiver et été même chose :</b> L'isolant bloque la chaleur dans les deux sens.<br><br>
+<b>4. Conseil pour maison :</b> Ne fais pas juste brique seule, ajoute 10 cm d'isolant Brique+Isolation rho1600. Et mets du double vitrage. Comme ça 22°C en hiver et 25°C en été sans grosse facture. Sinon tu vas payer 1450 watts et ta maison sera froide.<br><br>
+<b>Dernier exemple :</b> La maison c'est comme un verre de thé. Sans isolant, verre en métal, le thé refroidit en 5 minutes. Avec isolant, verre thermos, il reste chaud 5 heures. Et la fenêtre c'est comme laisser le couvercle ouvert, même le thermos ne sert à rien si le couvercle est ouvert !
 </div>
 <p style="text-align:center;color:#888;margin-top:20px">                              | ANSYS Fluent 2024 R1 | </p>
 </div>
