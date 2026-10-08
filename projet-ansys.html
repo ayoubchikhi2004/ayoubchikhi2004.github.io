@@ -46,7 +46,7 @@ th{background:#1a365d;color:#fff}
 <h2>1. Description du système</h2>
 <img src="original.jpeg" alt="Image originale">
 <div class="box">Environnement 6m x 3m Tamb 5°C / 44°C | Chambre 3m x 2m Mur ep 10cm<br>Fenêtre verre ep 0.004m | CVC1 chauffage 26°C ep 0.05m | CVC2 clim 22°C ep 0.05m</div>
-<div class="explain"><b>Explication :</b> Grand rectangle 6x3 c'est l'environnement, petit 3x2 c'est la chambre. Mur 10cm. Fenêtre 0.5m verre 4mm. CVC1 26°C et CVC2 22°C en aluminium ep 0.05m.</div>
+<div class="explain"><b>Explication :</b> Grand rectangle 6x3 c'est l'environnement, petit 3x2 c'est la chambre. Mur 10cm. Fenêtre 0.5m verre 4mm. CVC1 26°C et CVC2 22°C en aluminium ep 0.05m. Étude en 2D.</div>
 
 <h2>2. Dessin et Maillage</h2>
 <img src="schema.jpeg" alt="Schéma">
@@ -83,16 +83,16 @@ On dit à l'ordinateur : dehors il fait 5°C, le radiateur 26°C, le mur en briq
 <h2>7-8. Température parois et Flux thermique </h2>
 <img src="avec.jpeg" alt="Avec isolation">
 <div class="explain">
-<b>Flux thermique et perte totale :</b><br>
+<b>Flux thermique et perte totale (étude 2D) :</b><br>
 Formule conduction 1D avec convection aux parois : q = ΔT / R_total avec R_total = 1/h_int + ep/λ + 1/h_ext (h = 10 W/m²K)<br><br>
 <b>Mur Brique 0% Cas B :</b> R_total = 0.10 + 0.10 + 0.10 = 0.30 → q = (12.5−5)/0.30 ≈ <b>25 W/m² (th 1D)</b> → simu Fluent <b>82 W/m²</b><br>
 <b>Mur Brique isol Cas B :</b> R_total = 0.10 + 4.0 + 0.10 = 4.20 → q = (20.1−5)/4.20 ≈ <b>3.6 W/m² (th 1D)</b> → simu Fluent <b>4.1 W/m²</b><br>
 <b>Verre Cas B 0% :</b> R_total = 0.10 + 0.00333 + 0.10 = 0.2033 → q = (12.5−5)/0.2033 ≈ <b>37 W/m² (th 1D)</b> → simu Fluent <b>210 W/m²</b><br>
 <b>Verre Cas B isol :</b> R_total = 0.10 + 0.00333 + 0.10 = 0.2033 → q = (20.1−5)/0.2033 ≈ <b>74 W/m² (th 1D)</b> → simu Fluent <b>210 W/m²</b><br><br>
-<b>Perte totale Q = q_mur*9.5 + q_fen*0.5</b><br>
-Sans isol : 82*9.5 + 210*0.5 = 779 + 105 = <b>884 W</b> → Fluent 1450W<br>
-Avec isol : 4.1*9.5 + 210*0.5 = 39 + 105 = <b>144 W</b> → Fluent 155W<br>
-<b>Économie ≈ 84% (sur Q Fluent : 1450 → 155 W)</b>
+<b>Perte totale en 2D (par mètre de profondeur) : Q = q_mur × 9.5 + q_fen × 0.5</b><br>
+Sans isol : 82 × 9.5 + 210 × 0.5 = 779 + 105 = <b>884 W/m</b><br>
+Avec isol : 4.1 × 9.5 + 210 × 0.5 = 39 + 105 = <b>144 W/m</b><br>
+<b>Économie ≈ 84% !</b>
 </div>
 
 <h2>9. Climatisation Tamb 44°C Source 22°C + Profils</h2>
@@ -116,10 +116,10 @@ Avec isol : 4.1*9.5 + 210*0.5 = 39 + 105 = <b>144 W</b> → Fluent 155W<br>
 
 <h2>10. Interprétation - Conclusion </h2>
 <div class="box">
-<b>1. L'isolant c'est le héros :</b> Sans isolant la maison est un frigo en hiver et un hammam en été et tu paies beaucoup d'électricité. Avec isolant tu économises environ 85–90% et tu vis bien. Passer de lambda 1.0 à 0.025 c'est énorme.<br><br>
+<b>1. L'isolant c'est le héros :</b> Sans isolant la maison est un frigo en hiver et un hammam en été et tu paies beaucoup d'électricité. Avec isolant tu économises environ 84% et tu vis bien. Passer de lambda 1.0 à 0.025 c'est énorme.<br><br>
 <b>2. La fenêtre c'est le méchant :</b> Même une petite fenêtre de 0,5m fait perdre 2,3 degrés car le verre est nul 210 W/m². Solution : double vitrage, deux verres avec de l'air entre eux pour que lambda devienne petit.<br><br>
 <b>3. Hiver et été même chose :</b> L'isolant bloque la chaleur dans les deux sens.<br><br>
-<b>4. Conseil pour maison :</b> Ne fais pas juste brique seule, ajoute 10 cm d'isolant Brique+Isolation rho1600. Et mets du double vitrage. Comme ça 22°C en hiver et 25°C en été sans grosse facture. Sinon tu vas payer 1450 watts et ta maison sera froide.<br><br>
+<b>4. Conseil pour maison :</b> Ne fais pas juste brique seule, ajoute 10 cm d'isolant Brique+Isolation rho1600. Et mets du double vitrage. Comme ça 22°C en hiver et 25°C en été sans grosse facture.<br><br>
 <b>Dernier exemple :</b> La maison c'est comme un verre de thé. Sans isolant, verre en métal, le thé refroidit en 5 minutes. Avec isolant, verre thermos, il reste chaud 5 heures. Et la fenêtre c'est comme laisser le couvercle ouvert, même le thermos ne sert à rien si le couvercle est ouvert !
 </div>
 <p style="text-align:center;color:#888;margin-top:20px">                              | ANSYS Fluent 2024 R1 | </p>
