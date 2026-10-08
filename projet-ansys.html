@@ -84,15 +84,15 @@ On dit à l'ordinateur : dehors il fait 5°C, le radiateur 26°C, le mur en briq
 <img src="avec.jpeg" alt="Avec isolation">
 <div class="explain">
 <b>Flux thermique et perte totale :</b><br>
-q = λ/ep * (T_moy - Tamb)<br>
-- Brique 0% Cas B : q = 1.0/0.10 * (12.5-5) = <b>75 W/m²</b> → simu Fluent 82 W/m² avec convection<br>
-- Brique isol Cas B : q = 0.025/0.10 * (20.1-5) = <b>3.775 W/m²</b> → simu 4.1 W/m²<br>
-- Verre Cas B 0% : q = 1.2/0.004 * (12.5-5) = <b>2250 W/m² th</b> → simu 210 W/m² <br>
-- Verre Cas B isol : q = 1.2/0.004 * (20.1-5) = <b>4530 W/m² th</b> → simu 210 W/m²<br><br>
+Formule conduction 1D avec convection aux parois : q = ΔT / R_total avec R_total = 1/h_int + ep/λ + 1/h_ext (h = 10 W/m²K)<br><br>
+<b>Mur Brique 0% Cas B :</b> R_total = 0.10 + 0.10 + 0.10 = 0.30 → q = (12.5−5)/0.30 ≈ <b>25 W/m² (th 1D)</b> → simu Fluent <b>82 W/m²</b><br>
+<b>Mur Brique isol Cas B :</b> R_total = 0.10 + 4.0 + 0.10 = 4.20 → q = (20.1−5)/4.20 ≈ <b>3.6 W/m² (th 1D)</b> → simu Fluent <b>4.1 W/m²</b><br>
+<b>Verre Cas B 0% :</b> R_total = 0.10 + 0.00333 + 0.10 = 0.2033 → q = (12.5−5)/0.2033 ≈ <b>37 W/m² (th 1D)</b> → simu Fluent <b>210 W/m²</b><br>
+<b>Verre Cas B isol :</b> R_total = 0.10 + 0.00333 + 0.10 = 0.2033 → q = (20.1−5)/0.2033 ≈ <b>74 W/m² (th 1D)</b> → simu Fluent <b>210 W/m²</b><br><br>
 <b>Perte totale Q = q_mur*9.5 + q_fen*0.5</b><br>
-Sans isol : 82*9.5 + 210*0.5 = 884W → Fluent 1450W<br>
-Avec isol : 4.1*9.5 + 210*0.5 = 144W → Fluent 155W<br>
-<b>Économie 90% !</b>
+Sans isol : 82*9.5 + 210*0.5 = 779 + 105 = <b>884 W</b> → Fluent 1450W<br>
+Avec isol : 4.1*9.5 + 210*0.5 = 39 + 105 = <b>144 W</b> → Fluent 155W<br>
+<b>Économie ≈ 84% (sur Q Fluent : 1450 → 155 W)</b>
 </div>
 
 <h2>9. Climatisation Tamb 44°C Source 22°C + Profils</h2>
@@ -116,7 +116,7 @@ Avec isol : 4.1*9.5 + 210*0.5 = 144W → Fluent 155W<br>
 
 <h2>10. Interprétation - Conclusion </h2>
 <div class="box">
-<b>1. L'isolant c'est le héros :</b> Sans isolant la maison est un frigo en hiver et un hammam en été et tu paies beaucoup d'électricité. Avec isolant tu économises 90% et tu vis bien. Passer de lambda 1.0 à 0.025 c'est énorme.<br><br>
+<b>1. L'isolant c'est le héros :</b> Sans isolant la maison est un frigo en hiver et un hammam en été et tu paies beaucoup d'électricité. Avec isolant tu économises environ 85–90% et tu vis bien. Passer de lambda 1.0 à 0.025 c'est énorme.<br><br>
 <b>2. La fenêtre c'est le méchant :</b> Même une petite fenêtre de 0,5m fait perdre 2,3 degrés car le verre est nul 210 W/m². Solution : double vitrage, deux verres avec de l'air entre eux pour que lambda devienne petit.<br><br>
 <b>3. Hiver et été même chose :</b> L'isolant bloque la chaleur dans les deux sens.<br><br>
 <b>4. Conseil pour maison :</b> Ne fais pas juste brique seule, ajoute 10 cm d'isolant Brique+Isolation rho1600. Et mets du double vitrage. Comme ça 22°C en hiver et 25°C en été sans grosse facture. Sinon tu vas payer 1450 watts et ta maison sera froide.<br><br>
