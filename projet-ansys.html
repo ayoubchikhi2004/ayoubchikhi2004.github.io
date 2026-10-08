@@ -53,13 +53,14 @@ th{background:#1a365d;color:#fff}
 <div class="explain"><b>Maillage :</b> 120 000 cellules. Raffinage 1cm au mur et fenêtre, 5cm à l'environnement. Méthode : Quad Dominant.</div>
 
 <h2>3. Cas A sans fenêtre / Cas B avec fenêtre</h2>
-<div class="explain"><b>Cas A :</b> On bouche la fenêtre, maison fermée pour voir perte par mur seulement.<br><b>Cas B :</b> Fenêtre verre 4mm lambda 1.2, on voit l'effet pont thermique.</div>
-
-<h2>3. Cas A sans fenêtre / Cas B avec fenêtre</h2>
 <div class="explain">
 <b>Cas A sans fenêtre :</b> Imagine que tu bouches la fenêtre avec du ciment, il n'y a plus de trou. La maison est complètement fermée. On fait ça pour voir combien de chaleur s'échappe juste par le mur.<br>
 <b>Cas B avec fenêtre :</b> On laisse la fenêtre avec du verre normal de 4 mm d'épaisseur. Le verre laisse passer beaucoup le froid, on veut voir la différence entre une maison sans fenêtre et avec fenêtre.<br>
 Pourquoi 2 fichiers ? ANSYS a besoin d'un fichier pour chaque situation, comme prendre une photo de la même maison une fois avec fenêtre et une fois sans.
+</div>
+<h2>4. Paramètres et Solution Animations</h2>
+<div class="explain">
+On dit à l'ordinateur : dehors il fait 5°C, le radiateur 26°C, le mur en brique, la fenêtre en verre. On choisit Steady, ça veut dire que la chaleur est stable, elle ne change pas chaque seconde. On lui dit de continuer à calculer jusqu'à ce que l'erreur soit toute petite 0,000001, après il s'arrête, pour que le résultat soit 100% correct. L'option solution animations nous montre un petit film de la chaleur qui passe du bleu froid au rouge chaud et qui se répand dans la maison.
 </div>
 <h2>5. Température moyenne - Chauffage Tamb 5°C</h2>
 <img src="sans.jpeg" alt="Sans isolation">
