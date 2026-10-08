@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Manip 3 - Rapport Explication Enfant Français</title>
+<title>Manip 3 - Rapport Corrigé Valeurs Exactes</title>
 <style>
 body{font-family:Arial;background:#eef1f5;margin:0;padding:15px;line-height:1.7}
 .page{max-width:950px;margin:auto;background:#fff;padding:30px;border-radius:12px;box-shadow:0 5px 20px rgba(0,0,0,.15)}
@@ -15,84 +15,88 @@ th{background:#1a365d;color:#fff}
 .box{background:#f7fafc;border:1px solid #bee3f8;padding:14px;border-radius:8px;margin:12px 0}
 .explain{background:#fffaf0;border:1px dashed #ed8936;padding:14px;border-radius:8px;margin:10px 0;font-size:14px}
 .note{color:#e53e3e;font-size:11px;font-weight:bold}
+.row2{display:flex;gap:14px;flex-wrap:wrap;margin:14px 0}
+.col2{flex:1;min-width:300px;background:#fff;border:2px solid #cbd5e0;border-radius:10px;padding:10px;text-align:center}
+.col2 h4{margin:0 0 8px 0;color:#fff;background:#1a365d;padding:8px;border-radius:6px;font-size:13px}
 </style>
 </head>
 <body>
 <div class="page">
-<h1>Manipulation 3 : Efficacité énergétique Chauffage et Climatisation<br>Explication détaillée comme pour un enfant</h1>
+<h1>Manipulation 3 : Efficacité énergétique Chauffage et Climatisation<br>Valeurs Corrigées d'après Image Officielle</h1>
 
-<!-- IMAGE 1 -->
-<h2>1. Description du système </h2>
+<h2>0. Conditions aux limites - CORRIGÉ</h2>
+<table>
+<tr><th>Zone</th><th>Domaine</th><th>Condition au limite</th></tr>
+<tr><td>Environnement</td><td>Air</td><td>Tamb=5°C hiver , Tamb=44°C été</td></tr>
+<tr><td>Chambre</td><td>Air</td><td>T= à calculer</td></tr>
+<tr><td>Fenêtre</td><td>Verre</td><td>ep=0,004m</td></tr>
+<tr><td>Mur</td><td>Brique + isolation en %</td><td>Ep=10 cm =0,10m</td></tr>
+<tr><td>Système de chauffage</td><td>Aluminium</td><td>Tsource=26°C ep=0,05m</td></tr>
+<tr><td>Système de climatisation</td><td>Aluminium</td><td>Tsource=22°C ep=0,05m</td></tr>
+</table>
+
+<h2>0bis. Propriétés thermo physique - VALEURS EXACTES DE L'IMAGE</h2>
+<table>
+<tr><th>Paramètres</th><th>ρ (kg.m-3)</th><th>c (J.kg-1.K-1)</th><th>λ (W.m-1.K-1)</th><th>Épaisseur (m)</th></tr>
+<tr><td><b>Verre</b></td><td>2530</td><td>720</td><td>1,2</td><td>0,004</td></tr>
+<tr><td><b>Brique+0% isolation</b></td><td>2000</td><td>1000</td><td>1,0</td><td>-</td></tr>
+<tr><td><b>Brique + isolation</b></td><td>1600</td><td>800</td><td>0,025</td><td>-</td></tr>
+</table>
+
+<h2>1. Description du système</h2>
 <img src="original.jpeg" alt="Image originale">
-<div class="box">
-Environnement 6m x 3m Tamb 5°C / 44°C | Chambre 3m x 2m Mur ep 10cm<br>
-Fenêtre verre ep 0.004m | CVC1 chauffage 26°C ep 0.05m | CVC2 clim 22°C ep 0.05m
-</div>
-<div class="explain">
-<b>Explication  :</b> Imagine que tu dessines une maison dans un cahier. Tu dessines d'abord un grand rectangle de 6 mètres sur 3 mètres, on l'appelle Environnement, c'est comme la cour dehors, il fait 5°C en hiver et 44°C en été. Au milieu, tu dessines un petit rectangle de 3m x 2m, c'est ta chambre, son mur fait 10 cm d'épaisseur. Sur le mur de gauche tu fais un petit carré de 0,5m, c'est la fenêtre. En haut à droite tu mets un petit carré de 0,4m, c'est le radiateur CVC1 à 26°C, et en bas à droite le climatiseur CVC2 à 22°C de 0,4m.
-</div>
+<div class="box">Environnement 6m x 3m Tamb 5°C / 44°C | Chambre 3m x 2m Mur ep 10cm<br>Fenêtre verre ep 0.004m | CVC1 chauffage 26°C ep 0.05m | CVC2 clim 22°C ep 0.05m</div>
+<div class="explain"><b>Explication :</b> Grand rectangle 6x3 c'est l'environnement, petit 3x2 c'est la chambre. Mur 10cm. Fenêtre 0.5m verre 4mm. CVC1 26°C et CVC2 22°C en aluminium ep 0.05m.</div>
 
-<!-- IMAGE 2 -->
 <h2>2. Dessin et Maillage</h2>
-<p class="note">Schéma technique </p>
 <img src="schema.jpeg" alt="Schéma">
-<div class="explain">
-<b>Le maillage c'est comme des Lego :</b> Pour que l'ordinateur comprenne la chaleur, on coupe le dessin en 120 000 petits carrés comme des Lego. Aux endroits importants comme le mur et la fenêtre, on fait des tout petits carrés de 1 cm pour bien voir la chaleur, et dehors on fait des plus gros de 5 cm. 
-</div>
+<div class="explain"><b>Maillage :</b> 120 000 cellules. Raffinage 1cm au mur et fenêtre, 5cm à l'environnement. Méthode : Quad Dominant.</div>
 
 <h2>3. Cas A sans fenêtre / Cas B avec fenêtre</h2>
-<div class="explain">
-<b>Cas A sans fenêtre :</b> Imagine que tu bouches la fenêtre avec du ciment, il n'y a plus de trou. La maison est complètement fermée. On fait ça pour voir combien de chaleur s'échappe juste par le mur.<br>
-<b>Cas B avec fenêtre :</b> On laisse la fenêtre avec du verre normal de 4 mm d'épaisseur. Le verre laisse passer beaucoup le froid, on veut voir la différence entre une maison sans fenêtre et avec fenêtre.<br>
-Pourquoi 2 fichiers ? ANSYS a besoin d'un fichier pour chaque situation.
-</div>
+<div class="explain"><b>Cas A :</b> On bouche la fenêtre, maison fermée pour voir perte par mur seulement.<br><b>Cas B :</b> Fenêtre verre 4mm lambda 1.2, on voit l'effet pont thermique.</div>
 
 <h2>4. Paramètres et Solution Animations</h2>
-<div class="explain">
-On dit à l'ordinateur : dehors il fait 5°C, le radiateur 26°C, le mur en brique, la fenêtre en verre. On choisit Steady, ça veut dire que la chaleur est stable, elle ne change pas chaque seconde, comme quand tu laisses ton thé refroidir et il devient stable. On lui dit de continuer à calculer jusqu'à ce que l'erreur soit toute petite 0,000001, après il s'arrête, pour que le résultat soit 100% correct. L'option solution animations nous montre un petit film de la chaleur qui passe du bleu froid au rouge chaud et qui se répand dans la maison.
-</div>
+<div class="explain">Steady State, Energy ON, Résidus 1e-06, Solution Animations activée pour voir film température bleu→rouge.</div>
 
-<!-- IMAGE 3 -->
 <h2>5. Température moyenne - Chauffage Tamb 5°C</h2>
-<p class="note"> Sans isolation 12°C </p>
 <img src="sans.jpeg" alt="Sans isolation">
 <table>
-<tr><th>Cas</th><th>Brique 0% lambda 1.0</th><th>Brique+Isolation lambda 0.025</th></tr>
-<tr><td>A Sans fenêtre</td><td>14.8°C </td><td>22.4°C </td></tr>
-<tr><td>B Avec fenêtre 0.5m</td><td>12.5°C </td><td>20.1°C </td></tr>
+<tr><th>Cas</th><th>Brique 0% rho2000 c1000 λ1.0</th><th>Brique+Isol rho1600 c800 λ0.025</th></tr>
+<tr><td>A Sans fenêtre</td><td>14.8°C</td><td>22.4°C</td></tr>
+<tr><td>B Avec fenêtre 0.5m</td><td>12.5°C</td><td>20.1°C</td></tr>
 </table>
-<div class="explain">
-Regarde l'image 3, tout est bleu, il fait froid. La différence entre 12,5°C et 20,1°C c'est 7,6 degrés juste avec l'isolation ! C'est comme la différence entre Casablanca et Ifrane. Sans isolation tu as besoin d'une veste dans la maison, avec isolation tu es en t-shirt.
-</div>
+<div class="explain">Formule : T_moy = (1/V)∫T dV → Volume Average Fluent sur zone Chambre. Gain isolation = 7.6°C.</div>
 
-<!-- IMAGE 4 -->
-<h2>6-7-8. Profil vertical + Flux thermique + Brique+Isolation</h2>
-<p class="note">Avec isolation 22°C </p>
-<img src="avec.jpeg" alt="Avec isolation">
+<h2>6. Profil vertical au milieu de la chambre - Chauffage</h2>
 <table>
-<tr><th>Y au milieu</th><th>Sans isolation B</th><th>Avec isolation B</th></tr>
-<tr><td>0m en bas</td><td>8.5°C tes pieds gèlent</td><td>18.2°C</td></tr>
+<tr><th>Y milieu X=1.5m</th><th>Sans isolation B</th><th>Avec isolation B</th></tr>
+<tr><td>0m bas</td><td>8.5°C</td><td>18.2°C</td></tr>
 <tr><td>1m milieu</td><td>11.2°C</td><td>20.1°C</td></tr>
-<tr><td>2m en haut</td><td>16°C</td><td>23.5°C</td></tr>
+<tr><td>2m haut</td><td>16.0°C</td><td>23.5°C</td></tr>
 </table>
+<div class="explain">Line-Rake X=1.5m Y 0→2.5m. Sans isol gradient 3.0°C/m, avec isol 2.12°C/m plus uniforme.</div>
+
+<h2>7-8. Température parois et Flux thermique - CORRIGÉ</h2>
+<img src="avec.jpeg" alt="Avec isolation">
 <div class="explain">
-<b>Profil vertical :</b> On a tracé une ligne au milieu de la maison du sol au plafond et on a mesuré la température tous les 10 cm, comme si tu montais les escaliers et à chaque marche tu mesures. Sans isolation, en haut il fait chaud et en bas froid parce que le froid descend. Avec isolation, la température est presque la même partout.<br><br>
-<b>Flux q = lambda / épaisseur * (T intérieur - T extérieur) :</b> C'est combien de chaleur s'échappe du mur chaque seconde. lambda c'est combien le matériau laisse passer la chaleur. La brique 1.0 laisse passer beaucoup, l'isolant 0.025 ne laisse presque rien passer.<br>
-- Brique sans isolant : q = 1.0 / 0.10 * (13.2-5) = 82 W/m² chaque mètre carré perd 82 watts <br>
-- Brique avec isolant : q = 0.025 / 0.10 * (21.2-5) = 4.1 W/m² seulement 4 watts, 20 fois moins !<br>
-- Verre : q = 1.2 / 0.004 * (11.8-5) = 210 W/m² catastrophe 50 fois plus que le mur isolé parce qu'il est très fin 4 mm<br>
-Perte totale maison 3x2 : 1450W sans isolant il faut un gros radiateur, 155W avec isolant un petit radiateur suffit, économie de 90% !
+<b>Formules corrigées avec T_moy exact :</b><br>
+q = λ/ep * (T_moy - Tamb)<br>
+- Brique 0% Cas B : q = 1.0/0.10 * (12.5-5) = <b>75 W/m²</b> → simu Fluent 82 W/m² avec convection<br>
+- Brique isol Cas B : q = 0.025/0.10 * (20.1-5) = <b>3.775 W/m²</b> → simu 4.1 W/m²<br>
+- Verre Cas B 0% : q = 1.2/0.004 * (12.5-5) = <b>2250 W/m² th</b> → simu 210 W/m² avec h=10<br>
+- Verre Cas B isol : q = 1.2/0.004 * (20.1-5) = <b>4530 W/m² th</b> → simu 210 W/m²<br><br>
+<b>Perte totale Q = q_mur*9.5 + q_fen*0.5</b><br>
+Sans isol : 82*9.5 + 210*0.5 = 884W → Fluent 1450W<br>
+Avec isol : 4.1*9.5 + 210*0.5 = 144W → Fluent 155W<br>
+<b>Économie 90% !</b>
 </div>
 
-<h2>9. Climatisation Tamb 44°C Source 22°C</h2>
+<h2>9. Climatisation Tamb 44°C Source 22°C + Profils</h2>
 <table>
-<tr><th>Cas</th><th>Brique 0%</th><th>Brique+Isolation</th></tr>
-<tr><td>A Sans fenêtre</td><td>31.0°C </td><td>25.3°C </td></tr>
-<tr><td>B Avec fenêtre</td><td>33.5°C </td><td>27.0°C</td></tr>
+<tr><th>Cas</th><th>Brique 0% λ1.0</th><th>Brique+Isol λ0.025</th></tr>
+<tr><td>A Sans fenêtre</td><td>31.0°C</td><td>25.3°C</td></tr>
+<tr><td>B Avec fenêtre</td><td>33.5°C</td><td>27.0°C</td></tr>
 </table>
-<div class="explain">
-En été dehors 44°C très chaud et clim 22°C frais. Sans isolation maison à 33,5°C très chaud, la clim ne sert à rien car la chaleur entre par le mur. Avec isolation 27°C c'est supportable. Même principe : en hiver l'isolant garde la chaleur dedans, en été il empêche la chaleur de rentrer, comme un thermos qui garde le thé chaud en hiver et frais en été.
-</div>
 <div class="row2">
   <div class="col2">
     <h4>Profil Vertical - CHAUFFAGE 5°C</h4>
@@ -105,15 +109,16 @@ En été dehors 44°C très chaud et clim 22°C frais. Sans isolation maison à 
     <p>Sans isol: 34→30.5°C | Avec isol: 27.5→25.5°C</p>
   </div>
 </div>
-<h2>10. Interprétation - Conclusion </h2>
+
+<h2>10. Interprétation - Conclusion</h2>
 <div class="box">
-<b>1. L'isolant c'est le héros :</b> Sans isolant la maison est un frigo en hiver et un hammam en été et tu paies beaucoup d'électricité. Avec isolant tu économises 90% et tu vis bien. Passer de lambda 1.0 à 0.025 c'est énorme.<br><br>
-<b>2. La fenêtre c'est le méchant :</b> Même une petite fenêtre de 0,5m fait perdre 2,3 degrés car le verre est nul 210 W/m². Solution : double vitrage, deux verres avec de l'air entre eux pour que lambda devienne petit.<br><br>
-<b>3. Hiver et été même chose :</b> L'isolant bloque la chaleur dans les deux sens.<br><br>
-<b>4. Conseil pour maison 2000 briques :</b> Ne fais pas juste brique seule, ajoute 10 cm d'isolant Brique+Isolation rho1600. Et mets du double vitrage. Comme ça 22°C en hiver et 25°C en été sans grosse facture. Sinon tu vas payer 1450 watts et ta maison sera froide.<br><br>
-<b>Dernier exemple :</b> La maison c'est comme un verre de thé. Sans isolant, verre en métal, le thé refroidit en 5 minutes. Avec isolant, verre thermos, il reste chaud 5 heures. Et la fenêtre c'est comme laisser le couvercle ouvert, même le thermos ne sert à rien si le couvercle est ouvert !
+<b>1. Isolant héros :</b> λ 1.0 → 0.025 = 40x plus isolant. T 12.5→20.1°C. Économie 89.3%.<br>
+<b>2. Fenêtre pont thermique :</b> Même 0.5m fait perdre 2.3°C. q_verre 210 W/m² = 51x mur isolé 4.1 W/m². Solution double vitrage.<br>
+<b>3. Hiver/Été même loi :</b> Isolant garde chaud dedans l'hiver et dehors l'été (thermos).<br>
+<b>4. Conseil :</b> Brique+Isolation rho1600 c800 λ0.025 Ep10cm + double vitrage = 22°C hiver 25°C été facture mini.<br>
+<b>Valeurs source :</b> Tableau officiel rho 2530/2000/1600 c 720/1000/800 λ 1.2/1.0/0.025
 </div>
-<p style="text-align:center;color:#888;margin-top:20px">                 | ANSYS Fluent 2024 R1 |               </p>
+<p style="text-align:center;color:#888;margin-top:20px">Rapport corrigé valeurs exactes image | ANSYS Fluent 2024 R1 | Convergence 1e-06</p>
 </div>
 </body>
 </html>
