@@ -62,12 +62,15 @@
   th{background:#f1f5f9; color:#0f172a; font-weight:600}
   tr:nth-child(even) td{background:#f8fafc}
   .grid2{display:grid; grid-template-columns:1fr 1fr; gap:20px}
-  @media(max-width:860px){.grid2{grid-template-columns:1fr}}
+  .grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px}
+  @media(max-width:860px){.grid2, .grid3{grid-template-columns:1fr}}
   figure{margin:20px 0; text-align:center}
   figure img{
     max-width:100%; border:1px solid var(--line); border-radius:12px;
     background:#fff; box-shadow:0 4px 10px rgba(0,0,0,.05);
+    transition: transform 0.2s;
   }
+  figure img:hover { transform: scale(1.02); }
   figcaption{font-size:.88rem; color:var(--muted); margin-top:10px; font-style:italic}
   pre{
     background:var(--code-bg); color:var(--code-ink);
@@ -80,12 +83,6 @@
     font-family:Consolas, monospace; font-size:.9em; direction:ltr;
     display:inline-block;
   }
-  .badge{
-    display:inline-block; background:var(--accent); color:#fff;
-    border-radius:20px; padding:3px 14px; font-size:.8rem; font-weight:600;
-  }
-  .badge.red{background:var(--accent2)}
-  .badge.gray{background:#64748b}
   .formula-box{
     direction:ltr; text-align:center; font-size:1.1rem; font-weight:bold;
     background:#f8fafc; padding:15px; border-radius:10px; margin:15px 0;
@@ -172,9 +169,49 @@
   </div>
 </section>
 
-<!-- ============ 2. CALCULS ============ -->
+<!-- ============ 2. SPECTRES ET DÉCOMPOSITION ============ -->
 <section class="card">
-  <h2>2. Calcul des rapports d'intensités (Facteurs de Scofield)</h2>
+  <h2>2. Analyse Détaillée des 12 Spectres (Décomposition Individuelle)</h2>
+  <p>
+    Voici l'ensemble des spectres bruts et leurs décompositions. Chaque spectre est traité individuellement pour extraire les composantes chimiques expliquées dans la section précédente.
+  </p>
+
+  <h3>2.1 Carbone (C<sub>1s</sub>)</h3>
+  <div class="grid3">
+    <figure><img src="C1s-Red.png" alt="C1s Red"><figcaption>PT<sub>Re</sub> : Pic principal intense, peu de défauts.</figcaption></figure>
+    <figure><img src="C1s-Ox.png" alt="C1s Ox"><figcaption>PT<sub>Ox</sub> : Apparition des composantes de dopage.</figcaption></figure>
+    <figure><img src="C1s-Ov.png" alt="C1s Ov"><figcaption>PT<sub>Ov</sub> : Pic C=O bien visible à 289 eV.</figcaption></figure>
+  </div>
+
+  <h3>2.2 Chlore (Cl<sub>2p</sub>)</h3>
+  <div class="grid3">
+    <figure><img src="Cl2p-Red.png" alt="Cl2p Red"><figcaption>PT<sub>Re</sub> : Signal faible, perchlorate piégé.</figcaption></figure>
+    <figure><img src="Cl2p-Ox.png" alt="Cl2p Ox"><figcaption>PT<sub>Ox</sub> : Pic dopant (207 eV) intense.</figcaption></figure>
+    <figure><img src="Cl2p-Ov.png" alt="Cl2p Ov"><figcaption>PT<sub>Ov</sub> : Apparition du pic C-Cl (200 eV).</figcaption></figure>
+  </div>
+
+  <h3>2.3 Soufre (S<sub>2p</sub>)</h3>
+  <div class="grid3">
+    <figure><img src="S2p-Red.png" alt="S2p Red"><figcaption>PT<sub>Re</sub> : Cycle thiophène intact.</figcaption></figure>
+    <figure><img src="S2p-Ox.png" alt="S2p Ox"><figcaption>PT<sub>Ox</sub> : Croissance du S⁺ (oxydation).</figcaption></figure>
+    <figure><img src="S2p-Ov.png" alt="S2p Ov"><figcaption>PT<sub>Ov</sub> : Apparition de S=O et SO₂.</figcaption></figure>
+  </div>
+
+  <h3>2.4 Oxygène (O<sub>1s</sub>)</h3>
+  <div class="grid3">
+    <figure><img src="O1s-Red.png" alt="O1s Red"><figcaption>PT<sub>Re</sub> : Signal faible, eau résiduelle.</figcaption></figure>
+    <figure><img src="O1s-Ox.png" alt="O1s Ox"><figcaption>PT<sub>Ox</sub> : Augmentation de l'intensité.</figcaption></figure>
+    <figure><img src="O1s-Ov.png" alt="O1s Ov"><figcaption>PT<sub>Ov</sub> : Explosion de l'intensité (C=O, S=O).</figcaption></figure>
+  </div>
+
+  <div class="note">
+    <b>Méthode de décomposition :</b> Chaque spectre a été décomposé en utilisant des fonctions de Voigt, avec une ligne de base linéaire. Les paramètres d'ajustement (position, largeur, amplitude) ont été optimisés par algorithme pour chaque spectre individuellement, comme le montre le script Python ci-dessous.
+  </div>
+</section>
+
+<!-- ============ 3. CALCULS ============ -->
+<section class="card">
+  <h2>3. Calcul des rapports d'intensités (Facteurs de Scofield)</h2>
   <p>
     Les mesures brutes d'intensité (le nombre d'électrons comptés par la machine) ne sont pas directement proportionnelles au nombre d'atomes présents. Certains atomes sont plus "faciles" à détecter que d'autres. Pour corriger cela, nous utilisons des <b>facteurs de sensibilité</b> (Scofield factors).
   </p>
@@ -228,9 +265,9 @@
   </p>
 </section>
 
-<!-- ============ 3. COMPOSITION ============ -->
+<!-- ============ 4. COMPOSITION ============ -->
 <section class="card">
-  <h2>3. Composition élémentaire des échantillons</h2>
+  <h2>4. Composition élémentaire des échantillons</h2>
   <p>
     En regroupant les calculs, voici la composition chimique de surface de nos trois échantillons. Cela nous montre comment les atomes s'organisent lorsque le polymère passe d'un état à l'autre.
   </p>
@@ -273,9 +310,9 @@
   </div>
 </section>
 
-<!-- ============ 4. TAUX DE DOPAGE ============ -->
+<!-- ============ 5. TAUX DE DOPAGE ============ -->
 <section class="card">
-  <h2>4. Variation du taux de dopage avec l'état d'oxydation</h2>
+  <h2>5. Variation du taux de dopage avec l'état d'oxydation</h2>
   <p>
     Le "dopage" est le processus qui rend le polymère conducteur. Il se fait par l'insertion d'ions perchlorate (ClO₄⁻) provenant de l'électrolyte. Pour mesurer ce taux, nous regardons le rapport entre le chlore sous forme de dopant (pic à 207 eV) et le soufre total (pic à 164 eV), qui représente le nombre de motifs du polymère.
   </p>
@@ -310,9 +347,9 @@
   </p>
 </section>
 
-<!-- ============ 5. IMPLICATION ÉLECTROLYTE ============ -->
+<!-- ============ 6. IMPLICATION ÉLECTROLYTE ============ -->
 <section class="card">
-  <h2>5. Implication de l'électrolyte support dans la dégradation</h2>
+  <h2>6. Implication de l'électrolyte support dans la dégradation</h2>
   <p>
     L'électrolyte support (LiClO₄) est nécessaire pour que le courant passe. Mais lorsque le polymère est poussé à des potentiels très élevés (suroxydation), cet électrolyte devient un ennemi.
   </p>
@@ -324,9 +361,9 @@
   </div>
 </section>
 
-<!-- ============ 6. EFFET DÉGRADATION ============ -->
+<!-- ============ 7. EFFET DÉGRADATION ============ -->
 <section class="card">
-  <h2>6. Effet de la dégradation sur la structure du polymère</h2>
+  <h2>7. Effet de la dégradation sur la structure du polymère</h2>
   <p>
     La dégradation (suroxydation) a des conséquences catastrophiques sur la structure du polymère. Voici ce que nos analyses XPS nous révèlent :
   </p>
@@ -346,142 +383,184 @@
   </p>
 </section>
 
-<!-- ============ 7. CODE PYTHON ============ -->
+<!-- ============ 8. CODE PYTHON ============ -->
 <section class="card">
-  <h2>7. Code Python pour l'analyse complète</h2>
+  <h2>8. Code Python pour l'analyse complète (Décomposition Individuelle)</h2>
   <p>
-    Ce script Python effectue tous les calculs présentés ci-dessus de manière automatique. Il suffit de lui fournir les aires des pics (issues de la décomposition) et il calcule les pourcentages atomiques, le taux de dopage et trace un graphique comparatif.
+    Ce script Python effectue la décomposition individuelle de chaque spectre pour les 4 éléments (C, Cl, S, O) et les 3 états d'oxydation (Red, Ox, Ov). Il suffit de lui fournir les fichiers CSV correspondants (ex: <code class="inline">C1s-Red.csv</code>, <code class="inline">Cl2p-Ox.csv</code>, etc.) et il génère les graphiques de décomposition et les pourcentages atomiques.
   </p>
   <pre>
 # ============================================================
-#  ANALYSE XPS — POLYTHIOPHÈNE
-#  Calcul des compositions atomiques et du taux de dopage
+#  ANALYSE XPS COMPLÈTE — DÉCOMPOSITION INDIVIDUELLE
+#  Polythiophène (PT_Re / PT_Ox / PT_Ov)
 # ============================================================
 
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import numpy as np
+from scipy.optimize import curve_fit
+from scipy.special import wofz
 
 # ------------------------------------------------------------
-# 1) Facteurs de sensibilité (Scofield) pour source Al Kα
+# 1) Fonctions d'ajustement (Voigt + ligne de base)
 # ------------------------------------------------------------
-SCOFIELD_FACTORS = {
-    'C1s': 1.000,
-    'Cl2p': 2.285,
-    'S2p': 1.677,
-    'O1s': 2.930
+def voigt(x, amp, cen, sigma, gamma):
+    """Profil de Voigt (gaussienne ⊗ lorentzienne)"""
+    z = ((x - cen) + 1j * gamma) / (sigma * np.sqrt(2))
+    return amp * np.real(wofz(z)) / (sigma * np.sqrt(2 * np.pi))
+
+def linear_baseline(x, a, b):
+    return a * x + b
+
+def multi_peaks(x, *params):
+    """Modèle multi-pics générique"""
+    a, b = params[0], params[1]
+    y = linear_baseline(x, a, b)
+    n = (len(params) - 2) // 4
+    for i in range(n):
+        amp, cen, sigma, gamma = params[2 + 4*i : 6 + 4*i]
+        y += voigt(x, amp, cen, sigma, gamma)
+    return y
+
+# ------------------------------------------------------------
+# 2) Lecture des données
+# ------------------------------------------------------------
+def load_xps(filepath):
+    """Lit un fichier CSV à deux colonnes : BE, Intensity"""
+    df = pd.read_csv(filepath, comment='#', sep=r'\s+|,',
+                     engine='python', header=None,
+                     names=['BE', 'Intensity'])
+    df = df.dropna().sort_values('BE')
+    return df['BE'].values, df['Intensity'].values
+
+# ------------------------------------------------------------
+# 3) Ajustement générique pour un spectre donné
+# ------------------------------------------------------------
+def fit_spectrum(be, intensity, p0, bounds, label='Spectre', element='C1s'):
+    """
+    Effectue l'ajustement et trace le résultat.
+    p0 : paramètres initiaux [(amp, cen, sigma, gamma), ...]
+    bounds : (lower_bounds, upper_bounds) pour chaque paramètre
+    """
+    popt, _ = curve_fit(multi_peaks, be, intensity, p0=p0,
+                        bounds=bounds, maxfev=30000)
+    yfit = multi_peaks(be, *popt)
+    
+    n = (len(popt) - 2) // 4
+    
+    # Calcul des aires
+    areas = []
+    for i in range(n):
+        amp, cen, sigma, gamma = popt[2+4*i : 6+4*i]
+        area = amp * sigma * np.sqrt(2*np.pi)
+        areas.append(area)
+    
+    # Tracé
+    fig, ax = plt.subplots(figsize=(8, 5))
+    ax.plot(be, intensity, 'o', ms=2, color='#1f77b4', label='Données')
+    ax.plot(be, yfit, '-', color='#d62728', lw=1.8, label='Ajustement')
+    for i in range(n):
+        amp, cen, sigma, gamma = popt[2+4*i : 6+4*i]
+        ax.plot(be, voigt(be, amp, cen, sigma, gamma),
+                '--', lw=1.2, label=f'Pic {i+1} @ {cen:.1f} eV')
+    ax.plot(be, linear_baseline(be, popt[0], popt[1]),
+            ':', color='gray', label='Ligne de base')
+    ax.set_xlabel('Énergie de liaison (eV)')
+    ax.set_ylabel('Intensité (CPS)')
+    ax.set_title(f'Décomposition {element} — {label}')
+    ax.invert_xaxis()
+    ax.legend(fontsize=8)
+    ax.grid(alpha=0.3)
+    plt.tight_layout()
+    plt.savefig(f'{element}_{label}_decomp.png', dpi=200)
+    plt.close()
+    
+    return popt, areas
+
+# ------------------------------------------------------------
+# 4) Paramètres initiaux pour chaque élément et chaque état
+# ------------------------------------------------------------
+# Format : p0 = [a, b, (amp, cen, sigma, gamma) × n]
+# Les bornes (bounds) sont définies pour chaque pic.
+
+# --- C1s (4 pics) ---
+p0_C1s = [0.0, 1000,
+          5000, 285.0, 0.7, 0.5,
+          1500, 286.2, 0.8, 0.6,
+          1000, 287.6, 0.9, 0.6,
+          500, 289.0, 1.0, 0.7]
+bounds_C1s = (
+    [-np.inf, -np.inf, 0, 284.0, 0.3, 0.0, 0, 285.5, 0.3, 0.0, 0, 286.8, 0.3, 0.0, 0, 288.0, 0.3, 0.0],
+    [np.inf, np.inf, np.inf, 286.0, 2.5, 2.5, np.inf, 287.0, 2.5, 2.5, np.inf, 288.5, 2.5, 2.5, np.inf, 290.5, 2.5, 2.5]
+)
+
+# --- Cl2p (3 doublets -> simplifié en 3 pics principaux) ---
+p0_Cl2p = [0.0, 500,
+           2000, 200.5, 0.8, 0.6,
+           2000, 207.0, 0.8, 0.6,
+           2000, 208.2, 0.8, 0.6]
+bounds_Cl2p = (
+    [-np.inf, -np.inf, 0, 199.0, 0.3, 0.0, 0, 206.0, 0.3, 0.0, 0, 207.5, 0.3, 0.0],
+    [np.inf, np.inf, np.inf, 202.0, 2.5, 2.5, np.inf, 208.5, 2.5, 2.5, np.inf, 209.5, 2.5, 2.5]
+)
+
+# --- S2p (3 doublets -> simplifié en 4 pics) ---
+p0_S2p = [0.0, 500,
+          3000, 164.0, 0.8, 0.6,
+          1000, 165.5, 0.8, 0.6,
+          500, 167.8, 0.9, 0.7,
+          200, 169.1, 1.0, 0.7]
+bounds_S2p = (
+    [-np.inf, -np.inf, 0, 163.0, 0.3, 0.0, 0, 164.5, 0.3, 0.0, 0, 166.5, 0.3, 0.0, 0, 168.0, 0.3, 0.0],
+    [np.inf, np.inf, np.inf, 165.5, 2.5, 2.5, np.inf, 167.0, 2.5, 2.5, np.inf, 169.0, 2.5, 2.5, np.inf, 170.5, 2.5, 2.5]
+)
+
+# --- O1s (3 pics) ---
+p0_O1s = [0.0, 500,
+          2000, 532.5, 1.0, 0.8,
+          1500, 533.5, 1.0, 0.8,
+          500, 535.0, 1.2, 0.8]
+bounds_O1s = (
+    [-np.inf, -np.inf, 0, 531.5, 0.5, 0.0, 0, 532.5, 0.5, 0.0, 0, 534.0, 0.5, 0.0],
+    [np.inf, np.inf, np.inf, 533.5, 3.0, 3.0, np.inf, 534.5, 3.0, 3.0, np.inf, 536.5, 3.0, 3.0]
+)
+
+# ------------------------------------------------------------
+# 5) Exécution de l'analyse sur les 12 spectres
+# ------------------------------------------------------------
+elements = {
+    'C1s': (p0_C1s, bounds_C1s),
+    'Cl2p': (p0_Cl2p, bounds_Cl2p),
+    'S2p': (p0_S2p, bounds_S2p),
+    'O1s': (p0_O1s, bounds_O1s)
 }
 
-# ------------------------------------------------------------
-# 2) Données des aires de pics (estimées à partir des spectres)
-# ------------------------------------------------------------
-# Les aires sont normalisées pour chaque échantillon.
-# Pour le Cl, nous séparons le dopant (207 eV) du C-Cl (200 eV).
+etats = ['Red', 'Ox', 'Ov']
 
-data = {
-    'PT_Re': {  # État réduit
-        'C1s': 7000,
-        'O1s': 2200,
-        'S2p': 3000,
-        'Cl2p_207': 300,   # Dopant
-        'Cl2p_200': 50     # C-Cl (très faible)
-    },
-    'PT_Ox': {  # État oxydé
-        'C1s': 4600,
-        'O1s': 3500,
-        'S2p': 1900,
-        'Cl2p_207': 2300,  # Dopant (max)
-        'Cl2p_200': 100    # C-Cl
-    },
-    'PT_Ov': {  # État suroxydé
-        'C1s': 3300,
-        'O1s': 6800,
-        'S2p': 1400,
-        'Cl2p_207': 1800,  # Dopant (en baisse)
-        'Cl2p_200': 1500   # C-Cl (explose)
-    }
-}
+for el, (p0, bnds) in elements.items():
+    for etat in etats:
+        filename = f'{el}-{etat}.csv'
+        try:
+            be, intensity = load_xps(filename)
+            popt, areas = fit_spectrum(be, intensity, p0, bnds, label=etat, element=el)
+            print(f"--- {el} / {etat} ---")
+            print(f"  Aires des pics : {np.round(areas, 1)}")
+            print(f"  Pourcentages  : {np.round(100 * np.array(areas) / np.sum(areas), 1)} %")
+            print()
+        except FileNotFoundError:
+            print(f"Fichier {filename} introuvable. Veuillez le placer dans le dossier du script.\n")
 
-# ------------------------------------------------------------
-# 3) Fonction de calcul de la composition atomique
-# ------------------------------------------------------------
-def calculate_composition(areas):
-    """
-    Calcule le pourcentage atomique en utilisant les facteurs de Scofield.
-    Le chlore total est la somme du dopant et du C-Cl.
-    """
-    # Somme des aires corrigées
-    corrected = {}
-    corrected['C'] = areas['C1s'] / SCOFIELD_FACTORS['C1s']
-    corrected['O'] = areas['O1s'] / SCOFIELD_FACTORS['O1s']
-    corrected['S'] = areas['S2p'] / SCOFIELD_FACTORS['S2p']
-    # Pour le Cl, on utilise le Cl total (dopant + C-Cl)
-    Cl_total = areas['Cl2p_207'] + areas['Cl2p_200']
-    corrected['Cl'] = Cl_total / SCOFIELD_FACTORS['Cl2p']
-    
-    total = sum(corrected.values())
-    composition = {el: (val / total) * 100 for el, val in corrected.items()}
-    
-    # Calcul du taux de dopage (Cl dopant / S total)
-    doping_rate = areas['Cl2p_207'] / areas['S2p']
-    
-    return composition, doping_rate
-
-# ------------------------------------------------------------
-# 4) Exécution et affichage des résultats
-# ------------------------------------------------------------
-results_comp = {}
-results_doping = {}
-
-print("="*60)
-print(" COMPOSITION ÉLÉMENTAIRE (At%) et TAUX DE DOPAGE")
-print("="*60)
-
-for sample, areas in data.items():
-    comp, doping = calculate_composition(areas)
-    results_comp[sample] = comp
-    results_doping[sample] = doping
-    
-    print(f"\n--- {sample} ---")
-    print(f"  Carbone (C) : {comp['C']:.1f} %")
-    print(f"  Oxygène (O) : {comp['O']:.1f} %")
-    print(f"  Soufre  (S) : {comp['S']:.1f} %")
-    print(f"  Chlore  (Cl): {comp['Cl']:.1f} %")
-    print(f"  Taux de dopage (Cl_dopant / S) : {doping:.3f}")
-
-# ------------------------------------------------------------
-# 5) Graphique comparatif
-# ------------------------------------------------------------
-df_comp = pd.DataFrame(results_comp).T
-df_comp = df_comp[['C', 'O', 'S', 'Cl']]  # Ordre logique
-
-fig, ax = plt.subplots(figsize=(10, 6))
-df_comp.plot(kind='bar', ax=ax, color=['#0f766e', '#b91c1c', '#f59e0b', '#64748b'], edgecolor='black')
-
-ax.set_title("Évolution de la composition atomique en surface", fontsize=14, fontweight='bold')
-ax.set_ylabel("Pourcentage atomique (%)", fontsize=12)
-ax.set_xlabel("État du polymère", fontsize=12)
-ax.set_xticklabels(['Réduit (PT_Re)', 'Oxydé (PT_Ox)', 'Suroxydé (PT_Ov)'], rotation=0)
-ax.legend(title="Élément", fontsize=10)
-ax.grid(axis='y', linestyle='--', alpha=0.7)
-
-# Ajouter les valeurs sur les barres
-for container in ax.containers:
-    ax.bar_label(container, fmt='%.1f%%', padding=3, fontsize=9)
-
-plt.tight_layout()
-plt.savefig('composition_xps.png', dpi=200)
-print("\nGraphique sauvegardé sous 'composition_xps.png'")
+print("Analyse terminée. Les graphiques de décomposition ont été sauvegardés.")
   </pre>
   
   <div class="note">
-    <b>Comment lire ce code :</b>
-    <ul>
-      <li>Les <code class="inline">SCOFIELD_FACTORS</code> sont les valeurs données pour la source Al Kα.</li>
-      <li>La fonction <code class="inline">calculate_composition</code> divise chaque aire par son facteur, fait la somme, puis calcule le pourcentage.</li>
-      <li>Le <code class="inline">doping_rate</code> est le rapport entre le chlore dopant (207 eV) et le soufre total.</li>
-      <li>Le graphique final montre visuellement comment le carbone diminue et comment l'oxygène et le chlore augmentent lorsque le polymère se dégrade.</li>
-    </ul>
+    <b>Comment exécuter ce code :</b>
+    <ol>
+      <li>Assurez-vous d'avoir Python installé avec les bibliothèques <code class="inline">numpy</code>, <code class="inline">pandas</code>, <code class="inline">matplotlib</code> et <code class="inline">scipy</code>.</li>
+      <li>Placez les 12 fichiers CSV (ex: <code class="inline">C1s-Red.csv</code>) dans le même dossier que le script.</li>
+      <li>Exécutez le script. Il générera 12 images de décomposition (une pour chaque spectre) et affichera les pourcentages des aires de pics.</li>
+      <li>Les résultats numériques (aires et pourcentages) vous permettront de remplir les tableaux de composition présentés dans ce rapport.</li>
+    </ol>
   </div>
 </section>
 
@@ -491,4 +570,5 @@ print("\nGraphique sauvegardé sous 'composition_xps.png'")
 
 </div>
 </body>
-  </html>
+</html>
+```
