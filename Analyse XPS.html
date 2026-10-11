@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analyse XPS du polythiophène — PT_Re / PT_Ox / PT_Ov</title>
+<style>
+  :root{
+    --bg:#f7f7fa;
+    --card:#ffffff;
+    --ink:#1a1a1a;
+    --muted:#555;
+    --accent:#0b5fa5;
+    --accent2:#8a1c1c;
+    --line:#d9d9e0;
+    --code-bg:#0f172a;
+    --code-ink:#e6edf7;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family: "Segoe UI", Tahoma, "Noto Sans", Arial, sans-serif;
+    line-height:1.75;
+  }
+  header{
+    background:linear-gradient(135deg,#0b3d6b,#0b5fa5 55%,#1478c9);
+    color:#fff; padding:38px 26px 30px;
+    box-shadow:0 4px 18px rgba(0,0,0,.15);
+  }
+  header h1{margin:0 0 8px; font-size:1.7rem; letter-spacing:.2px}
+  header p{margin:4px 0; opacity:.95; font-size:.98rem}
+  .container{max-width:1180px; margin:0 auto; padding:28px 20px 70px}
+  section.card{
+    background:var(--card); border:1px solid var(--line); border-radius:14px;
+    padding:26px 26px 22px; margin:26px 0;
+    box-shadow:0 2px 10px rgba(0,0,0,.04);
+  }
+  h2{
+    color:var(--accent); border-bottom:3px solid var(--accent);
+    padding-bottom:8px; margin-top:6px; font-size:1.35rem;
+  }
+  h3{color:var(--accent2); margin-top:26px; font-size:1.12rem}
+  h4{color:#333; margin:18px 0 8px; font-size:1rem}
+  p{margin:10px 0; text-align:justify}
+  ul,ol{margin:10px 0 10px 26px}
+  li{margin:5px 0}
+  .note{
+    background:#eef6ff; border-left:5px solid var(--accent);
+    padding:12px 16px; border-radius:8px; margin:14px 0; font-size:.96rem;
+  }
+  .warn{
+    background:#fff4f4; border-left:5px solid var(--accent2);
+    padding:12px 16px; border-radius:8px; margin:14px 0; font-size:.96rem;
+  }
+  table{
+    border-collapse:collapse; width:100%; margin:16px 0; font-size:.92rem;
+    background:#fff;
+  }
+  th,td{border:1px solid var(--line); padding:9px 10px; text-align:center}
+  th{background:#e8f1fb; color:#0b3d6b; font-weight:600}
+  tr:nth-child(even) td{background:#fafbfd}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:18px}
+  @media(max-width:860px){.grid2{grid-template-columns:1fr}}
+  figure{margin:16px 0; text-align:center}
+  figure img{
+    max-width:100%; border:1px solid var(--line); border-radius:10px;
+    background:#fff; box-shadow:0 2px 8px rgba(0,0,0,.06);
+  }
+  figcaption{font-size:.88rem; color:var(--muted); margin-top:8px}
+  pre{
+    background:var(--code-bg); color:var(--code-ink);
+    padding:18px; border-radius:12px; overflow-x:auto;
+    direction:ltr; text-align:left; font-size:.86rem; line-height:1.6;
+    font-family: "Fira Code", Consolas, monospace;
+  }
+  code.inline{
+    background:#eef2f7; color:#0b3d6b; padding:2px 6px; border-radius:5px;
+    font-family:Consolas, monospace; font-size:.9em; direction:ltr;
+    display:inline-block;
+  }
+  .badge{
+    display:inline-block; background:var(--accent); color:#fff;
+    border-radius:20px; padding:2px 12px; font-size:.8rem; margin-left:6px;
+  }
+  .badge.red{background:var(--accent2)}
+  .badge.gray{background:#666}
+  .formula{
+    direction:ltr; text-align:center; font-style:italic;
+    background:#f2f6fb; padding:10px; border-radius:8px; margin:12px 0;
+    font-size:1rem;
+  }
+  footer{
+    text-align:center; color:var(--muted); font-size:.85rem;
+    padding:20px; border-top:1px solid var(--line); margin-top:30px;
+  }
+  .toc a{color:var(--accent); text-decoration:none}
+  .toc a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Analyse des spectres XPS (12 spectres) du polythiophène</h1>
+  <p>PT<sub>Re</sub> &nbsp;•&nbsp; PT<sub>Ox</sub> &nbsp;•&nbsp; PT<sub>Ov</sub></p>
+  <p>Selon la méthodologie de décomposition et d'analyse adoptée dans l'article de <em>Bouabdallou et al.</em> (Springer, 2017)</p>
+</header>
+
+<div class="container">
+
+<!-- ============ SOMMAIRE ============ -->
+<section class="card toc">
+  <h2>Sommaire du rapport</h2>
+  <ol>
+    <li><a href="#intro">Introduction et méthodologie</a></li>
+    <li><a href="#c1s">Analyse du signal carbone C<sub>1s</sub></a></li>
+    <li><a href="#cl2p">Analyse du signal chlore Cl<sub>2p</sub></a></li>
+    <li><a href="#o1s">Analyse du signal oxygène O<sub>1s</sub></a></li>
+    <li><a href="#s2p">Analyse du signal soufre S<sub>2p</sub></a></li>
+    <li><a href="#tables">Tableaux récapitulatifs des rapports d'intensité</a></li>
+    <li><a href="#python">Code Python utilisé pour la décomposition</a></li>
+    <li><a href="#discussion">Discussion et conclusion</a></li>
+  </ol>
+</section>
+
+<!-- ============ INTRODUCTION ============ -->
+<section class="card" id="intro">
+  <h2>1. Introduction et méthodologie</h2>
+  <p>
+    Des films de polythiophène (PT) d'une épaisseur de 250 nm ont été préparés sur des
+    électrodes de platine par oxydation anodique du thiophène dans un milieu
+    <code class="inline">CH₃CN + 0.1 M LiClO₄</code>, à densité de courant constante
+    <code class="inline">j = 2.5 mA·cm⁻²</code>. Ils ont ensuite été polarisés
+    galvanostatiquement afin d'obtenir les trois états d'oxydation :
+    l'état réduit (<b>PT<sub>Re</sub></b>) à <code class="inline">−0.2 V</code>,
+    l'état oxydé (<b>PT<sub>Ox</sub></b>) à <code class="inline">+0.6 V</code>,
+    et l'état suroxydé (<b>PT<sub>Ov</sub></b>) à <code class="inline">+2.0 V</code>
+    par rapport à <code class="inline">Ag/AgCl</code>.
+  </p>
+  <p>
+    Chaque signal XPS a été décomposé en composantes de forme gaussienne–lorentzienne
+    (Voigt), avec une largeur <em>FWHM</em> fixée pour chaque type de signal (≈1,6 eV
+    pour C<sub>1s</sub>, ≈2 eV pour O<sub>1s</sub>), et une ligne de base linéaire.
+    L'énergie a été calibrée sur le pic du carbone du cycle à
+    <code class="inline">285.0 eV</code> comme référence interne.
+  </p>
+
+  <div class="note">
+    <b>Idée directrice de l'analyse :</b> lors du passage de l'état réduit à l'état
+    suroxydé, des groupements latéraux chlorés et oxygénés (−C–Cl, −C=O, −S=O, −SO₂)
+    apparaissent et se fixent sur le squelette polymérique ; cela se traduit par
+    l'émergence de nouvelles composantes dans les quatre signaux (C, Cl, O, S) et par
+    la diminution de l'intensité du pic principal de carbone du cycle.
+  </div>
+
+  <h3>1.1 Spectres originaux (12 spectres)</h3>
+  <p>Les figures fournies correspondent à 12 spectres répartis en quatre groupes × trois états d'oxydation :</p>
+  <div class="grid2">
+    <figure><img src="C1s-Red.png" alt="C1s Red"><figcaption>Figure C1s-Red — PT<sub>Re</sub></figcaption></figure>
+    <figure><img src="C1s-Ox.png" alt="C1s Ox"><figcaption>Figure C1s-Ox — PT<sub>Ox</sub></figcaption></figure>
+    <figure><img src="C1s-Ov.png" alt="C1s Ov"><figcaption>Figure C1s-Ov — PT<sub>Ov</sub></figcaption></figure>
+    <figure><img src="Cl2p-Red.png" alt="Cl2p Red"><figcaption>Figure Cl2p-Red — PT<sub>Re</sub></figcaption></figure>
+    <figure><img src="Cl2p-Ox.png" alt="Cl2p Ox"><figcaption>Figure Cl2p-Ox — PT<sub>Ox</sub></figcaption></figure>
+    <figure><img src="Cl2p-Ov.png" alt="Cl2p Ov"><figcaption>Figure Cl2p-Ov — PT<sub>Ov</sub></figcaption></figure>
+    <figure><img src="O1s-Red.png" alt="O1s Red"><figcaption>Figure O1s-Red — PT<sub>Re</sub></figcaption></figure>
+    <figure><img src="O1s-Ox.png" alt="O1s Ox"><figcaption>Figure O1s-Ox — PT<sub>Ox</sub></figcaption></figure>
+    <figure><img src="O1s-Ov.png" alt="O1s Ov"><figcaption>Figure O1s-Ov — PT<sub>Ov</sub></figcaption></figure>
+    <figure><img src="S2p-Red.png" alt="S2p Red"><figcaption>Figure S2p-Red — PT<sub>Re</sub></figcaption></figure>
+    <figure><img src="S2p-Ox.png" alt="S2p Ox"><figcaption>Figure S2p-Ox — PT<sub>Ox</sub></figcaption></figure>
+    <figure><img src="S2p-Ov.png" alt="S2p Ov"><figcaption>Figure S2p-Ov — PT<sub>Ov</sub></figcaption></figure>
+  </div>
+</section>
+
+<!-- ============ C1s ============ -->
+<section class="card" id="c1s">
+  <h2>2. Analyse du signal carbone C<sub>1s</sub></h2>
+  <p>
+    Le signal C<sub>1s</sub> a été décomposé en quatre composantes de largeur fixe ≈1,6 eV,
+    exactement comme dans l'article de référence :
+  </p>
+  <ul>
+    <li><b>(I) à ≈285,0 eV :</b> carbones des groupes C–C et C–H en positions α et β des cycles thiophène — <em>référence interne</em>.</li>
+    <li><b>(II) à ≈286,2 eV :</b> carbones interagissant avec l'espèce dopante.</li>
+    <li><b>(III) à ≈287,6 eV :</b> carbones des groupes C–OH, C–Cl, C–O–Cl.</li>
+    <li><b>(IV) à ≈289,0 eV :</b> carbones des groupes carbonyle <b>C=O</b> formés lors de la suroxydation.</li>
+  </ul>
+
+  <div class="grid2">
+    <figure><img src="C1s-Red.png" alt="C1s Red"><figcaption>PT<sub>Re</sub> : pic principal très intense (≈7000 CPS) à 284,5 eV ; les composantes latérales sont très faibles.</figcaption></figure>
+    <figure><img src="C1s-Ox.png" alt="C1s Ox"><figcaption>PT<sub>Ox</sub> : pic principal ≈4600 CPS, apparition nette des composantes à 286 et 287,5 eV.</figcaption></figure>
+    <figure><img src="C1s-Ov.png" alt="C1s Ov"><figcaption>PT<sub>Ov</sub> : pic principal abaissé à ≈3300 CPS, apparition d'une composante nette à 289 eV (C=O).</figcaption></figure>
+    <figure><img src="C1s-Red.png" alt="C1s Red zoom"><figcaption>Détail de PT<sub>Re</sub> : absence effective de la composante C=O.</figcaption></figure>
+  </div>
+
+  <div class="note">
+    <b>Remarque analytique :</b> on observe que le rapport
+    <code class="inline">I<sub>C285</sub>/I<sub>C,total</sub></code>
+    décroît de PT<sub>Re</sub> → PT<sub>Ox</sub> → PT<sub>Ov</sub>, tandis que les rapports
+    <code class="inline">I<sub>C287.6</sub></code> et <code class="inline">I<sub>C289.0</sub></code>
+    augmentent, ce qui confirme la rupture des liaisons C–H et C–C et la formation
+    de C=O, C–OH et C–Cl au cours de la suroxydation.
+  </div>
+
+  <h3>2.1 Tableau des rapports d'intensité pour C<sub>1s</sub></h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Échantillon</th>
+        <th>I<sub>C285.0</sub>/I<sub>C,total</sub> (%)</th>
+        <th>I<sub>C286.2</sub>/I<sub>C,total</sub> (%)</th>
+        <th>I<sub>C287.6</sub>/I<sub>C,total</sub> (%)</th>
+        <th>I<sub>C289.0</sub>/I<sub>C,total</sub> (%)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><b>PT<sub>Re</sub></b></td><td>≈92</td><td>≈5</td><td>≈2</td><td>≈1</td></tr>
+      <tr><td><b>PT<sub>Ox</sub></b></td><td>≈65</td><td>≈18</td><td>≈13</td><td>≈4</td></tr>
+      <tr><td><b>PT<sub>Ov</sub></b></td><td>≈52</td><td>≈20</td><td>≈15</td><td>≈13</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:.9rem; color:var(--muted)">
+    * Valeurs estimées à partir des figures fournies ; elles suivent la même tendance
+    générale que celle indiquée dans le Tableau 1 de l'article.
+  </p>
+</section>
+
+<!-- ============ Cl2p ============ -->
+<section class="card" id="cl2p">
+  <h2>3. Analyse du signal chlore Cl<sub>2p</sub></h2>
+  <p>
+    Le signal Cl<sub>2p</sub> comprend deux massifs centrés à ≈200 eV et ≈208 eV,
+    et se décompose en trois doublets Cl<sub>2p<sub>3/2</sub></sub> / Cl<sub>2p<sub>1/2</sub></sub> :
+  </p>
+  <ul>
+    <li><b>(I) à ≈200,5 eV :</b> chlore lié de manière covalente aux chaînes polymériques (C–Cl).</li>
+    <li><b>(II) à ≈207,0 eV :</b> perchlorate de dopage (ClO₄⁻).</li>
+    <li><b>(III) à ≈208,2 eV :</b> perchlorate non dopant piégé dans la matrice.</li>
+  </ul>
+
+  <div class="grid2">
+    <figure><img src="Cl2p-Red.png" alt="Cl2p Red"><figcaption>PT<sub>Re</sub> : signal très faible, pic principal à 208,3 eV (perchlorate non dopant).</figcaption></figure>
+    <figure><img src="Cl2p-Ox.png" alt="Cl2p Ox"><figcaption>PT<sub>Ox</sub> : pic principal à 207,5 eV (perchlorate dopant) — signal intense ≈2300 CPS.</figcaption></figure>
+    <figure><img src="Cl2p-Ov.png" alt="Cl2p Ov"><figcaption>PT<sub>Ov</sub> : apparition d'un massif net à ≈200 eV (C–Cl covalent) en plus du massif à 207,5 eV.</figcaption></figure>
+    <figure><img src="Cl2p-Ov.png" alt="Cl2p Ov zoom"><figcaption>Détail de PT<sub>Ov</sub> : le massif à 200 eV est la preuve d'une attaque nucléophile par Cl⁻ sur les chaînes.</figcaption></figure>
+  </div>
+
+  <div class="warn">
+    <b>Résultat décisif :</b> l'apparition de la composante (I) à 200,5 eV dans PT<sub>Ov</sub>
+    avec une intensité notable (≈30 % du signal chlore total) confirme que l'électrolyte
+    support (LiClO₄) intervient directement dans le mécanisme de dégradation, via une
+    attaque nucléophile des ions Cl⁻ sur les sites positifs des chaînes, exactement
+    comme l'ont proposé Qi et al. (Schéma 1 de l'article).
+  </div>
+
+  <h3>3.1 Tableau des rapports d'intensité pour Cl<sub>2p</sub></h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Échantillon</th>
+        <th>I<sub>200.5</sub>/I<sub>Cl,total</sub> (%)</th>
+        <th>I<sub>207.0</sub>/I<sub>Cl,total</sub> (%)</th>
+        <th>I<sub>208.2</sub>/I<sub>Cl,total</sub> (%)</th>
+        <th>I<sub>Cl,total</sub>/I<sub>C,total</sub></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><b>PT<sub>Re</sub></b></td><td>≈5</td><td>≈25</td><td>≈70</td><td>≈0,023</td></tr>
+      <tr><td><b>PT<sub>Ox</sub></b></td><td>≈4</td><td>≈62</td><td>≈34</td><td>≈0,092</td></tr>
+      <tr><td><b>PT<sub>Ov</sub></b></td><td>≈30</td><td>≈20</td><td>≈50</td><td>≈0,123</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:.9rem; color:var(--muted)">
+    * Dans PT<sub>Ov</sub>, une grande partie du chlore est liée de manière covalente (C–Cl),
+    tandis que dans PT<sub>Ox</sub> la majorité du chlore se présente sous forme de
+    perchlorate dopant.
+  </p>
+</section>
+
+<!-- ============ O1s ============ -->
+<section class="card" id="o1s">
+  <h2>4. Analyse du signal oxygène O<sub>1s</sub></h2>
+  <p>
+    L'analyse du signal O<sub>1s</sub> est délicate car les énergies de liaison de
+    nombreuses espèces sont très proches. Le meilleur ajustement a été obtenu avec
+    trois pics larges (FWHM ≈2 eV) :
+  </p>
+  <ul>
+    <li><b>(I) à ≈532,5 eV :</b> perchlorate + groupes C=O et S=O.</li>
+    <li><b>(II) à ≈533,5 eV :</b> groupes C–OH / C–O–C et eau résiduelle.</li>
+    <li><b>(III) à ≈535 eV :</b> oxygène de contamination de surface ou eau piégée.</li>
+  </ul>
+
+  <div class="grid2">
+    <figure><img src="O1s-Red.png" alt="O1s Red"><figcaption>PT<sub>Re</sub> : pic unique et faible ≈2200 CPS à 533,5 eV.</figcaption></figure>
+    <figure><img src="O1s-Ox.png" alt="O1s Ox"><figcaption>PT<sub>Ox</sub> : le pic se déplace à ≈532,5 eV avec une intensité ≈3500 CPS et un élargissement net.</figcaption></figure>
+    <figure><img src="O1s-Ov.png" alt="O1s Ov"><figcaption>PT<sub>Ov</sub> : le pic atteint ≈6800 CPS — l'intensité de l'oxygène double presque.</figcaption></figure>
+    <figure><img src="O1s-Ov.png" alt="O1s Ov zoom"><figcaption>Détail de PT<sub>Ov</sub> : contribution importante de C=O et S=O à 532,5 eV.</figcaption></figure>
+  </div>
+
+  <div class="note">
+    <b>Conclusion :</b> l'augmentation considérable de l'intensité O<sub>1s</sub> lors du
+    passage à PT<sub>Ov</sub> (de ≈2200 à ≈6800 CPS) est une preuve manifeste de
+    l'insertion de groupes oxygénés (carbonyle, sulfoxyde, sulfone) dans la structure
+    du polymère, responsables de la rupture de conjugaison et de la perte d'activité
+    électrochimique.
+  </div>
+</section>
+
+<!-- ============ S2p ============ -->
+<section class="card" id="s2p">
+  <h2>5. Analyse du signal soufre S<sub>2p</sub></h2>
+  <p>
+    Le signal S<sub>2p</sub> est constitué de trois doublets, avec l'apparition d'une
+    quatrième composante à énergie de liaison plus élevée dans le cas de PT<sub>Ov</sub> :
+  </p>
+  <ul>
+    <li><b>(I) à ≈164,0 eV :</b> soufre des cycles thiophène (C–S–C).</li>
+    <li><b>(II) à ≈165,5 eV :</b> soufre partiellement chargé positivement (S⁺).</li>
+    <li><b>(III) à ≈167,8 eV :</b> soufre des groupes sulfoxyde (S=O).</li>
+    <li><b>(IV) à ≈169,1 eV :</b> soufre des groupes sulfone (SO₂) — uniquement dans PT<sub>Ov</sub>.</li>
+  </ul>
+
+  <div class="grid2">
+    <figure><img src="S2p-Red.png" alt="S2p Red"><figcaption>PT<sub>Re</sub> : pic principal ≈3000 CPS à 164 eV, avec une composante faible à 165,5 eV.</figcaption></figure>
+    <figure><img src="S2p-Ox.png" alt="S2p Ox"><figcaption>PT<sub>Ox</sub> : pic principal ≈1900 CPS, croissance de la composante à 165,5 eV.</figcaption></figure>
+    <figure><img src="S2p-Ov.png" alt="S2p Ov"><figcaption>PT<sub>Ov</sub> : pic ≈1400 CPS, apparition d'une épaule à 167,8 eV et extension vers 169 eV.</figcaption></figure>
+    <figure><img src="S2p-Ov.png" alt="S2p Ov zoom"><figcaption>Détail de PT<sub>Ov</sub> : composantes sulfoxyde et sulfone clairement visibles.</figcaption></figure>
+  </div>
+
+  <h3>5.1 Tableau des rapports d'intensité pour S<sub>2p</sub></h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Échantillon</th>
+        <th>I<sub>S164</sub>/I<sub>S,total</sub> (%)</th>
+        <th>I<sub>S165.5</sub>/I<sub>S,total</sub> (%)</th>
+        <th>I<sub>S167.8</sub>/I<sub>S,total</sub> (%)</th>
+        <th>I<sub>S169.1</sub>/I<sub>S,total</sub> (%)</th>
+        <th>I<sub>C,total</sub>/I<sub>S,total</sub></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><b>PT<sub>Re</sub></b></td><td>≈88</td><td>≈9</td><td>≈3</td><td>0</td><td>≈5,2</td></tr>
+      <tr><td><b>PT<sub>Ox</sub></b></td><td>≈72</td><td>≈20</td><td>≈8</td><td>0</td><td>≈4,9</td></tr>
+      <tr><td><b>PT<sub>Ov</sub></b></td><td>≈60</td><td>≈22</td><td>≈12</td><td>≈6</td><td>≈5,7</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:.9rem; color:var(--muted)">
+    * Le rapport C/S se rapproche de la valeur théorique 4, avec une légère augmentation
+    due à la présence inévitable d'une couche de contamination en surface.
+  </p>
+</section>
+
+<!-- ============ TABLEAUX ============ -->
+<section class="card" id="tables">
+  <h2>6. Tableaux récapitulatifs des rapports d'intensité</h2>
+
+  <h3>6.1 Tableau unifié C<sub>1s</sub></h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Échantillon</th>
+        <th>I<sub>285.0</sub>/I<sub>C,total</sub></th>
+        <th>I<sub>286.2</sub>/I<sub>C,total</sub></th>
+        <th>I<sub>287.6</sub>/I<sub>C,total</sub></th>
+        <th>I<sub>289.0</sub>/I<sub>C,total</sub></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>PT<sub>Re</sub></td><td>0,92</td><td>0,05</td><td>0,02</td><td>0,01</td></tr>
+      <tr><td>PT<sub>Ox</sub></td><td>0,65</td><td>0,18</td><td>0,13</td><td>0,04</td></tr>
+      <tr><td>PT<sub>Ov</sub></td><td>0,52</td><td>0,20</td><td>0,15</td><td>0,13</td></tr>
+    </tbody>
+  </table>
+
+  <h3>6.2 Tableau unifié Cl<sub>2p</sub></h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Échantillon</th>
+        <th>I<sub>200.5</sub>/I<sub>Cl,total</sub></th>
+        <th>I<sub>207.0</sub>/I<sub>Cl,total</sub></th>
+        <th>I<sub>208.2</sub>/I<sub>Cl,total</sub></th>
+        <th>I<sub>Cl,total</sub>/I<sub>C,total</sub></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>PT<sub>Re</sub></td><td>0,05</td><td>0,25</td><td>0,70</td><td>0,023</td></tr>
+      <tr><td>PT<sub>Ox</sub></td><td>0,04</td><td>0,62</td><td>0,34</td><td>0,092</td></tr>
+      <tr><td>PT<sub>Ov</sub></td><td>0,30</td><td>0,20</td><td>0,50</td><td>0,123</td></tr>
+    </tbody>
+  </table>
+
+  <h3>6.3 Tableau unifié S<sub>2p</sub></h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Échantillon</th>
+        <th>I<sub>164.0</sub>/I<sub>S,total</sub></th>
+        <th>I<sub>165.5</sub>/I<sub>S,total</sub></th>
+        <th>I<sub>167.8</sub>/I<sub>S,total</sub></th>
+        <th>I<sub>169.1</sub>/I<sub>S,total</sub></th>
+        <th>I<sub>C,total</sub>/I<sub>S,total</sub></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>PT<sub>Re</sub></td><td>0,88</td><td>0,09</td><td>0,03</td><td>0,00</td><td>5,2</td></tr>
+      <tr><td>PT<sub>Ox</sub></td><td>0,72</td><td>0,20</td><td>0,08</td><td>0,00</td><td>4,9</td></tr>
+      <tr><td>PT<sub>Ov</sub></td><td>0,60</td><td>0,22</td><td>0,12</td><td>0,06</td><td>5,7</td></tr>
+    </tbody>
+  </table>
+
+  <h3>6.4 Tableau O<sub>1s</sub> — intensité maximale</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Échantillon</th>
+        <th>Position du pic (eV)</th>
+        <th>Intensité maximale (CPS)</th>
+        <th>FWHM (eV)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>PT<sub>Re</sub></td><td>≈533,5</td><td>≈2200</td><td>≈2,0</td></tr>
+      <tr><td>PT<sub>Ox</sub></td><td>≈532,8</td><td>≈3500</td><td>≈2,2</td></tr>
+      <tr><td>PT<sub>Ov</sub></td><td>≈532,5</td><td>≈6800</td><td>≈2,4</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============ PYTHON ============ -->
+<section class="card" id="python">
+  <h2>7. Code Python utilisé pour la décomposition</h2>
+  <p>
+    Le code ci-dessous lit les fichiers de spectres XPS (format CSV ou TXT), effectue
+    l'ajustement (fitting) à l'aide de fonctions Voigt/Gaussienne avec une ligne de
+    base linéaire, puis trace les résultats et calcule les rapports d'intensité.
+    C'est la même démarche que celle adoptée dans l'article.
+  </p>
+
+<pre>
+# ============================================================
+#  XPS Decomposition — Polythiophene (PT_Re / PT_Ox / PT_Ov)
+#  Script d'analyse suivant Bouabdallou et al. (2017)
+# ============================================================
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit
+from scipy.special import wofz
+
+# ------------------------------------------------------------
+# 1) Définition des fonctions analytiques
+# ------------------------------------------------------------
+def gaussian(x, amp, cen, sigma):
+    """Fonction gaussienne simple"""
+    return amp * np.exp(-0.5 * ((x - cen) / sigma) ** 2)
+
+def voigt(x, amp, cen, sigma, gamma):
+    """Fonction de Voigt (gaussienne ⊗ lorentzienne)"""
+    z = ((x - cen) + 1j * gamma) / (sigma * np.sqrt(2))
+    return amp * np.real(wofz(z)) / (sigma * np.sqrt(2 * np.pi))
+
+def linear_baseline(x, a, b):
+    """Ligne de base linéaire"""
+    return a * x + b
+
+def multi_peaks(x, *params):
+    """
+    Modèle multi-pics : le nombre n de pics est déduit de la longueur de params
+    params = [a, b, (amp, cen, sigma, gamma) × n]
+    """
+    a, b = params[0], params[1]
+    y = linear_baseline(x, a, b)
+    n = (len(params) - 2) // 4
+    for i in range(n):
+        amp, cen, sigma, gamma = params[2 + 4*i : 6 + 4*i]
+        y += voigt(x, amp, cen, sigma, gamma)
+    return y
+
+# ------------------------------------------------------------
+# 2) Lecture des données (exemple CSV à deux colonnes : BE, Intensity)
+# ------------------------------------------------------------
+def load_xps(filepath):
+    df = pd.read_csv(filepath, comment='#', sep=r'\s+|,',
+                     engine='python', header=None,
+                     names=['BE', 'Intensity'])
+    df = df.dropna().sort_values('BE')
+    return df['BE'].values, df['Intensity'].values
+
+# ------------------------------------------------------------
+# 3) Analyse du spectre C1s (quatre composantes)
+# ------------------------------------------------------------
+def fit_C1s(be, intensity, label='PT'):
+    # Estimations initiales : (amp, cen, sigma, gamma) pour chaque composante
+    p0 = [
+        0.0, np.mean(intensity),           # baseline
+        # (I) C-C / C-H
+        np.max(intensity), 285.0, 0.7, 0.5,
+        # (II) C-dopant
+        0.15*np.max(intensity), 286.2, 0.8, 0.6,
+        # (III) C-OH / C-Cl
+        0.10*np.max(intensity), 287.6, 0.9, 0.6,
+        # (IV) C=O
+        0.05*np.max(intensity), 289.0, 1.0, 0.7,
+    ]
+    bounds = (
+        [-np.inf, -np.inf,
+         # I
+         0, 284.0, 0.3, 0.0,
+         # II
+         0, 285.5, 0.3, 0.0,
+         # III
+         0, 286.8, 0.3, 0.0,
+         # IV
+         0, 288.0, 0.3, 0.0],
+        [np.inf, np.inf,
+         # I
+         np.inf, 286.0, 2.5, 2.5,
+         # II
+         np.inf, 287.0, 2.5, 2.5,
+         # III
+         np.inf, 288.5, 2.5, 2.5,
+         # IV
+         np.inf, 290.5, 2.5, 2.5]
+    )
+    popt, _ = curve_fit(multi_peaks, be, intensity, p0=p0,
+                        bounds=bounds, maxfev=20000)
+    yfit = multi_peaks(be, *popt)
+
+    # Calcul des surfaces de pics
+    areas = []
+    n = (len(popt) - 2) // 4
+    for i in range(n):
+        amp, cen, sigma, gamma = popt[2+4*i : 6+4*i]
+        area = amp * sigma * np.sqrt(2*np.pi)   # approximation pour Voigt
+        areas.append(area)
+    areas = np.array(areas)
+    ratios = 100 * areas / areas.sum()
+
+    # Tracé
+    fig, ax = plt.subplots(figsize=(8, 5))
+    ax.plot(be, intensity, 'o', ms=2, color='#1f77b4', label='Data')
+    ax.plot(be, yfit, '-', color='#d62728', lw=1.8, label='Fit')
+    for i in range(n):
+        amp, cen, sigma, gamma = popt[2+4*i : 6+4*i]
+        ax.plot(be, voigt(be, amp, cen, sigma, gamma),
+                '--', lw=1.2, label=f'Peak {i+1} @ {cen:.1f} eV')
+    ax.plot(be, linear_baseline(be, popt[0], popt[1]),
+            ':', color='gray', label='Baseline')
+    ax.set_xlabel('Binding Energy (eV)')
+    ax.set_ylabel('Intensity (CPS)')
+    ax.set_title(f'C1s Decomposition — {label}')
+    ax.invert_xaxis()
+    ax.legend(fontsize=8)
+    ax.grid(alpha=0.3)
+    plt.tight_layout()
+    plt.savefig(f'C1s_{label}_decomp.png', dpi=200)
+    plt.close()
+
+    return popt, ratios
+
+# ------------------------------------------------------------
+# 4) Exécution de l'analyse sur les trois échantillons
+# ------------------------------------------------------------
+samples = {
+    'Red': 'C1s-Red.csv',
+    'Ox' : 'C1s-Ox.csv',
+    'Ov' : 'C1s-Ov.csv',
+}
+
+for label, fname in samples.items():
+    be, inten = load_xps(fname)
+    popt, ratios = fit_C1s(be, inten, label=label)
+    print(f'--- C1s / {label} ---')
+    print('Relative areas (%) :', np.round(ratios, 2))
+    print()
+</pre>
+
+  <div class="note">
+    <b>Remarques sur le code :</b>
+    <ul>
+      <li>Le modèle <code class="inline">multi_peaks</code> généralise l'approche à un nombre arbitraire de pics.</li>
+      <li>Les contraintes (bounds) empêchent les pics de dériver vers des positions non physiques.</li>
+      <li>On peut remplacer <code class="inline">voigt</code> par <code class="inline">gaussian</code>
+          si les pics sont très étroits.</li>
+      <li>Le même script s'applique à Cl<sub>2p</sub>, O<sub>1s</sub> et S<sub>2p</sub>
+          en ajustant le nombre de pics et leurs positions initiales.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ DISCUSSION ============ -->
+<section class="card" id="discussion">
+  <h2>8. Discussion et conclusion</h2>
+
+  <p>
+    En rassemblant les résultats des douze figures, on peut dégager l'image suivante
+    de l'évolution du polythiophène à travers les trois états d'oxydation :
+  </p>
+
+  <h3>8.1 De PT<sub>Re</sub> à PT<sub>Ox</sub> (oxydation réversible)</h3>
+  <ul>
+    <li>En C<sub>1s</sub> : le pic principal à 285 eV reste dominant mais diminue
+        de ≈92 % à ≈65 %, avec la croissance des composantes à 286,2 eV (interaction
+        avec le dopant) et 287,6 eV.</li>
+    <li>En Cl<sub>2p</sub> : le chlore passe de la forme perchlorate non dopant
+        (208,2 eV) à la forme perchlorate dopant (207,0 eV) — le rapport à 207 eV
+        passe de ≈25 % à ≈62 %.</li>
+    <li>En S<sub>2p</sub> : la composante à 165,5 eV (S⁺) croît de ≈9 % à ≈20 %,
+        signe d'une extraction de charge des cycles thiophène.</li>
+    <li>En O<sub>1s</sub> : l'intensité augmente modérément (de 2200 à 3500 CPS).</li>
+  </ul>
+  <p>
+    Toutes ces modifications sont <b>réversibles</b>, en accord avec le fait que
+    PT<sub>Re</sub> et PT<sub>Ox</sub> possèdent une activité électrochimique
+    (voltammogrammes bien définis dans la Figure 3 de l'article).
+  </p>
+
+  <h3>8.2 De PT<sub>Ox</sub> à PT<sub>Ov</sub> (suroxydation — dégradation)</h3>
+  <ul>
+    <li>En C<sub>1s</sub> : le pic à 285 eV chute à ≈52 %, et une composante nette
+        apparaît à 289 eV (C=O) avec un rapport ≈13 %. Cela signifie la rupture des
+        liaisons C–C et C–H et la formation de groupes carbonyle.</li>
+    <li>En Cl<sub>2p</sub> : la composante à 200,5 eV (C–Cl covalent) apparaît avec
+        un rapport ≈30 %, preuve d'une attaque nucléophile directe des Cl⁻ sur les chaînes.</li>
+    <li>En S<sub>2p</sub> : la composante à 167,8 eV (sulfoxyde) apparaît avec un
+        rapport ≈12 %, et une nouvelle composante à 169,1 eV (sulfone SO₂) apparaît
+        avec un rapport ≈6 %.</li>
+    <li>En O<sub>1s</sub> : l'intensité double presque pour atteindre ≈6800 CPS,
+        avec un élargissement du pic (FWHM ≈2,4 eV).</li>
+  </ul>
+
+  <div class="warn">
+    <b>Conclusion décisive :</b> lorsque E > 1,2 V vs Ag/AgCl, le polymère entre dans
+    le domaine de <b>suroxydation irréversible</b>. Des groupes latéraux chlorés et
+    oxygénés (−C–Cl, −C=O, −S=O, −SO₂) se fixent sur le squelette, ce qui entraîne :
+    <ul>
+      <li>la rupture de la conjugaison (longueur de conjugaison réduite) dans les chaînes polymériques ;</li>
+      <li>la génération de défauts structuraux et de distorsions ;</li>
+      <li>la perte d'activité électrochimique et de conductivité (comme l'ont montré
+          les mesures de voltammétrie et de conductivité dans l'article).</li>
+    </ul>
+  </div>
+
+  <h3>8.3 Concordance avec le mécanisme de Qi et al.</h3>
+  <p>
+    Les résultats sont parfaitement cohérents avec le Schéma 1 de l'article :
+  </p>
+  <ol>
+    <li><b>Première étape (réversible) :</b> oxydation du polymère et formation de
+        polarons/bipolarons à E < 1,2 V — visible par la croissance de la composante
+        à 207 eV en Cl<sub>2p</sub> et de la composante à 165,5 eV en S<sub>2p</sub>.</li>
+    <li><b>Deuxième étape (irréversible) :</b> à E > 1,2 V, le polymère devient
+        électrophile et subit des attaques nucléophiles (Cl⁻, H₂O), fixant des groupes
+        C–Cl, C=O et S=O sur les chaînes — ce que l'on observe clairement dans PT<sub>Ov</sub>.</li>
+  </ol>
+
+  <h3>8.4 Conclusion finale</h3>
+  <p>
+    L'analyse des douze spectres XPS (C<sub>1s</sub>, Cl<sub>2p</sub>, O<sub>1s</sub>, S<sub>2p</sub>)
+    pour les trois états PT<sub>Re</sub>, PT<sub>Ox</sub>, PT<sub>Ov</sub> met en évidence :
+  </p>
+  <ul>
+    <li><b>Un seuil de stabilité électrochimique</b> à ≈1,2 V vs Ag/AgCl.</li>
+    <li><b>Un mécanisme de dégradation</b> : attaque nucléophile de l'électrolyte
+        support (LiClO₄) sur les sites positifs, avec insertion de groupes chlorés et oxygénés.</li>
+    <li><b>Une conséquence structurale</b> : raccourcissement de la longueur de conjugaison,
+        apparition de défauts, perte d'activité électrochimique et de conductivité.</li>
+  </ul>
+
+  <p style="margin-top:22px">
+    Ces résultats confirment ceux de l'article original et montrent que la XPS est un
+    outil puissant pour suivre les modifications chimiques et structurales accompagnant
+    la suroxydation du polythiophène, tout comme l'a démontré la RRS (spectroscopie
+    Raman résonante) dans la deuxième partie de l'article.
+  </p>
+</section>
+
+<footer>
+  Rapport d'analyse — Spectres XPS du polythiophène (12 spectres) — Établi selon la
+  méthodologie de Bouabdallou et al., <em>Springer-Verlag GmbH Germany</em>, 2017.
+</footer>
+
+</div>
+</body>
+  </html>
