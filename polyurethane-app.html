@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mécanisme Polyuréthane - Ayoub Chikhi</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+body{background:#fffbeb;padding:20px;color:#1e293b}
+.header{text-align:center;margin-bottom:30px}
+.header h1{font-size:2rem;color:#0f172a}
+.header p{color:#64748b;margin-top:8px}
+.steps{display:flex;gap:15px;justify-content:center;flex-wrap:wrap;margin:25px 0}
+.step{flex:1;min-width:280px;background:white;border-radius:16px;padding:20px;border:2px solid #e2e8f0;transition:0.3s;cursor:pointer}
+.step.active{border-color:#f59e0b;box-shadow:0 8px 25px rgba(245,158,11,0.2);transform:translateY(-4px)}
+.step-number{width:32px;height:32px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-weight:800;margin-bottom:12px}
+.step.active .step-number{background:#f59e0b;color:white}
+.formula{font-family:monospace;font-size:1.15rem;background:#f8fafc;padding:12px;border-radius:8px;margin:12px 0;text-align:center;border:1px dashed #cbd5e1}
+.arrow{font-size:2rem;text-align:center;color:#f59e0b;margin:10px 0}
+.details{background:#f0f9ff;border-left:4px solid #0ea5e9;padding:15px;border-radius:0 10px 10px 0;margin-top:15px}
+.dbTL{background:#0f172a;color:#fde68a;padding:20px;border-radius:12px;margin-top:20px}
+.controls{text-align:center;margin:20px 0}
+button{padding:12px 22px;border:none;border-radius:10px;font-weight:700;cursor:pointer;margin:5px}
+.btn-next{background:#0f172a;color:white}
+.btn-prev{background:#e2e8f0}
+</style>
+</head>
+<body>
+<div class="header">
+<h1>Polyuréthane : Isocyanate + Polyol → Uréthane</h1>
+<p>Réaction catalysée par DBTL - Mécanisme en 3 étapes</p>
+</div>
+
+<div style="text-align:center" class="formula"><b>Réaction globale:</b> R–N=C=O + HO–R' <span style="color:#f59e0b">--[DBTL]--></span> R–NH–C(=O)–O–R'</div>
+
+<div class="steps">
+<div class="step active" id="s1" onclick="show(1)">
+<div class="step-number">1</div>
+<h3>Attaque nucléophile</h3>
+<div class="formula">R–N=C=O + :O–R'</div>
+<p style="font-size:0.9rem;color:#64748b">L'oxygène du polyol (doublet libre) attaque le carbone électrophile δ+ de l'isocyanate. Le carbone passe de sp à sp3.</p>
+<div class="details">Polarisation: N=C<sup>δ+</sup>=O<sup>δ-</sup> • DBTL se coordine à O pour augmenter l'électrophilie</div>
+</div>
+
+<div class="step" id="s2" onclick="show(2)">
+<div class="step-number">2</div>
+<h3>Intermédiaire zwitterionique</h3>
+<div class="formula">R–N⁻–C(=O)–O⁺H–R'</div>
+<p style="font-size:0.9rem;color:#64748b">Formation d'un état de transition chargé. N porte une charge négative, O porte une charge positive.</p>
+<div class="details">Espèce instable • Stabilisée par DBTL • Durée de vie très courte</div>
+</div>
+
+<div class="step" id="s3" onclick="show(3)">
+<div class="step-number">3</div>
+<h3>Transfert de proton → Uréthane</h3>
+<div class="formula" style="background:#dbeafe;border-color:#3b82f6">R–NH–C(=O)–O–R'</div>
+<p style="font-size:0.9rem;color:#64748b">Le proton migre de O⁺ vers N⁻. Formation de la liaison uréthane neutre et stable.</p>
+<div class="details">Produit final: carbamate / uréthane • Liaison très stable • DBTL régénéré</div>
+</div>
+</div>
+
+<div class="arrow" id="arrow">↓</div>
+
+<div class="dbTL">
+<strong>🔬 Rôle du DBTL (Dibutyltin dilaurate):</strong> [CH3(CH2)3]2Sn[OCO(CH2)10CH3]2<br>
+Acide de Lewis qui se coordine à l'oxygène de N=C=O → augmente δ+ sur le carbone → abaisse l'énergie d'activation de 40%. Non consommé, régénéré en fin de cycle.
+</div>
+
+<div class="controls">
+<button class="btn-prev" onclick="prev()">← Précédent</button>
+<button class="btn-next" onclick="next()">Suivant →</button>
+</div>
+
+<script>
+let cur=1;
+function show(n){
+ cur=n;
+ document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+ document.getElementById('s'+n).classList.add('active');
+}
+function next(){ if(cur<3) show(cur+1) }
+function prev(){ if(cur>1) show(cur-1) }
+</script>
+</body>
+</html>
