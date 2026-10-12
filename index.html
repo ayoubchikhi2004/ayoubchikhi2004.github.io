@@ -23,6 +23,7 @@ h2{font-size:1.9rem;margin-bottom:25px;border-left:5px solid #0ea5e9;padding-lef
   height:100%;
   display:flex;
   flex-direction:column;
+  cursor:pointer;
 }
 .card:hover{transform:translateY(-8px);box-shadow:0 16px 35px rgba(0,0,0,0.12)}
 .card-top{height:6px;width:100%}
@@ -41,7 +42,22 @@ h2{font-size:1.9rem;margin-bottom:25px;border-left:5px solid #0ea5e9;padding-lef
 .c-ansys .card-top{background:#8b5cf6} .c-ansys .tag{background:#ede9fe;color:#5b21b6}
 .c-xps .card-top{background:linear-gradient(90deg,#0ea5e9,#06b6d4)} .c-xps .tag{background:#0f172a;color:#7dd3fc}
 .c-xps{background:linear-gradient(180deg,#ffffff 0%,#f0f9ff 100%);border:1px solid #bae6fd}
+/* NOUVELLE CARTE POLYURETHANE */
+.c-polyu .card-top{background:linear-gradient(90deg,#f59e0b,#ef4444)} 
+.c-polyu .tag{background:#fef3c7;color:#92400e}
+.c-polyu{background:linear-gradient(180deg,#ffffff 0%,#fffbeb 100%);border:2px solid #fcd34d}
+.badge-live{display:inline-block;background:#ef4444;color:white;font-size:0.65rem;padding:3px 7px;border-radius:4px;margin-left:8px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1} 50%{opacity:0.6}}
 footer{background:#0f172a;color:#94a3b8;text-align:center;padding:35px;margin-top:50px}
+
+/* MODAL POUR AFFICHER L'APP */
+.modal{display:none;position:fixed;z-index:9999;left:0;top:0;width:100%;height:100%;background:rgba(15,23,42,0.85);backdrop-filter:blur(4px)}
+.modal-content{position:relative;background:white;margin:2% auto;width:95%;max-width:1200px;height:94%;border-radius:16px;overflow:hidden;box-shadow:0 25px 50px rgba(0,0,0,0.3)}
+.modal-header{padding:14px 20px;background:#0f172a;color:white;display:flex;justify-content:space-between;align-items:center}
+.modal-header a{color:#7dd3fc;text-decoration:none;font-size:0.9rem}
+.close{font-size:28px;font-weight:bold;cursor:pointer;color:#94a3b8}
+.close:hover{color:white}
+.modal iframe{width:100%;height:calc(100% - 52px);border:none}
 </style>
 </head>
 <body>
@@ -55,6 +71,18 @@ footer{background:#0f172a;color:#94a3b8;text-align:center;padding:35px;margin-to
 <div class="container">
 <h2>Projets Académiques</h2>
 <div class="grid">
+
+<!-- NOUVELLE CARTE - APPLICATION POLYURETHANE -->
+<div class="card c-polyu" onclick="openApp()">
+<div class="card-top"></div>
+<div class="card-body">
+<h3>Mécanisme Polyuréthane - App Interactive <span class="badge-live">● LIVE</span></h3>
+<p>Application interactive du mécanisme réactionnel isocyanate + polyol. Simulation DBTL, intermédiaire zwitterionique et formation uréthane.</p>
+<span class="tag">Chimie • Polyuréthane • DBTL</span>
+</div>
+<div class="card-footer"><span class="link-arrow">Ouvrir l'application →</span></div>
+</div>
+
 <a href="projet-pvsyst.html" style="text-decoration:none;color:inherit"><div class="card c-pvsyst"><div class="card-top"></div><div class="card-body"><h3>Dimensionnement PV 3 kWc résidentiel - PVsyst</h3><p>Dimensionnement complet d'une installation résidentielle 3 kWc : calcul productible et analyse de performance.</p><span class="tag">PVsyst</span></div><div class="card-footer"><span class="link-arrow">Voir projet →</span></div></div></a>
 <a href="projet-prepvsyst.html" style="text-decoration:none;color:inherit"><div class="card c-python"><div class="card-top"></div><div class="card-body"><h3>Calculs pré-PVsyst - Python</h3><p>Outil Python pour vérification pré-dimensionnement : Voc froid, Vmp MPPT, ratio DC/AC et estimation productible.</p><span class="tag">Python</span></div><div class="card-footer"><span class="link-arrow">Voir projet →</span></div></div></a>
 <a href="Pv-2D simulation.html" style="text-decoration:none;color:inherit"><div class="card c-html"><div class="card-top"></div><div class="card-body"><h3>Modélisation 2D d'une installation PV résidentielle</h3><p>Conception du plan 2D et calepinage des modules pour une toiture résidentielle.</p><span class="tag">2D Design</span></div><div class="card-footer"><span class="link-arrow">Voir projet →</span></div></div></a>
@@ -73,6 +101,39 @@ footer{background:#0f172a;color:#94a3b8;text-align:center;padding:35px;margin-to
 <h2 style="margin-top:40px">Contact</h2>
 <p>Email: <b>ayoubchikhi2004@gmail.com</b><br>Tél: <b>+212 762 734 288</b><br>Oujda, Maroc</p>
 </div>
+
+<!-- MODAL APP -->
+<div id="appModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span>Mécanisme Polyuréthane - Application Interactive</span>
+      <div style="display:flex;gap:15px;align-items:center">
+        <a href="https://claude.ai/artifact/8T8xncTsk1QfMF2fN8ukne" target="_blank">Ouvrir dans nouvel onglet ↗</a>
+        <span class="close" onclick="closeApp()">&times;</span>
+      </div>
+    </div>
+    <iframe src="https://claude.ai/artifact/8T8xncTsk1QfMF2fN8ukne" title="App Polyuréthane"></iframe>
+  </div>
+</div>
+
 <footer><p>© 2026 Ayoub Chikhi - Portfolio Ingénierie Énergétique</p></footer>
+
+<script>
+function openApp(){
+  document.getElementById('appModal').style.display='block';
+  document.body.style.overflow='hidden';
+}
+function closeApp(){
+  document.getElementById('appModal').style.display='none';
+  document.body.style.overflow='auto';
+}
+window.onclick = function(e){
+  if(e.target == document.getElementById('appModal')) closeApp();
+}
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape') closeApp();
+});
+</script>
+
 </body>
 </html>
