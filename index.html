@@ -13,7 +13,7 @@ header p{color:#94a3b8;margin:12px 0 20px;font-size:1.1rem;max-width:800px;margi
 .container{max-width:1100px;margin:auto;padding:50px 20px}
 h2{font-size:1.9rem;margin-bottom:25px;border-left:5px solid #0ea5e9;padding-left:15px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:28px}
-.card{background:white;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.06);overflow:hidden;border:1px solid #e2e8f0;transition:all 0.35s ease;height:100%;display:flex;flex-direction:column;cursor:pointer}
+.card{background:white;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.06);overflow:hidden;border:1px solid #e2e8f0;transition:all 0.35s ease;height:100%;display:flex;flex-direction:column}
 .card:hover{transform:translateY(-8px);box-shadow:0 16px 35px rgba(0,0,0,0.12)}
 .card-top{height:6px;width:100%}
 .card-body{padding:24px;flex:1}
@@ -31,35 +31,18 @@ h2{font-size:1.9rem;margin-bottom:25px;border-left:5px solid #0ea5e9;padding-lef
 .c-ansys .card-top{background:#8b5cf6} .c-ansys .tag{background:#ede9fe;color:#5b21b6}
 .c-xps .card-top{background:linear-gradient(90deg,#0ea5e9,#06b6d4)} .c-xps .tag{background:#0f172a;color:#7dd3fc}
 .c-xps{background:linear-gradient(180deg,#ffffff 0%,#f0f9ff 100%);border:1px solid #bae6fd}
-.c-polyu .card-top{background:linear-gradient(90deg,#f59e0b,#ef4444)} 
-.c-polyu .tag{background:#fef3c7;color:#92400e}
-.c-polyu{background:linear-gradient(180deg,#ffffff 0%,#fffbeb 100%);border:2px solid #fcd34d}
-/* NOUVELLE CARTE CORROSION */
-.c-corrosion .card-top{background:linear-gradient(90deg,#7f1d1d,#dc2626,#f97316)} 
-.c-corrosion .tag{background:#fee2e2;color:#7f1d1d}
-.c-corrosion{background:linear-gradient(180deg,#ffffff 0%,#fef2f2 100%);border:2px solid #fca5a5}
+.c-polyu .card-top{background:linear-gradient(90deg,#f59e0b,#ef4444)} .c-polyu .tag{background:#fef3c7;color:#92400e}
+.c-polyu{background:linear-gradient(180deg,#ffffff 0%,#fffbeb 100%);border:1px solid #fde68a}
+.c-corrosion .card-top{background:linear-gradient(90deg,#7f1d1d,#ef4444,#f97316)} .c-corrosion .tag{background:#fee2e2;color:#7f1d1d}
+.c-corrosion{background:linear-gradient(180deg,#ffffff 0%,#fef2f2 100%);border:1px solid #fecaca}
 footer{background:#0f172a;color:#94a3b8;text-align:center;padding:35px;margin-top:50px}
-.modal{display:none;position:fixed;z-index:9999;left:0;top:0;width:100%;height:100%;background:rgba(15,23,42,0.9);overflow:auto}
-.modal-content{position:relative;background:#fffbeb;margin:20px auto;width:95%;max-width:1100px;border-radius:16px;overflow:hidden}
-.modal-content.corrosion-bg{background:#fef2f2}
-.modal-header{padding:14px 20px;background:#0f172a;color:white;display:flex;justify-content:space-between;align-items:center}
-.close{font-size:32px;cursor:pointer;color:#94a3b8}
-.close:hover{color:white}
-.app-body{padding:25px}
-.app-formula{font-family:monospace;font-size:1.1rem;background:white;padding:14px;border-radius:10px;text-align:center;border:2px dashed #f59e0b;margin:15px 0}
-.steps{display:flex;gap:15px;flex-wrap:wrap;margin:20px 0}
-.step{flex:1;min-width:260px;background:white;border-radius:14px;padding:18px;border:2px solid #e2e8f0;cursor:pointer}
-.step.active{border-color:#f59e0b;box-shadow:0 8px 20px rgba(245,158,11,0.25)}
-.step-num{width:30px;height:30px;border-radius:50%;background:#e2e8f0;display:inline-flex;align-items:center;justify-content:center;font-weight:800;margin-right:8px}
-.step.active .step-num{background:#f59e0b;color:white}
-.step-cor{flex:1;min-width:250px;background:white;border-radius:14px;padding:18px;border:2px solid #e2e8f0}
-.step-cor.active{border-color:#dc2626;box-shadow:0 8px 20px rgba(220,38,38,0.2)}
 </style>
 </head>
 <body>
 <header>
 <h1>AYOUB CHIKHI</h1>
 <p>M2 Génie des Matériaux et Énergie - UMP Oujda | BINAYATE, TRNSYS, ANSYS, PVsyst, Python | Recherche stage PFE Fév 2027</p>
+<p>Spécialisé en simulation <strong>PVsyst</strong>, <strong>Python</strong> et <strong>ANSYS Fluent</strong>. Utilise <strong>BINAYATE</strong> pour l'enveloppe thermique et <strong>TRNSYS</strong> pour l'énergie solaire.</p>
 <a href="https://www.linkedin.com/in/ayoub-chikhi-543b09433/" style="display:inline-block;padding:12px 26px;background:#0A66C2;color:white;border-radius:10px;text-decoration:none;font-weight:bold;">LinkedIn</a>
 <a href="mailto:ayoubchikhi2004@gmail.com" style="display:inline-block;padding:12px 26px;background:#1e293b;color:white;border-radius:10px;text-decoration:none;font-weight:bold;margin-left:10px;">Contact</a>
 </header>
@@ -67,94 +50,38 @@ footer{background:#0f172a;color:#94a3b8;text-align:center;padding:35px;margin-to
 <h2>Projets Académiques</h2>
 <div class="grid">
 
-<div class="card c-polyu" onclick="openModal('appModal')">
-<div class="card-top"></div>
-<div class="card-body">
-<h3>Mécanisme Polyuréthane - App Interactive</h3>
-<p>Application interactive : isocyanate + polyol → uréthane. Mécanisme avec DBTL, intermédiaire zwitterionique.</p>
-<span class="tag">Chimie • Polyuréthane • LOCAL ✓</span>
-</div>
-<div class="card-footer"><span class="link-arrow">Ouvrir l'application →</span></div>
-</div>
+<a href="projet-polyurethane.html" style="text-decoration:none;color:inherit"><div class="card c-polyu"><div class="card-top"></div><div class="card-body"><h3>Mécanisme Polyuréthane - Isocyanate + Polyol</h3><p>Mécanisme réactionnel complet : attaque nucléophile, intermédiaire zwitterionique, transfert proton et formation uréthane avec catalyseur DBTL.</p><span class="tag">Polyuréthane • DBTL</span></div><div class="card-footer"><span class="link-arrow">Voir projet →</span></div></div></a>
 
-<!-- CARTE CORROSION CLICABLE -->
-<div class="card c-corrosion" onclick="openModal('corrosionModal')">
-<div class="card-top"></div>
-<div class="card-body">
-<h3>Simulation Corrosion Acier - App Interactive</h3>
-<p>Simulation électrochimique : Fe → Fe²⁺, réduction O₂, rouille Fe₂O₃·nH₂O. Facteurs Cl⁻, pH, protection cathodique.</p>
-<span class="tag">Corrosion • Électrochimie • LOCAL ✓</span>
-</div>
-<div class="card-footer"><span class="link-arrow">Lancer simulation →</span></div>
-</div>
+<a href="projet-corrosion.html" style="text-decoration:none;color:inherit"><div class="card c-corrosion"><div class="card-top"></div><div class="card-body"><h3>Simulation Corrosion Acier - Électrochimie</h3><p>Simulation électrochimique : Fe → Fe²⁺ + 2e⁻, réduction O₂, formation rouille Fe₂O₃·H₂O. Facteurs Cl⁻, pH et protection.</p><span class="tag">Corrosion • Électrochimie</span></div><div class="card-footer"><span class="link-arrow">Voir projet →</span></div></div></a>
 
 <a href="projet-pvsyst.html" style="text-decoration:none;color:inherit"><div class="card c-pvsyst"><div class="card-top"></div><div class="card-body"><h3>Dimensionnement PV 3 kWc résidentiel - PVsyst</h3><p>Dimensionnement complet d'une installation résidentielle 3 kWc : calcul productible et analyse de performance.</p><span class="tag">PVsyst</span></div><div class="card-footer"><span class="link-arrow">Voir projet →</span></div></div></a>
+
 <a href="projet-prepvsyst.html" style="text-decoration:none;color:inherit"><div class="card c-python"><div class="card-top"></div><div class="card-body"><h3>Calculs pré-PVsyst - Python</h3><p>Outil Python pour vérification pré-dimensionnement : Voc froid, Vmp MPPT, ratio DC/AC et estimation productible.</p><span class="tag">Python</span></div><div class="card-footer"><span class="link-arrow">Voir projet →</span></div></div></a>
+
 <a href="Pv-2D simulation.html" style="text-decoration:none;color:inherit"><div class="card c-html"><div class="card-top"></div><div class="card-body"><h3>Modélisation 2D d'une installation PV résidentielle</h3><p>Conception du plan 2D et calepinage des modules pour une toiture résidentielle.</p><span class="tag">2D Design</span></div><div class="card-footer"><span class="link-arrow">Voir projet →</span></div></div></a>
+
 <a href="Pv-3D simulation.html" style="text-decoration:none;color:inherit"><div class="card c-html"><div class="card-top"></div><div class="card-body"><h3>Modélisation 3D d'une installation PV résidentielle</h3><p>Modélisation 3D avec prise en compte des ombrages proches et orientation optimale.</p><span class="tag">3D Design</span></div><div class="card-footer"><span class="link-arrow">Voir projet →</span></div></div></a>
+
 <a href="projet-heliosketch.html" style="text-decoration:none;color:inherit"><div class="card c-helio"><div class="card-top"></div><div class="card-body"><h3>Dimensionnement PV 3 kWc - HelioSketch</h3><p>Pré-dimensionnement rapide sur HelioSketch : estimation production et surface nécessaire.</p><span class="tag">HelioSketch</span></div><div class="card-footer"><span class="link-arrow">Voir projet →</span></div></div></a>
+
 <a href="projet-python.html" style="text-decoration:none;color:inherit"><div class="card c-python"><div class="card-top"></div><div class="card-body"><h3>Automatisation DRX - Python</h3><p>Traitement automatisé des données DRX expérimentales et génération des diffractogrammes via Python.</p><span class="tag">Python • DRX</span></div><div class="card-footer"><span class="link-arrow">Voir projet →</span></div></div></a>
+
 <a href="projet-binayate.html" style="text-decoration:none;color:inherit"><div class="card c-binayate"><div class="card-top"></div><div class="card-body"><h3>Enveloppe thermique - BINAYATE</h3><p>Validation réglementaire de l'enveloppe thermique d'un bâtiment selon la norme marocaine RTCM.</p><span class="tag">BINAYATE</span></div><div class="card-footer"><span class="link-arrow">Voir projet →</span></div></div></a>
+
 <a href="projet-trnsys.html" style="text-decoration:none;color:inherit"><div class="card c-trnsys"><div class="card-top"></div><div class="card-body"><h3>Systèmes solaires - TRNSYS</h3><p>Modélisation dynamique des systèmes de conversion d'énergie solaire sous TRNSYS.</p><span class="tag">TRNSYS</span></div><div class="card-footer"><span class="link-arrow">Voir projet →</span></div></div></a>
+
 <a href="projet-ansys.html" style="text-decoration:none;color:inherit"><div class="card c-ansys"><div class="card-top"></div><div class="card-body"><h3>Optimisation CVC - ANSYS Fluent</h3><p>Dimensionnement et optimisation de l'efficacité énergétique des systèmes de chauffage et climatisation.</p><span class="tag">ANSYS Fluent</span></div><div class="card-footer"><span class="link-arrow">Voir projet →</span></div></div></a>
+
 <a href="Analyse XPS.html" style="text-decoration:none;color:inherit"><div class="card c-xps"><div class="card-top"></div><div class="card-body"><h3>Analyse XPS - Red / Ox / Ov</h3><p>Analyse chimique complète C1s, O1s, S2p, Cl2p. Quantification atomique, déconvolution et taux de dopage.</p><span class="tag">XPS • 12 Spectres</span></div><div class="card-footer"><span class="link-arrow">Voir rapport →</span></div></div></a>
-</div>
-</div>
 
-<!-- MODAL POLYURETHANE -->
-<div id="appModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <span>Polyuréthane : Mécanisme Réactionnel Interactif</span>
-      <span class="close" onclick="closeModal('appModal')">&times;</span>
-    </div>
-    <div class="app-body">
-      <div class="app-formula"><b>R–N=C=O + HO–R' --[DBTL]--> R–NH–C(=O)–O–R'</b></div>
-      <div class="steps">
-        <div class="step active" id="step1" onclick="setStep(1)"><span class="step-num">1</span><b>Attaque nucléophile</b><br><br>O du polyol attaque C δ+ de l'isocyanate. DBTL polarise N=C=O.<br><br><code>R-N=C=O + :O-R'</code></div>
-        <div class="step" id="step2" onclick="setStep(2)"><span class="step-num">2</span><b>Zwitterion</b><br><br>Intermédiaire chargé instable.<br><br><code>R-N⁻-C(=O)-O⁺H-R'</code><br><br>N⁻ et O⁺</div>
-        <div class="step" id="step3" onclick="setStep(3)"><span class="step-num">3</span><b>Uréthane</b><br><br>Transfert H de O⁺ vers N⁻.<br><br><code style="background:#dbeafe;padding:4px;border-radius:4px">R-NH-C(=O)-O-R'</code><br><br>Produit final stable</div>
-      </div>
-      <div style="background:#0f172a;color:#fde68a;padding:18px;border-radius:10px;margin-top:15px">
-      <b>🔬 DBTL:</b> Acide de Lewis [CH3(CH2)3]2Sn[OCO(CH2)10CH3]2. Se coordine à O de N=C=O, augmente l'électrophilie du carbone, abaisse l'énergie d'activation.
-      </div>
-    </div>
-  </div>
 </div>
-
-<!-- MODAL CORROSION -->
-<div id="corrosionModal" class="modal">
-  <div class="modal-content corrosion-bg">
-    <div class="modal-header">
-      <span>Corrosion Acier : Simulation Électrochimique</span>
-      <span class="close" onclick="closeModal('corrosionModal')">&times;</span>
-    </div>
-    <div class="app-body">
-      <div class="app-formula" style="border-color:#dc2626"><b>Anode: Fe → Fe²⁺ + 2e⁻ | Cathode: O₂ + 2H₂O + 4e⁻ → 4OH⁻ | Rouille: 4Fe(OH)₂ + O₂ → 2Fe₂O₃·H₂O</b></div>
-      <div class="steps">
-        <div class="step-cor active"><b>🔴 Anode - Oxydation</b><br><br>Fe → Fe²⁺ + 2e⁻<br>E° = -0.44 V<br><br><small>Dissolution, perte de masse</small></div>
-        <div class="step-cor active" style="border-color:#0ea5e9"><b>🔵 Cathode - Réduction</b><br><br>O₂ + 2H₂O + 4e⁻ → 4OH⁻<br>E° = +0.40 V<br><br><small>Milieu neutre aéré</small></div>
-        <div class="step-cor active" style="border-color:#f59e0b"><b>🟠 Rouille</b><br><br>Fe²⁺ + 2OH⁻ → Fe(OH)₂<br>→ Fe₂O₃·nH₂O<br><br><small>Couche poreuse non protectrice</small></div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:20px">
-        <div style="background:white;border:1px solid #fecaca;padding:15px;border-radius:10px"><b>🔴 Accélérateurs:</b><br>• Cl⁻ (mer) → piqûres<br>• pH < 4<br>• O₂ dissous<br>• T° ↑</div>
-        <div style="background:white;border:1px solid #bbf7d0;padding:15px;border-radius:10px"><b>🟢 Protection:</b><br>• Revêtement PU (ton projet!)<br>• Zn galvanisation<br>• Inhibiteurs<br>• Protection cathodique</div>
-      </div>
-    </div>
-  </div>
+<h2 style="margin-top:50px">Compétences</h2>
+<p><b>Logiciels:</b> PVsyst, TRNSYS, ANSYS, Python, BINAYATE</p>
+<p><b>Caractérisation:</b> MEB, DRX, XPS</p>
+<p><b>Langues:</b> Français, Anglais, Arabe</p>
+<h2 style="margin-top:40px">Contact</h2>
+<p>Email: <b>ayoubchikhi2004@gmail.com</b><br>Tél: <b>+212 762 734 288</b><br>Oujda, Maroc</p>
 </div>
-
-<footer><p>© 2026 Ayoub Chikhi</p></footer>
-
-<script>
-function openModal(id){document.getElementById(id).style.display='block';document.body.style.overflow='hidden';}
-function closeModal(id){document.getElementById(id).style.display='none';document.body.style.overflow='auto';}
-function setStep(n){
- document.querySelectorAll('#appModal .step').forEach(s=>s.classList.remove('active'));
- document.getElementById('step'+n).classList.add('active');
-}
-window.onclick=function(e){if(e.target.classList.contains('modal')){e.target.style.display='none';document.body.style.overflow='auto';}}
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.modal').forEach(m=>m.style.display='none');document.body.style.overflow='auto';}});
-</script>
+<footer><p>© 2026 Ayoub Chikhi - Portfolio Ingénierie Énergétique</p></footer>
 </body>
 </html>
