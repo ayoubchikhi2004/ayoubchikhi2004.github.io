@@ -34,19 +34,26 @@ h2{font-size:1.9rem;margin-bottom:25px;border-left:5px solid #0ea5e9;padding-lef
 .c-polyu .card-top{background:linear-gradient(90deg,#f59e0b,#ef4444)} 
 .c-polyu .tag{background:#fef3c7;color:#92400e}
 .c-polyu{background:linear-gradient(180deg,#ffffff 0%,#fffbeb 100%);border:2px solid #fcd34d}
+/* NOUVELLE CARTE CORROSION */
+.c-corrosion .card-top{background:linear-gradient(90deg,#7f1d1d,#dc2626,#f97316)} 
+.c-corrosion .tag{background:#fee2e2;color:#7f1d1d}
+.c-corrosion{background:linear-gradient(180deg,#ffffff 0%,#fef2f2 100%);border:2px solid #fca5a5}
 footer{background:#0f172a;color:#94a3b8;text-align:center;padding:35px;margin-top:50px}
 .modal{display:none;position:fixed;z-index:9999;left:0;top:0;width:100%;height:100%;background:rgba(15,23,42,0.9);overflow:auto}
 .modal-content{position:relative;background:#fffbeb;margin:20px auto;width:95%;max-width:1100px;border-radius:16px;overflow:hidden}
+.modal-content.corrosion-bg{background:#fef2f2}
 .modal-header{padding:14px 20px;background:#0f172a;color:white;display:flex;justify-content:space-between;align-items:center}
 .close{font-size:32px;cursor:pointer;color:#94a3b8}
 .close:hover{color:white}
 .app-body{padding:25px}
-.app-formula{font-family:monospace;font-size:1.2rem;background:white;padding:14px;border-radius:10px;text-align:center;border:2px dashed #f59e0b;margin:15px 0}
+.app-formula{font-family:monospace;font-size:1.1rem;background:white;padding:14px;border-radius:10px;text-align:center;border:2px dashed #f59e0b;margin:15px 0}
 .steps{display:flex;gap:15px;flex-wrap:wrap;margin:20px 0}
 .step{flex:1;min-width:260px;background:white;border-radius:14px;padding:18px;border:2px solid #e2e8f0;cursor:pointer}
 .step.active{border-color:#f59e0b;box-shadow:0 8px 20px rgba(245,158,11,0.25)}
 .step-num{width:30px;height:30px;border-radius:50%;background:#e2e8f0;display:inline-flex;align-items:center;justify-content:center;font-weight:800;margin-right:8px}
 .step.active .step-num{background:#f59e0b;color:white}
+.step-cor{flex:1;min-width:250px;background:white;border-radius:14px;padding:18px;border:2px solid #e2e8f0}
+.step-cor.active{border-color:#dc2626;box-shadow:0 8px 20px rgba(220,38,38,0.2)}
 </style>
 </head>
 <body>
@@ -60,7 +67,7 @@ footer{background:#0f172a;color:#94a3b8;text-align:center;padding:35px;margin-to
 <h2>Projets Académiques</h2>
 <div class="grid">
 
-<div class="card c-polyu" onclick="openApp()">
+<div class="card c-polyu" onclick="openModal('appModal')">
 <div class="card-top"></div>
 <div class="card-body">
 <h3>Mécanisme Polyuréthane - App Interactive</h3>
@@ -68,6 +75,17 @@ footer{background:#0f172a;color:#94a3b8;text-align:center;padding:35px;margin-to
 <span class="tag">Chimie • Polyuréthane • LOCAL ✓</span>
 </div>
 <div class="card-footer"><span class="link-arrow">Ouvrir l'application →</span></div>
+</div>
+
+<!-- CARTE CORROSION CLICABLE -->
+<div class="card c-corrosion" onclick="openModal('corrosionModal')">
+<div class="card-top"></div>
+<div class="card-body">
+<h3>Simulation Corrosion Acier - App Interactive</h3>
+<p>Simulation électrochimique : Fe → Fe²⁺, réduction O₂, rouille Fe₂O₃·nH₂O. Facteurs Cl⁻, pH, protection cathodique.</p>
+<span class="tag">Corrosion • Électrochimie • LOCAL ✓</span>
+</div>
+<div class="card-footer"><span class="link-arrow">Lancer simulation →</span></div>
 </div>
 
 <a href="projet-pvsyst.html" style="text-decoration:none;color:inherit"><div class="card c-pvsyst"><div class="card-top"></div><div class="card-body"><h3>Dimensionnement PV 3 kWc résidentiel - PVsyst</h3><p>Dimensionnement complet d'une installation résidentielle 3 kWc : calcul productible et analyse de performance.</p><span class="tag">PVsyst</span></div><div class="card-footer"><span class="link-arrow">Voir projet →</span></div></div></a>
@@ -83,11 +101,12 @@ footer{background:#0f172a;color:#94a3b8;text-align:center;padding:35px;margin-to
 </div>
 </div>
 
+<!-- MODAL POLYURETHANE -->
 <div id="appModal" class="modal">
   <div class="modal-content">
     <div class="modal-header">
       <span>Polyuréthane : Mécanisme Réactionnel Interactif</span>
-      <span class="close" onclick="closeApp()">&times;</span>
+      <span class="close" onclick="closeModal('appModal')">&times;</span>
     </div>
     <div class="app-body">
       <div class="app-formula"><b>R–N=C=O + HO–R' --[DBTL]--> R–NH–C(=O)–O–R'</b></div>
@@ -97,12 +116,29 @@ footer{background:#0f172a;color:#94a3b8;text-align:center;padding:35px;margin-to
         <div class="step" id="step3" onclick="setStep(3)"><span class="step-num">3</span><b>Uréthane</b><br><br>Transfert H de O⁺ vers N⁻.<br><br><code style="background:#dbeafe;padding:4px;border-radius:4px">R-NH-C(=O)-O-R'</code><br><br>Produit final stable</div>
       </div>
       <div style="background:#0f172a;color:#fde68a;padding:18px;border-radius:10px;margin-top:15px">
-      <b>🔬 DBTL (Dibutyltin dilaurate):</b> Acide de Lewis [CH3(CH2)3]2Sn[OCO(CH2)10CH3]2. Se coordine à O de N=C=O, augmente l'électrophilie du carbone, abaisse l'énergie d'activation. Régénéré à la fin.
+      <b>🔬 DBTL:</b> Acide de Lewis [CH3(CH2)3]2Sn[OCO(CH2)10CH3]2. Se coordine à O de N=C=O, augmente l'électrophilie du carbone, abaisse l'énergie d'activation.
       </div>
-      <div style="text-align:center;margin-top:20px">
-        <button onclick="setStep(1)" style="padding:10px 18px;border-radius:8px;border:1px solid #e2e8f0;background:white;cursor:pointer">Étape 1</button>
-        <button onclick="setStep(2)" style="padding:10px 18px;border-radius:8px;border:none;background:#f59e0b;color:white;cursor:pointer;margin:0 8px">Étape 2</button>
-        <button onclick="setStep(3)" style="padding:10px 18px;border-radius:8px;border:none;background:#0f172a;color:white;cursor:pointer">Étape 3 - Produit</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CORROSION -->
+<div id="corrosionModal" class="modal">
+  <div class="modal-content corrosion-bg">
+    <div class="modal-header">
+      <span>Corrosion Acier : Simulation Électrochimique</span>
+      <span class="close" onclick="closeModal('corrosionModal')">&times;</span>
+    </div>
+    <div class="app-body">
+      <div class="app-formula" style="border-color:#dc2626"><b>Anode: Fe → Fe²⁺ + 2e⁻ | Cathode: O₂ + 2H₂O + 4e⁻ → 4OH⁻ | Rouille: 4Fe(OH)₂ + O₂ → 2Fe₂O₃·H₂O</b></div>
+      <div class="steps">
+        <div class="step-cor active"><b>🔴 Anode - Oxydation</b><br><br>Fe → Fe²⁺ + 2e⁻<br>E° = -0.44 V<br><br><small>Dissolution, perte de masse</small></div>
+        <div class="step-cor active" style="border-color:#0ea5e9"><b>🔵 Cathode - Réduction</b><br><br>O₂ + 2H₂O + 4e⁻ → 4OH⁻<br>E° = +0.40 V<br><br><small>Milieu neutre aéré</small></div>
+        <div class="step-cor active" style="border-color:#f59e0b"><b>🟠 Rouille</b><br><br>Fe²⁺ + 2OH⁻ → Fe(OH)₂<br>→ Fe₂O₃·nH₂O<br><br><small>Couche poreuse non protectrice</small></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:20px">
+        <div style="background:white;border:1px solid #fecaca;padding:15px;border-radius:10px"><b>🔴 Accélérateurs:</b><br>• Cl⁻ (mer) → piqûres<br>• pH < 4<br>• O₂ dissous<br>• T° ↑</div>
+        <div style="background:white;border:1px solid #bbf7d0;padding:15px;border-radius:10px"><b>🟢 Protection:</b><br>• Revêtement PU (ton projet!)<br>• Zn galvanisation<br>• Inhibiteurs<br>• Protection cathodique</div>
       </div>
     </div>
   </div>
@@ -111,14 +147,14 @@ footer{background:#0f172a;color:#94a3b8;text-align:center;padding:35px;margin-to
 <footer><p>© 2026 Ayoub Chikhi</p></footer>
 
 <script>
-function openApp(){document.getElementById('appModal').style.display='block';document.body.style.overflow='hidden';}
-function closeApp(){document.getElementById('appModal').style.display='none';document.body.style.overflow='auto';}
+function openModal(id){document.getElementById(id).style.display='block';document.body.style.overflow='hidden';}
+function closeModal(id){document.getElementById(id).style.display='none';document.body.style.overflow='auto';}
 function setStep(n){
- document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+ document.querySelectorAll('#appModal .step').forEach(s=>s.classList.remove('active'));
  document.getElementById('step'+n).classList.add('active');
 }
-window.onclick=function(e){if(e.target==document.getElementById('appModal')) closeApp();}
-document.addEventListener('keydown',e=>{if(e.key==='Escape') closeApp();});
+window.onclick=function(e){if(e.target.classList.contains('modal')){e.target.style.display='none';document.body.style.overflow='auto';}}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.modal').forEach(m=>m.style.display='none');document.body.style.overflow='auto';}});
 </script>
 </body>
 </html>
