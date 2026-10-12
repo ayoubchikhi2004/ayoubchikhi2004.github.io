@@ -13,18 +13,7 @@ header p{color:#94a3b8;margin:12px 0 20px;font-size:1.1rem;max-width:800px;margi
 .container{max-width:1100px;margin:auto;padding:50px 20px}
 h2{font-size:1.9rem;margin-bottom:25px;border-left:5px solid #0ea5e9;padding-left:15px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:28px}
-.card{
-  background:white;
-  border-radius:16px;
-  box-shadow:0 4px 20px rgba(0,0,0,0.06);
-  overflow:hidden;
-  border:1px solid #e2e8f0;
-  transition:all 0.35s ease;
-  height:100%;
-  display:flex;
-  flex-direction:column;
-  cursor:pointer;
-}
+.card{background:white;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.06);overflow:hidden;border:1px solid #e2e8f0;transition:all 0.35s ease;height:100%;display:flex;flex-direction:column;cursor:pointer}
 .card:hover{transform:translateY(-8px);box-shadow:0 16px 35px rgba(0,0,0,0.12)}
 .card-top{height:6px;width:100%}
 .card-body{padding:24px;flex:1}
@@ -42,29 +31,28 @@ h2{font-size:1.9rem;margin-bottom:25px;border-left:5px solid #0ea5e9;padding-lef
 .c-ansys .card-top{background:#8b5cf6} .c-ansys .tag{background:#ede9fe;color:#5b21b6}
 .c-xps .card-top{background:linear-gradient(90deg,#0ea5e9,#06b6d4)} .c-xps .tag{background:#0f172a;color:#7dd3fc}
 .c-xps{background:linear-gradient(180deg,#ffffff 0%,#f0f9ff 100%);border:1px solid #bae6fd}
-/* NOUVELLE CARTE POLYURETHANE */
 .c-polyu .card-top{background:linear-gradient(90deg,#f59e0b,#ef4444)} 
 .c-polyu .tag{background:#fef3c7;color:#92400e}
 .c-polyu{background:linear-gradient(180deg,#ffffff 0%,#fffbeb 100%);border:2px solid #fcd34d}
-.badge-live{display:inline-block;background:#ef4444;color:white;font-size:0.65rem;padding:3px 7px;border-radius:4px;margin-left:8px;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1} 50%{opacity:0.6}}
 footer{background:#0f172a;color:#94a3b8;text-align:center;padding:35px;margin-top:50px}
-
-/* MODAL POUR AFFICHER L'APP */
-.modal{display:none;position:fixed;z-index:9999;left:0;top:0;width:100%;height:100%;background:rgba(15,23,42,0.85);backdrop-filter:blur(4px)}
-.modal-content{position:relative;background:white;margin:2% auto;width:95%;max-width:1200px;height:94%;border-radius:16px;overflow:hidden;box-shadow:0 25px 50px rgba(0,0,0,0.3)}
+.modal{display:none;position:fixed;z-index:9999;left:0;top:0;width:100%;height:100%;background:rgba(15,23,42,0.9);overflow:auto}
+.modal-content{position:relative;background:#fffbeb;margin:20px auto;width:95%;max-width:1100px;border-radius:16px;overflow:hidden}
 .modal-header{padding:14px 20px;background:#0f172a;color:white;display:flex;justify-content:space-between;align-items:center}
-.modal-header a{color:#7dd3fc;text-decoration:none;font-size:0.9rem}
-.close{font-size:28px;font-weight:bold;cursor:pointer;color:#94a3b8}
+.close{font-size:32px;cursor:pointer;color:#94a3b8}
 .close:hover{color:white}
-.modal iframe{width:100%;height:calc(100% - 52px);border:none}
+.app-body{padding:25px}
+.app-formula{font-family:monospace;font-size:1.2rem;background:white;padding:14px;border-radius:10px;text-align:center;border:2px dashed #f59e0b;margin:15px 0}
+.steps{display:flex;gap:15px;flex-wrap:wrap;margin:20px 0}
+.step{flex:1;min-width:260px;background:white;border-radius:14px;padding:18px;border:2px solid #e2e8f0;cursor:pointer}
+.step.active{border-color:#f59e0b;box-shadow:0 8px 20px rgba(245,158,11,0.25)}
+.step-num{width:30px;height:30px;border-radius:50%;background:#e2e8f0;display:inline-flex;align-items:center;justify-content:center;font-weight:800;margin-right:8px}
+.step.active .step-num{background:#f59e0b;color:white}
 </style>
 </head>
 <body>
 <header>
 <h1>AYOUB CHIKHI</h1>
 <p>M2 Génie des Matériaux et Énergie - UMP Oujda | BINAYATE, TRNSYS, ANSYS, PVsyst, Python | Recherche stage PFE Fév 2027</p>
-<p>Spécialisé en simulation <strong>PVsyst</strong>, <strong>Python</strong> et <strong>ANSYS Fluent</strong>. Utilise <strong>BINAYATE</strong> pour l'enveloppe thermique et <strong>TRNSYS</strong> pour l'énergie solaire.</p>
 <a href="https://www.linkedin.com/in/ayoub-chikhi-543b09433/" style="display:inline-block;padding:12px 26px;background:#0A66C2;color:white;border-radius:10px;text-decoration:none;font-weight:bold;">LinkedIn</a>
 <a href="mailto:ayoubchikhi2004@gmail.com" style="display:inline-block;padding:12px 26px;background:#1e293b;color:white;border-radius:10px;text-decoration:none;font-weight:bold;margin-left:10px;">Contact</a>
 </header>
@@ -72,13 +60,12 @@ footer{background:#0f172a;color:#94a3b8;text-align:center;padding:35px;margin-to
 <h2>Projets Académiques</h2>
 <div class="grid">
 
-<!-- NOUVELLE CARTE - APPLICATION POLYURETHANE -->
 <div class="card c-polyu" onclick="openApp()">
 <div class="card-top"></div>
 <div class="card-body">
-<h3>Mécanisme Polyuréthane - App Interactive <span class="badge-live">● LIVE</span></h3>
-<p>Application interactive du mécanisme réactionnel isocyanate + polyol. Simulation DBTL, intermédiaire zwitterionique et formation uréthane.</p>
-<span class="tag">Chimie • Polyuréthane • DBTL</span>
+<h3>Mécanisme Polyuréthane - App Interactive</h3>
+<p>Application interactive : isocyanate + polyol → uréthane. Mécanisme avec DBTL, intermédiaire zwitterionique.</p>
+<span class="tag">Chimie • Polyuréthane • LOCAL ✓</span>
 </div>
 <div class="card-footer"><span class="link-arrow">Ouvrir l'application →</span></div>
 </div>
@@ -94,45 +81,44 @@ footer{background:#0f172a;color:#94a3b8;text-align:center;padding:35px;margin-to
 <a href="projet-ansys.html" style="text-decoration:none;color:inherit"><div class="card c-ansys"><div class="card-top"></div><div class="card-body"><h3>Optimisation CVC - ANSYS Fluent</h3><p>Dimensionnement et optimisation de l'efficacité énergétique des systèmes de chauffage et climatisation.</p><span class="tag">ANSYS Fluent</span></div><div class="card-footer"><span class="link-arrow">Voir projet →</span></div></div></a>
 <a href="Analyse XPS.html" style="text-decoration:none;color:inherit"><div class="card c-xps"><div class="card-top"></div><div class="card-body"><h3>Analyse XPS - Red / Ox / Ov</h3><p>Analyse chimique complète C1s, O1s, S2p, Cl2p. Quantification atomique, déconvolution et taux de dopage.</p><span class="tag">XPS • 12 Spectres</span></div><div class="card-footer"><span class="link-arrow">Voir rapport →</span></div></div></a>
 </div>
-<h2 style="margin-top:50px">Compétences</h2>
-<p><b>Logiciels:</b> PVsyst, TRNSYS, ANSYS, Python, BINAYATE</p>
-<p><b>Caractérisation:</b> MEB, DRX, XPS</p>
-<p><b>Langues:</b> Français, Anglais, Arabe</p>
-<h2 style="margin-top:40px">Contact</h2>
-<p>Email: <b>ayoubchikhi2004@gmail.com</b><br>Tél: <b>+212 762 734 288</b><br>Oujda, Maroc</p>
 </div>
 
-<!-- MODAL APP -->
-<a href="polyurethane-app.html" target="_blank" style="text-decoration:none;color:inherit">
-<div class="card c-polyu">
-<div class="card-top"></div>
-<div class="card-body">
-<h3>Mécanisme Polyuréthane - App Interactive <span style="background:#10b981;color:white;font-size:0.65rem;padding:3px 7px;border-radius:4px;margin-left:8px">✓ LOCAL</span></h3>
-<p>Application interactive du mécanisme réactionnel isocyanate + polyol. Simulation DBTL, intermédiaire zwitterionique et formation uréthane. Fonctionne sans Claude.</p>
-<span class="tag">Chimie • Polyuréthane • DBTL</span>
+<div id="appModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span>Polyuréthane : Mécanisme Réactionnel Interactif</span>
+      <span class="close" onclick="closeApp()">&times;</span>
+    </div>
+    <div class="app-body">
+      <div class="app-formula"><b>R–N=C=O + HO–R' --[DBTL]--> R–NH–C(=O)–O–R'</b></div>
+      <div class="steps">
+        <div class="step active" id="step1" onclick="setStep(1)"><span class="step-num">1</span><b>Attaque nucléophile</b><br><br>O du polyol attaque C δ+ de l'isocyanate. DBTL polarise N=C=O.<br><br><code>R-N=C=O + :O-R'</code></div>
+        <div class="step" id="step2" onclick="setStep(2)"><span class="step-num">2</span><b>Zwitterion</b><br><br>Intermédiaire chargé instable.<br><br><code>R-N⁻-C(=O)-O⁺H-R'</code><br><br>N⁻ et O⁺</div>
+        <div class="step" id="step3" onclick="setStep(3)"><span class="step-num">3</span><b>Uréthane</b><br><br>Transfert H de O⁺ vers N⁻.<br><br><code style="background:#dbeafe;padding:4px;border-radius:4px">R-NH-C(=O)-O-R'</code><br><br>Produit final stable</div>
+      </div>
+      <div style="background:#0f172a;color:#fde68a;padding:18px;border-radius:10px;margin-top:15px">
+      <b>🔬 DBTL (Dibutyltin dilaurate):</b> Acide de Lewis [CH3(CH2)3]2Sn[OCO(CH2)10CH3]2. Se coordine à O de N=C=O, augmente l'électrophilie du carbone, abaisse l'énergie d'activation. Régénéré à la fin.
+      </div>
+      <div style="text-align:center;margin-top:20px">
+        <button onclick="setStep(1)" style="padding:10px 18px;border-radius:8px;border:1px solid #e2e8f0;background:white;cursor:pointer">Étape 1</button>
+        <button onclick="setStep(2)" style="padding:10px 18px;border-radius:8px;border:none;background:#f59e0b;color:white;cursor:pointer;margin:0 8px">Étape 2</button>
+        <button onclick="setStep(3)" style="padding:10px 18px;border-radius:8px;border:none;background:#0f172a;color:white;cursor:pointer">Étape 3 - Produit</button>
+      </div>
+    </div>
+  </div>
 </div>
-<div class="card-footer"><span class="link-arrow">Ouvrir l'application →</span></div>
-</div>
-</a>
 
-<footer><p>© 2026 Ayoub Chikhi - Portfolio Ingénierie Énergétique</p></footer>
+<footer><p>© 2026 Ayoub Chikhi</p></footer>
 
 <script>
-function openApp(){
-  document.getElementById('appModal').style.display='block';
-  document.body.style.overflow='hidden';
+function openApp(){document.getElementById('appModal').style.display='block';document.body.style.overflow='hidden';}
+function closeApp(){document.getElementById('appModal').style.display='none';document.body.style.overflow='auto';}
+function setStep(n){
+ document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+ document.getElementById('step'+n).classList.add('active');
 }
-function closeApp(){
-  document.getElementById('appModal').style.display='none';
-  document.body.style.overflow='auto';
-}
-window.onclick = function(e){
-  if(e.target == document.getElementById('appModal')) closeApp();
-}
-document.addEventListener('keydown', function(e){
-  if(e.key === 'Escape') closeApp();
-});
+window.onclick=function(e){if(e.target==document.getElementById('appModal')) closeApp();}
+document.addEventListener('keydown',e=>{if(e.key==='Escape') closeApp();});
 </script>
-
 </body>
 </html>
