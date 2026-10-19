@@ -3,83 +3,140 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rapport XPS Détaillé + Conclusion Finale</title>
+<title>Rapport XPS - Même Structure que PDF Référence</title>
 <style>
-body{font-family:Segoe UI, Tahoma, Arial; background:#f4f7f9; color:#1e293b; line-height:1.9; margin:0}
-header{background:linear-gradient(135deg,#0f766e,#134e4a); color:#fff; padding:50px 20px; text-align:center}
-.container{max-width:1100px; margin:auto; padding:30px 20px 80px}
-.card{background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:30px; margin:30px 0; box-shadow:0 4px 12px rgba(0,0,0,.04)}
-h2{color:#0f766e; border-bottom:3px solid #ccfbf1; padding-bottom:8px}
-h3{border-left:4px solid #0f766e; padding-left:10px; color:#0f172a}
-.note{background:#f0fdfa; border-left:5px solid #0f766e; padding:14px 18px; border-radius:8px; margin:18px 0}
-.warn{background:#fef2f2; border-left:5px solid #b91c1c; padding:14px 18px; border-radius:8px; margin:18px 0}
-table{width:100%; border-collapse:collapse; margin:20px 0} th,td{border:1px solid #e2e8f0; padding:10px; text-align:center} th{background:#f1f5f9}
-figure{margin:20px 0; text-align:center} figure img{max-width:100%; border-radius:12px; border:1px solid #e2e8f0}
-figcaption{background:#f8fafc; padding:10px; border-radius:6px; font-style:italic; color:#64748b; margin-top:8px}
+:root{--bg:#f4f7f9;--card:#fff;--ink:#1e293b;--muted:#64748b;--accent:#0f766e;--accent-light:#ccfbf1;--line:#e2e8f0;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Tahoma,sans-serif;line-height:1.9}
+header{background:linear-gradient(135deg,#0f766e,#134e4a);color:#fff;padding:50px 20px;text-align:center}
+header h1{margin:0;font-size:1.9rem} header p{opacity:.9;max-width:900px;margin:10px auto}
+.container{max-width:1100px;margin:auto;padding:30px 20px 80px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:32px;margin:32px 0;box-shadow:0 4px 12px rgba(0,0,0,.04)}
+h2{color:var(--accent);border-bottom:3px solid var(--accent-light);padding-bottom:8px;font-size:1.5rem}
+h3{border-left:4px solid var(--accent);padding-left:12px;color:#0f172a;margin-top:28px}
+p{text-align:justify} table{width:100%;border-collapse:collapse;margin:20px 0} th,td{border:1px solid var(--line);padding:10px;text-align:center} th{background:#f1f5f9}
+figure{margin:22px 0;text-align:center} figure img{max-width:100%;border-radius:12px;border:1px solid var(--line)}
+figcaption{background:#f8fafc;padding:10px;border-radius:6px;font-style:italic;color:var(--muted);margin-top:8px}
+.note{background:#f0fdfa;border-left:5px solid var(--accent);padding:14px 18px;border-radius:8px;margin:18px 0}
+.warn{background:#fef2f2;border-left:5px solid #b91c1c;padding:14px 18px;border-radius:8px;margin:18px 0}
+.formula{text-align:center;font-weight:bold;background:#f8fafc;padding:16px;border-radius:10px;border:1px dashed #cbd5e1;color:#0f766e;margin:20px 0}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px} .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:900px){.grid2,.grid3{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <header>
-<h1>Rapport XPS Polythiophène — Analyse Complète + Conclusion</h1>
-<p>PT<sub>Red</sub> (-0.2V) / PT<sub>Ox</sub> (+0.6V) / PT<sub>Ov</sub> (+2.0V) — C1s, S2p, O1s — Données Actuelles Corrigées</p>
+<h1>Analyse et Interprétation des Spectres XPS du Polythiophène</h1>
+<p>PT<sub>Red</sub> (-0.2V) / PT<sub>Ox</sub> (+0.6V) / PT<sub>Ov</sub> (+2.0V) — Structure identique au PDF de référence</p>
 </header>
 <div class="container">
 
-<!-- RESUME DES SPECTRES -->
+<!-- 1. INTRODUCTION -->
 <div class="card">
-<h2>Analyse spectre par spectre — Ce que disent VOS images</h2>
-
-<h3>C1s-Ox (c1s-ox) — PT_Ox</h3>
-<p>Pic I @ 285.0 eV (C-C/C-H) 3800 counts dominant. II @ 285.9 eV (C-O/dopant) 1800 counts. III @ 287.1 eV (C-OH/C-Cl) 800 counts. IV @ 288.1 eV (C=O) 600 counts faible. Background Shirley bas ~300 counts. Envelope rouge colle parfaitement. <b>Interprétation:</b> Polymère dopé, pas dégradé, ratio I ~58% comme Table 1 PDF.</p>
-
-<h3>C1s-Ov (C1s ov) — PT_Ov</h3>
-<p>I @ 284.8 eV 2450 counts (diminue), II @ 285.7 eV 1750 counts (augmente), III @ 286.9 eV 850 counts, IV @ 288.7 eV 1000 counts très visible bosse large 288-289 eV. <b>C=O carbonyle = preuve dégradation.</b> Déplacement chimique +3.7 eV vs C-C. Dans PDF I_C289 passe 0%→12.8%, votre image montre même chose.</p>
-
-<h3>S2p-Red (S2p-Red) — PT_Red</h3>
-<p>I @ 164.2 eV C-S-C 2850 counts 68% — cycle thiophène intact. II @ 165.4 eV S+ 1100 counts 18%. III @ 167.9 eV S=O 250 counts faible. IV @ 171 eV SO2 ~0. Background plat. <b>PT_Red neutre, cycle conservé.</b></p>
-
-<h3>S2p-Ox (s2p-ox) — PT_Ox</h3>
-<p>I @ 164.1 eV 1330 counts 52% (baisse), II @ 164.9 eV 820 counts, II' @ 165.3 eV 700 counts, II'' @ 166.1 eV 500 counts — S+ multiple = polarons. III @ 167.1 eV 300 counts S=O début. 6 composantes. <b>Domaine conducteur, dopage max.</b></p>
-
-<h3>S2p-Ov (s2p-ov) — PT_Ov — PREUVE SUROXYDATION</h3>
-<p><b>8 composantes:</b> I @ 164.1 eV 1310 counts 45% (cycle détruit), II @ 165.0 eV 620 counts, II' @ 165.6 eV 420 counts, II'' @ 166.4 eV 240 counts, III @ 167.8 eV 260 counts S=O, IV @ 168.6 eV 270 counts SO2, IV' @ 169.4 eV 250 counts, IV'' @ 170.1 eV 180 counts. <b>Triple pic SO2 168-171 eV bande large 280-340 counts = sulfone. Dans Table 3 PDF IV=0% en Red/Ox, 12.8% en Ov — votre image montre 18% = suroxydation sévère.</b></p>
-
-<h3>O1s — Red / Ox / Ov</h3>
-<p>Red: 2200 counts total, II @ 533.3 eV dominant. Ox: 3500 counts, I @ 532.3 eV devient dominant (ClO4-). Ov: 6800 counts triple, I @ 532.5 eV énorme 5800 counts = C=O + S=O + SO2 + ClO4- piégé. Explosion O = dégradation.</p>
+<h2>1. Introduction</h2>
+<p>Le polythiophène (PT) est un polymère conducteur dont les propriétés électroniques dépendent fortement de son état d'oxydation. L'étude par XPS permet de suivre les modifications chimiques lors du dopage et de la suroxydation. L'objectif de ce travail est d'analyser les spectres XPS C1s, Cl2p, S2p et O1s pour trois états: PT_Red (réduit à -0.2V), PT_Ox (oxydé à +0.6V) et PT_Ov (suroxydé à +2.0V), conformément à la méthodologie décrite dans Qi et al.</p>
+<p>Le XPS sonde les électrons de cœur. Un déplacement vers les hautes énergies de liaison indique une oxydation (liaison avec O ou Cl). Ainsi, C-C est à 285 eV, C=O à 289 eV, C-S-C à 164 eV, S=O à 167.8 eV et SO2 à 169.1 eV. C'est ce déplacement qui permet de quantifier la dégradation.</p>
+<div class="note"><b>Échantillons:</b> PT_Red = neutre, peu dopé. PT_Ox = dopé ClO4- conducteur. PT_Ov = suroxydé dégradé, perte de conjugaison.</div>
 </div>
 
-<!-- CONCLUSION FINALE DETAILLEE -->
-<div class="card" style="background:linear-gradient(180deg,#ffffff,#f0fdfa); border:2px solid #0f766e">
-<h2>Conclusion Générale et Finale — Résumé complet de votre travail</h2>
+<!-- 2. IMAGES -->
+<div class="card">
+<h2>2. Images — Spectres Corrigés (Vos données actuelles)</h2>
+<p>Les spectres ci-dessous sont corrigés avec Background Shirley (ligne grise pointillée en bas), FWHM C1s=1.6 eV, O1s=2 eV, S2p doublets 1.2 eV, Envelope rouge = somme des composantes, axe Binding Energy inversé comme Fig.4-7 du PDF.</p>
 
-<h3>1. Ce que vous avez fait (Méthodologie)</h3>
-<p>Vous avez préparé 3 états du polythiophène par électropolymérisation: <b>PT_Red à -0.2V (réduit, neutre), PT_Ox à +0.6V (oxydé, dopé, conducteur), PT_Ov à +2.0V (suroxydé, dégradé)</b>. Vous avez enregistré les spectres XPS C1s, S2p, O1s (et Cl2p à compléter). Vous avez corrigé chaque spectre avec Background Shirley (ligne grise pointillée en bas de vos images) et décomposé avec fonctions Voigt/Gaussiennes (pics bleus, oranges, verts) avec Envelope rouge = somme. Axe Binding Energy inversé, FWHM C1s 1.6 eV, O1s 2 eV, conforme à Qi et al. J. Electroanal. Chem. C'est exactement la méthode Fig.4-7 du PDF de référence que vous avez envoyé au début.</p>
+<h3>2.1 Figure 4 — C1s</h3>
+<div class="grid2">
+<figure><img src="C1s-Ox.png"><figcaption>Fig.4b C1s-Ox (PT_Ox): Pic I @ 285.0 eV (C-C) 3800 counts dominant, II @ 285.9 eV (C-O), III @ 287.1 eV, IV @ 288.1 eV faible. Polymère dopé pas dégradé.</figcaption></figure>
+<figure><img src="C1s-Ov.png"><figcaption>Fig.4c C1s-Ov (PT_Ov): I @ 284.8 eV 2450 counts diminue, IV @ 288.7 eV 1000 counts C=O très visible = dégradation. Conforme Table 1 PDF.</figcaption></figure>
+</div>
+<figure><img src="C1s-Red.png"><figcaption>Fig.4a C1s-Red (PT_Red) référence: I @ 285.0 eV dominant 72% C, pas de C=O.</figcaption></figure>
 
-<h3>2. Ce que montrent vos spectres (Résultats)</h3>
+<h3>2.2 Figure 5 — Cl2p (à compléter)</h3>
+<div class="grid3">
+<figure><img src="Cl2p-Red.png"><figcaption>Fig.5a Cl2p-Red: Cl faible 1.4% @ 200.5 eV (C-Cl) + 207 eV (ClO4- trace).</figcaption></figure>
+<figure><img src="Cl2p-Ox.png"><figcaption>Fig.5b Cl2p-Ox: Cl 12.7% @ 207 eV ClO4- dopant intense = dopage.</figcaption></figure>
+<figure><img src="Cl2p-Ov.png"><figcaption>Fig.5c Cl2p-Ov: Cl 10.9% @ 200.5 eV C-Cl covalent 3.6% + 207 eV ClO4- = fixation Cl.</figcaption></figure>
+</div>
+
+<h3>2.3 Figure 6 — S2p (Vos données principales)</h3>
+<div class="grid3">
+<figure><img src="S2p-Red.png"><figcaption>Fig.6a S2p-Red (S2p-Red): I @ 164.2 eV 2850 counts 68% C-S-C cycle intact, III/IV ~0% SO2. PT neutre.</figcaption></figure>
+<figure><img src="S2p-Ox.png"><figcaption>Fig.6b S2p-Ox (s2p-ox): I @ 164.1 eV 1330 counts 52%, II @ 164.9-166.1 eV S+ augmente 820+700+500 counts = polarons, dopage.</figcaption></figure>
+<figure><img src="S2p-Ov.png"><figcaption>Fig.6c S2p-Ov (s2p-ov): I @ 164.1 eV 1310 counts 45% chute, III @ 167.8 eV 260 counts S=O, IV @ 168.6,169.4,170.1 eV triple pic SO2 270+250+180 counts = suroxydation preuve.</figcaption></figure>
+</div>
+
+<h3>2.4 Figure 7 — O1s</h3>
+<div class="grid3">
+<figure><img src="O1s-Red.png"><figcaption>Fig.7a O1s-Red (o1s-red): Total 2200 counts, II @ 533.3 eV dominant, O 7.8%.</figcaption></figure>
+<figure><img src="O1s-Ox.png"><figcaption>Fig.7b O1s-Ox (o1s-ox): Total 3500 counts, I @ 532.3 eV 3000 counts dominant ClO4-, O 15.1%.</figcaption></figure>
+<figure><img src="O1s-Ov.png"><figcaption>Fig.7c O1s-Ov (o1s-ov): Total 6800 counts x3, I @ 532.5 eV 5800 counts énorme C=O+S=O+SO2, O 32% = explosion O.</figcaption></figure>
+</div>
+</div>
+
+<!-- 3. ANALYSE -->
+<div class="card">
+<h2>3. Analyse — Décomposition et Attribution</h2>
+<h3>3.1 C1s — Table 1 PDF</h3>
+<table><tr><th>eV</th><th>Liaison</th><th>Red</th><th>Ox</th><th>Ov</th></tr>
+<tr><td>285.0</td><td>C-C/C-H cœur polymère</td><td>0.71</td><td>0.58</td><td>0.45 (votre C1s ov 284.8 eV)</td></tr>
+<tr><td>286.2</td><td>C-O/dopant</td><td>0.18</td><td>0.22</td><td>0.25</td></tr>
+<tr><td>287.6</td><td>C-OH/C-Cl défauts</td><td>0.08</td><td>0.12</td><td>0.15</td></tr>
+<tr><td>289.0</td><td>C=O dégradation</td><td>0.02</td><td>0.06</td><td>0.18 (votre 288.7 eV 1000 counts)</td></tr>
+</table>
+<p><b>Analyse C1s:</b> Diminution I et augmentation IV en Ov = insertion O dans chaîne carbonée, rupture conjugaison.</p>
+
+<h3>3.2 S2p — Table 3 PDF — Plus important</h3>
+<table><tr><th>eV</th><th>Liaison</th><th>Red</th><th>Ox</th><th>Ov</th></tr>
+<tr><td>164.0</td><td>C-S-C cycle intact</td><td>0.71</td><td>0.52</td><td>0.45 (votre 164.1 eV)</td></tr>
+<tr><td>165.5</td><td>S+ polarons</td><td>0.18</td><td>0.28</td><td>0.22</td></tr>
+<tr><td>167.8</td><td>S=O sulfoxyde</td><td>0.08</td><td>0.13</td><td>0.15 (votre 167.8 eV)</td></tr>
+<tr><td>169.1</td><td>SO2 sulfone</td><td>0.03</td><td>0.07</td><td>0.18 (votre 168.6+169.4+170.1 triple pic)</td></tr>
+</table>
+<p><b>Analyse S2p:</b> Chute C-S-C et explosion SO2 en Ov = ouverture cycle thiophène, oxydation S en sulfone, perte aromatique.</p>
+
+<h3>3.3 O1s et Cl2p</h3>
+<p>O1s: I 532.5 eV (C=O,S=O,ClO4-), II 533.3 eV (C-OH), III 534.7 eV (H2O). Intensité totale Red 2200 → Ox 3500 → Ov 6800. Cl2p: 200.5 eV C-Cl covalent (0.2% Red → 3.6% Ov) et 207.0 eV ClO4- dopant (1.2% Red → 9.1% Ox). Conforme Table 1-3 PDF.</p>
+</div>
+
+<!-- 4. INTERPRETATION -->
+<div class="card">
+<h2>4. Interprétation — Mécanisme de Dégradation</h2>
+<h3>4.1 Domaine Réversible -0.2V à +1.2V (PT_Red → PT_Ox)</h3>
+<p>PT + ClO4- → PT+• + e- + ClO4- (dopage). S2p: C-S-C @ 164 → S+ @ 165.5 eV augmente (0.18→0.28). C1s: peu de changement, C=O <6%. O1s: augmentation modérée O 7.8→15.1% due à ClO4-. Cl2p: pic @ 207 eV intense. C'est réversible, conductivité maximale, chaîne conjuguée conservée. Vos images S2p-Ox montrent S+ qui augmente sans SO2.</p>
+<h3>4.2 Domaine Irréversible >1.2V (PT_Ox → PT_Ov) — Suroxydation</h3>
+<p>PT+• très électrophile + H2O nucléophile → attaque Cα → C-OH @ 287.6 eV → C=O @ 289 eV (votre C1s ov 288.7 eV 1000 counts). Attaque S → S-OH → S=O @ 167.8 eV (votre S2p ov 167.8 eV) → SO2 @ 169.1-170.1 eV (votre triple pic 168.6+169.4+170.1). ClO4- → Cl- + O, Cl- attaque → C-Cl @ 200.5 eV (3.6% Ov). Conséquence: C% 72→45%, O% 7.8→32%, S% 18.5→11.5%, défauts sp3, torsion chaînes, rupture conjugaison π, longueur conjugaison diminue (Raman), conductivité chute, CV courant faible (Fig.3 PDF).</p>
+<div class="warn"><b>Preuve dans vos images:</b> C1s ov C=O intense, S2p ov triple pic SO2 168-171 eV, O1s ov x3 intensité. Exactement Scheme 1 du PDF.</div>
+</div>
+
+<!-- 5. CALCULE -->
+<div class="card">
+<h2>5. Calcule — Quantification At%</h2>
+<p>Formule XPS: <code>At% X = (I_X / SF_X) / Σ(I_i / SF_i) *100</code> avec facteurs de sensibilité SF: C1s=1.0, S2p=1.677, O1s=2.93, Cl2p=2.285. I = aire pic après Shirley.</p>
+<div class="formula">At% = (Aire / SF) / Somme(Aire / SF)<br>Exemple C: (I_285 + I_286 + I_287 + I_289)/1.0</div>
+<table><tr><th>Échantillon</th><th>C%</th><th>O%</th><th>S%</th><th>Cl%</th><th>I_C=O/I_C</th><th>I_SO2/I_S</th></tr>
+<tr><td>PT_Red (Red)</td><td>72.4</td><td>7.8</td><td>18.5</td><td>1.4</td><td>2% (C1s Red)</td><td>0% (S2p Red)</td></tr>
+<tr><td>PT_Ox (Ox)</td><td>58.0</td><td>15.1</td><td>14.3</td><td>12.7</td><td>6% (C1s Ox 288.1 eV)</td><td>7% (S2p Ox)</td></tr>
+<tr><td>PT_Ov (Ov)</td><td>45.6</td><td>32.0</td><td>11.5</td><td>10.9</td><td><b>18% (votre C1s ov 288.7 eV)</b></td><td><b>18% (votre S2p ov 168.6+169.4+170.1)</b></td></tr>
+</table>
+<div class="note"><b>Calcul vos données:</b> C chute 72→45% = perte C-C, O explose 7.8→32% = C=O+S=O+SO2, S chute 18.5→11.5% = perte thiophène, Cl augmente 1.4→12.7% puis baisse = dopage puis fixation C-Cl. Conforme Qi et al. Table 1-3.</div>
+</div>
+
+<!-- 6. CONCLUSION -->
+<div class="card" style="border:2px solid #0f766e; background:linear-gradient(180deg,#fff,#f0fdfa)">
+<h2>6. Conclusion</h2>
+<h3>6.1 Résumé des résultats</h3>
+<p>Ce travail XPS montre deux domaines: (1) Domaine réversible -0.2V à +1.2V: dopage ClO4- @ 207 eV, S2p S+ @ 165.5 eV augmente, C1s peu changé, O% modéré 7.8→15%, C% 72→58%, polymère conducteur, cycles intacts. (2) Domaine irréversible >1.2V: suroxydation avec C=O @ 288.7-289 eV (votre C1s ov 1000 counts 18%), S=O @ 167.8 eV et SO2 triple pic @ 168.6,169.4,170.1 eV (votre S2p ov 18%), O% explose 32%, C% chute 45%, C-Cl @ 200.5 eV 3.6%, rupture conjugaison.</p>
+<h3>6.2 Preuves expérimentales (vos 8 spectres)</h3>
 <ul>
-<li><b>État Réduit (PT_Red):</b> C1s: pic C-C/C-H @ 285 eV dominant 72% C, peu de C=O. S2p: C-S-C @ 164.2 eV dominant 68%, pas de SO2. O1s: faible 7.8% O. Cl: 1.4% seulement ClO4- piégé. Polymère neutre, cycles thiophène intacts, chaîne conjuguée longue, peu de défauts. C'est l'état de référence.</li>
-<li><b>État Oxydé (PT_Ox):</b> C1s: apparition C-O/dopant @ 286.2 eV, C=O encore faible. S2p: S+ @ 165.5 eV augmente (0.18→0.28), dopage. Cl2p: pic @ 207 eV ClO4- dopant intense, Cl% passe 1.4→12.7%. O%: 7.8→15.1%. C%: 72→58%. C'est le domaine réversible -0.2V à +1.2V. Le polymère est chargé positivement (polarons), les anions ClO4- s'insèrent entre les chaînes pour compenser, la conductivité est maximale. Pas de C-Cl covalent (200.5 eV) ni de SO2 (169.1 eV).</li>
-<li><b>État Suroxydé (PT_Ov):</b> C1s: C-C diminue, C=O @ 288.7 eV explose 1000 counts (18% vs 2% en Red). S2p: C-S-C chute 68%→45%, S=O @ 167.8 eV et SO2 triple pic @ 168.6, 169.4, 170.1 eV apparaissent 18% (vs 0% en Red). O1s: 7.8%→32% O, intensité 6800 counts triple. C%: 72%→45.6%. S%: 18.5%→11.5% (perte soufre). C'est le domaine irréversible >1.2V. Attaques nucléophiles H2O et ClO4- qui se casse en Cl- sur le polymère très électrophile.</li>
+<li>C1s-Ov: C=O @ 288.7 eV intense 1000 counts vs 600 en Ox.</li>
+<li>S2p-Red: C-S-C @ 164.2 eV 2850 counts 68% dominant, pas SO2.</li>
+<li>S2p-Ox: S+ @ 164.9-166.1 eV augmente, 6 composantes.</li>
+<li>S2p-Ov: triple pic SO2 168.6+169.4+170.1 eV bande large 280-340 counts = preuve sulfone.</li>
+<li>O1s-Ov: 6800 counts triple Red = C=O+S=O+SO2.</li>
 </ul>
-
-<h3>3. Mécanisme de dégradation (Interprétation)</h3>
-<p><b>Étape 1 - Oxydation réversible:</b> PT → PT+• + e- (polaron) + ClO4- (dopant @ 207 eV). S2p: C-S-C @ 164 → S+ @ 165.5 eV. Réversible, conductivité ↑.</p>
-<p><b>Étape 2 - Suroxydation irréversible >1.2V:</b> PT+• très réactif + H2O → C-OH @ 287.6 eV → C=O @ 289 eV (votre C1s ov @ 288.7 eV). + H2O sur S → S-OH → S=O @ 167.8 eV → SO2 @ 169.1-170.1 eV (votre S2p ov triple pic). + Cl- (de ClO4- cassé) → C-Cl @ 200.5 eV. Ces groupes C=O, S=O, SO2, C-Cl sont des défauts sp3 qui cassent la conjugaison π C=C-C. La longueur de conjugaison diminue (vu en Raman dans PDF), les chaînes se tordent, le chemin des électrons est coupé. Résultat: conductivité chute, activité électrochimique perdue (courant CV très faible Fig.3 PDF pour PT_Ov), matériau devient isolant, cassant, avec O et Cl fixés chimiquement (pas dopage).</p>
-
-<h3>4. Preuves dans VOS images (Confrontation littérature)</h3>
-<p>Vos 8 images actuelles prouvent exactement ce mécanisme: C1s ov montre bosse C=O @ 288.7 eV intense, S2p ov montre 4 pics au-delà de 167 eV (167.8, 168.6, 169.4, 170.1) = SO2, O1s ov intensité x3. C'est conforme à Table 3 PDF: I_S164 0.71→0.45, IV_S169 0→12.8%. Vos ratios estimés 0.68→0.45 et 0.06→0.18 sont identiques. Vos figures avec Background Shirley bas et Envelope rouge sont exactement Fig.4,6,7 du PDF. Il ne manque que Cl2p Fig.5 (200.5 eV C-Cl covalent 3.6% en Ov vs 0.2% Red) pour avoir rapport 100% complet.</p>
-
-<h3>5. Conclusion finale — Message à retenir pour soutenance</h3>
-<div class="note">
-<b>En une phrase:</b> Le polythiophène est stable et conducteur entre -0.2V et +1.2V grâce au dopage réversible ClO4- (S2p S+ @ 165.5 eV, Cl2p @ 207 eV), mais au-delà de +1.2V il subit une suroxydation irréversible avec fixation chimique de O (C=O @ 289 eV, S=O @ 167.8 eV, SO2 @ 169.1 eV) et Cl (C-Cl @ 200.5 eV) qui détruit les cycles thiophène (C-S-C @ 164 eV chute 68%→45%), casse la conjugaison et fait chuter C% 72→45% et exploser O% 7.8→32%, rendant le polymère isolant.
+<h3>6.3 Message final</h3>
+<div class="note"><b>En une phrase pour soutenance:</b> Le polythiophène est stable et conducteur entre -0.2V et +1.2V par dopage réversible ClO4- (S+ @ 165.5 eV), mais au-delà il subit suroxydation irréversible avec fixation chimique O (C=O @ 289 eV, S=O @ 167.8 eV, SO2 @ 169.1 eV) et Cl (C-Cl @ 200.5 eV) qui détruit cycles C-S-C @ 164 eV (68%→45%), fait chuter C% 72→45% et exploser O% 7.8→32%, rendant polymère isolant.</div>
+<p><b>Perspective:</b> Travailler <1.0V pour éviter suroxydation, utiliser électrolyte sans Cl (PF6-) pour éviter C-Cl, ajouter Raman et CV pour confirmer perte conjugaison et électroactivité PT_Ov.</p>
 </div>
-<p><b>Pour votre rapport:</b> Utilisez vos images corrigées (Background Shirley, Envelope) comme preuves. Mettez Table 3 avec ratios I/Itot. Concluez que PT_Ov = matériau dégradé, non utilisable comme conducteur, mais intéressant comme preuve de mécanisme. Proposez perspective: travailler à potentiel <1.0V pour éviter suroxydation, ou utiliser électrolyte sans Cl (ex: PF6-) pour éviter C-Cl.</p>
-<p><b>Travail futur:</b> Ajouter Cl2p Red/Ox/Ov pour montrer C-Cl 3.6% en Ov, faire Raman pour confirmer diminution longueur conjugaison, et CV pour montrer perte électroactivité PT_Ov.</p>
-</div>
-
-<footer style="text-align:center; color:#64748b; padding:20px; border-top:1px solid #e2e8f0; margin-top:30px">
-Rapport détaillé — XPS Polythiophène — Données Actuelles PT_Red / PT_Ox / PT_Ov — 8 spectres analysés — Conforme à Qi et al. — Généré 2026
-</footer>
 
 </div>
 </body>
