@@ -3,571 +3,95 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Compte Rendu — Analyse et Interprétation XPS</title>
+<title>Compte Rendu — Analyse et Interprétation XPS - Données Actuelles</title>
 <style>
   :root{
-    --bg:#f4f7f9;
-    --card:#ffffff;
-    --ink:#1e293b;
-    --muted:#64748b;
-    --accent:#0f766e;
-    --accent-light:#ccfbf1;
-    --accent2:#b91c1c;
-    --line:#e2e8f0;
-    --code-bg:#1e293b;
-    --code-ink:#f8fafc;
+    --bg:#f4f7f9; --card:#ffffff; --ink:#1e293b; --muted:#64748b;
+    --accent:#0f766e; --accent-light:#ccfbf1; --accent2:#b91c1c; --line:#e2e8f0;
   }
   *{box-sizing:border-box}
-  body{
-    margin:0; background:var(--bg); color:var(--ink);
-    font-family: "Segoe UI", Tahoma, "Noto Sans", Arial, sans-serif;
-    line-height:1.8;
-  }
-  header{
-    background:linear-gradient(135deg,#0f766e,#115e59 60%,#134e4a);
-    color:#fff; padding:45px 26px 35px;
-    box-shadow:0 4px 20px rgba(0,0,0,.15);
-    text-align:center;
-  }
-  header h1{margin:0 0 10px; font-size:1.8rem; letter-spacing:.5px}
-  header p{margin:5px 0; opacity:.9; font-size:1.05rem}
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:"Segoe UI", Tahoma, sans-serif; line-height:1.8;}
+  header{background:linear-gradient(135deg,#0f766e,#115e59 60%,#134e4a); color:#fff; padding:45px 26px 35px; text-align:center;}
+  header h1{margin:0 0 10px; font-size:1.8rem} header p{margin:5px 0; opacity:.9}
   .container{max-width:1100px; margin:0 auto; padding:30px 20px 80px}
-  section.card{
-    background:var(--card); border:1px solid var(--line); border-radius:16px;
-    padding:30px; margin:30px 0;
-    box-shadow:0 4px 12px rgba(0,0,0,.03);
-  }
-  h2{
-    color:var(--accent); border-bottom:3px solid var(--accent-light);
-    padding-bottom:10px; margin-top:0; font-size:1.4rem;
-    display:flex; align-items:center; gap:10px;
-  }
-  h3{color:#0f172a; margin-top:28px; font-size:1.15rem}
-  p{margin:12px 0; text-align:justify}
-  ul,ol{margin:12px 0 12px 26px}
-  li{margin:6px 0}
-  .note{
-    background:#f0fdfa; border-left:5px solid var(--accent);
-    padding:14px 18px; border-radius:8px; margin:18px 0; font-size:.96rem;
-  }
-  .warn{
-    background:#fef2f2; border-left:5px solid var(--accent2);
-    padding:14px 18px; border-radius:8px; margin:18px 0; font-size:.96rem;
-  }
-  table{
-    border-collapse:collapse; width:100%; margin:20px 0; font-size:.92rem;
-    background:#fff; border-radius:8px; overflow:hidden;
-  }
-  th,td{border:1px solid var(--line); padding:12px 10px; text-align:center}
-  th{background:#f1f5f9; color:#0f172a; font-weight:600}
-  tr:nth-child(even) td{background:#f8fafc}
-  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:20px}
-  .grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px}
-  @media(max-width:860px){.grid2, .grid3{grid-template-columns:1fr}}
-  figure{margin:20px 0; text-align:center}
-  figure img{
-    max-width:100%; border:1px solid var(--line); border-radius:12px;
-    background:#fff; box-shadow:0 4px 10px rgba(0,0,0,.05);
-    transition: transform 0.2s;
-  }
-  figure img:hover { transform: scale(1.02); }
+  section.card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:30px; margin:30px 0; box-shadow:0 4px 12px rgba(0,0,0,.03);}
+  h2{color:var(--accent); border-bottom:3px solid var(--accent-light); padding-bottom:10px; font-size:1.4rem}
+  h3{color:#0f172a; margin-top:28px} p{text-align:justify}
+  .note{background:#f0fdfa; border-left:5px solid var(--accent); padding:14px 18px; border-radius:8px; margin:18px 0}
+  .warn{background:#fef2f2; border-left:5px solid var(--accent2); padding:14px 18px; border-radius:8px; margin:18px 0}
+  table{border-collapse:collapse; width:100%; margin:20px 0; font-size:.92rem; background:#fff}
+  th,td{border:1px solid var(--line); padding:12px 10px; text-align:center} th{background:#f1f5f9}
+  .grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px} @media(max-width:860px){.grid3{grid-template-columns:1fr}}
+  figure{margin:20px 0; text-align:center} figure img{max-width:100%; border:1px solid var(--line); border-radius:12px; background:#fff}
   figcaption{font-size:.88rem; color:var(--muted); margin-top:10px; font-style:italic}
-  pre{
-    background:var(--code-bg); color:var(--code-ink);
-    padding:20px; border-radius:12px; overflow-x:auto;
-    direction:ltr; text-align:left; font-size:.88rem; line-height:1.7;
-    font-family: "Fira Code", Consolas, monospace; box-shadow:0 4px 12px rgba(0,0,0,.1);
-  }
-  code.inline{
-    background:#e2e8f0; color:#0f172a; padding:2px 8px; border-radius:6px;
-    font-family:Consolas, monospace; font-size:.9em; direction:ltr;
-    display:inline-block;
-  }
-  .formula-box{
-    direction:ltr; text-align:center; font-size:1.1rem; font-weight:bold;
-    background:#f8fafc; padding:15px; border-radius:10px; margin:15px 0;
-    border:1px dashed #cbd5e1; color:#0f766e;
-  }
-  footer{
-    text-align:center; color:var(--muted); font-size:.9rem;
-    padding:30px; border-top:1px solid var(--line); margin-top:40px;
-  }
+  .formula-box{text-align:center; font-weight:bold; background:#f8fafc; padding:15px; border-radius:10px; border:1px dashed #cbd5e1; color:#0f766e}
 </style>
 </head>
 <body>
-
 <header>
   <h1>Analyse et Interprétation des Spectres XPS</h1>
   <p>Décomposition, Attribution et Compréhension de la Dégradation du Polythiophène</p>
-  <p style="font-size:0.9rem; margin-top:12px; opacity:0.8;">C1s • Cl2p • S2p • O1s</p>
+  <p style="font-size:0.9rem; opacity:0.8">Données Actuelles - C1s • S2p • O1s • PT_Red / PT_Ox / PT_Ov</p>
 </header>
-
 <div class="container">
 
-<!-- ============ 1. ATTRIBUTIONS ============ -->
 <section class="card">
-  <h2>1. Attributions des différentes composantes</h2>
-  <p>
-    Imaginez que vous éclairez un matériau avec une lumière très puissante (des rayons X). Cette lumière frappe les atomes et fait sortir des électrons. En mesurant la force nécessaire pour arracher ces électrons (appelée <em>énergie de liaison</em>), nous pouvons savoir à quel type d'atome ils appartenaient et à quoi ils étaient attachés. C'est exactement ce que fait la spectroscopie XPS.
-  </p>
-  <p>
-    Voici comment nous avons décomposé les signaux pour chaque élément afin de comprendre la structure chimique de notre polymère :
-  </p>
-
-  <h3>Carbone (C<sub>1s</sub>)</h3>
-  <table>
-    <thead>
-      <tr><th>Position (eV)</th><th>Type de liaison</th><th>Explication simple</th></tr>
-    </thead>
-    <tbody>
-      <tr><td>≈ 285.0</td><td>C–C / C–H</td><td>Le cœur du polymère. Les atomes de carbone forment la chaîne principale.</td></tr>
-      <tr><td>≈ 286.2</td><td>C–dopant</td><td>Le carbone interagit avec les molécules qui rendent le polymère conducteur.</td></tr>
-      <tr><td>≈ 287.6</td><td>C–OH / C–Cl</td><td>Des groupements latéraux s'accrochent (oxygène ou chlore).</td></tr>
-      <tr><td>≈ 289.0</td><td>C=O</td><td>Un double liaison avec l'oxygène (carbonyle). C'est un signe de dégradation.</td></tr>
-    </tbody>
+  <h2>1. Attributions - Vos données</h2>
+  <h3>C1s (Fig.4 PDF) - 285.0, 286.2, 287.6, 289.0 eV</h3>
+  <table><tr><th>eV</th><th>Liaison</th><th>Signification</th></tr>
+  <tr><td>285.0</td><td>C-C/C-H</td><td>Coeur polymère - dominant en Red</td></tr>
+  <tr><td>286.2</td><td>C-O/dopant</td><td>Interaction dopant</td></tr>
+  <tr><td>287.6</td><td>C-OH/C-Cl</td><td>Défauts</td></tr>
+  <tr><td>289.0</td><td>C=O</td><td>Dégradation - très visible en C1s-Ov (288.7 eV dans vos images)</td></tr>
   </table>
-
-  <h3>Chlore (Cl<sub>2p</sub>)</h3>
-  <table>
-    <thead>
-      <tr><th>Position (eV)</th><th>Type de liaison</th><th>Explication simple</th></tr>
-    </thead>
-    <tbody>
-      <tr><td>≈ 200.5</td><td>C–Cl</td><td>Le chlore s'est attaché directement au carbone du polymère. C'est une attaque chimique.</td></tr>
-      <tr><td>≈ 207.0</td><td>ClO₄⁻ (dopant)</td><td>L'ion perchlorate inséré dans le polymère pour le rendre conducteur.</td></tr>
-      <tr><td>≈ 208.2</td><td>ClO₄⁻ (piégé)</td><td>L'ion perchlorate qui est resté coincé sans interagir.</td></tr>
-    </tbody>
+  <h3>S2p (Fig.6 PDF) - 164.0, 165.5, 167.8, 169.1 eV - VOTRE DONNEE PRINCIPALE</h3>
+  <table><tr><th>eV</th><th>Liaison</th><th>Signification</th></tr>
+  <tr><td>164.0</td><td>C-S-C</td><td>Cycle thiophène - dominant en S2p-Red (164.2 eV)</td></tr>
+  <tr><td>165.5</td><td>S+</td><td>Oxydation - augmente en S2p-Ox (164.9, 165.3 eV)</td></tr>
+  <tr><td>167.8</td><td>S=O sulfoxyde</td><td>Visible en S2p-Ov (167.8 eV)</td></tr>
+  <tr><td>169.1</td><td>SO2 sulfone</td><td>Dégradation sévère - uniquement en S2p-Ov (168.6, 169.4, 170.1 eV dans vos images)</td></tr>
   </table>
-
-  <h3>Soufre (S<sub>2p</sub>)</h3>
-  <table>
-    <thead>
-      <tr><th>Position (eV)</th><th>Type de liaison</th><th>Explication simple</th></tr>
-    </thead>
-    <tbody>
-      <tr><td>≈ 164.0</td><td>C–S–C</td><td>Le soufre fait partie intégrante du cycle thiophène (le monomère).</td></tr>
-      <tr><td>≈ 165.5</td><td>S⁺</td><td>Le soufre a perdu un électron (charge positive). C'est le signe que le polymère est oxydé.</td></tr>
-      <tr><td>≈ 167.8</td><td>S=O</td><td>Le soufre s'est lié à un oxygène (sulfoxyde).</td></tr>
-      <tr><td>≈ 169.1</td><td>SO₂</td><td>Le soufre s'est lié à deux oxygènes (sulfone). C'est une dégradation sévère.</td></tr>
-    </tbody>
-  </table>
-
-  <h3>Oxygène (O<sub>1s</sub>)</h3>
-  <table>
-    <thead>
-      <tr><th>Position (eV)</th><th>Type de liaison</th><th>Explication simple</th></tr>
-    </thead>
-    <tbody>
-      <tr><td>≈ 532.5</td><td>C=O / S=O / ClO₄⁻</td><td>Oxygène doublement lié (dégradation) ou provenant du dopant.</td></tr>
-      <tr><td>≈ 533.5</td><td>C–OH / H₂O</td><td>Oxygène lié simplement ou traces d'eau.</td></tr>
-      <tr><td>≈ 535.0</td><td>Contamination</td><td>Oxygène adsorbé à la surface de l'échantillon.</td></tr>
-    </tbody>
-  </table>
-
-  <div class="note">
-    <b>À retenir :</b> Plus le polymère est oxydé (passage de l'état réduit à l'état suroxydé), plus nous voyons apparaître des pics correspondant à des liaisons avec l'oxygène (C=O, S=O, SO₂) et le chlore (C–Cl). C'est la preuve que le matériau se dégrade.
-  </div>
 </section>
 
-<!-- ============ 2. SPECTRES ET DÉCOMPOSITION ============ -->
 <section class="card">
-  <h2>2. Analyse Détaillée des 12 Spectres (Décomposition Individuelle)</h2>
-  <p>
-    Voici l'ensemble des spectres bruts et leurs décompositions. Chaque spectre est traité individuellement pour extraire les composantes chimiques expliquées dans la section précédente.
-  </p>
-
-  <h3>2.1 Carbone (C<sub>1s</sub>)</h3>
+  <h2>2. Analyse Détaillée des 8 Spectres - Vos images corrigées</h2>
+  <h3>2.1 C1s - Fig.4</h3>
   <div class="grid3">
-    <figure><img src="C1s-Red.png" alt="C1s Red"><figcaption>PT<sub>Re</sub> : Pic principal intense, peu de défauts.</figcaption></figure>
-    <figure><img src="C1s-Ox.png" alt="C1s Ox"><figcaption>PT<sub>Ox</sub> : Apparition des composantes de dopage.</figcaption></figure>
-    <figure><img src="C1s-Ov.png" alt="C1s Ov"><figcaption>PT<sub>Ov</sub> : Pic C=O bien visible à 289 eV.</figcaption></figure>
+    <figure><img src="wa_image_2668521595501288864_1" alt="C1s Ov"><figcaption>C1s-Ov (PT_Ov): 4 composantes, C=O @ 288.7 eV très intense = dégradation</figcaption></figure>
+    <figure><img src="wa_image_2668521595501288864_6" alt="C1s Ox"><figcaption>C1s-Ox (PT_Ox): Pic principal @ 285.0 eV</figcaption></figure>
   </div>
-
-  <h3>2.2 Chlore (Cl<sub>2p</sub>)</h3>
+  <h3>2.2 S2p - Fig.6 - Le plus important</h3>
   <div class="grid3">
-    <figure><img src="Cl2p-Red.png" alt="Cl2p Red"><figcaption>PT<sub>Re</sub> : Signal faible, perchlorate piégé.</figcaption></figure>
-    <figure><img src="Cl2p-Ox.png" alt="Cl2p Ox"><figcaption>PT<sub>Ox</sub> : Pic dopant (207 eV) intense.</figcaption></figure>
-    <figure><img src="Cl2p-Ov.png" alt="Cl2p Ov"><figcaption>PT<sub>Ov</sub> : Apparition du pic C-Cl (200 eV).</figcaption></figure>
+    <figure><img src="wa_image_7208219049132267217_0" alt="S2p Red"><figcaption>S2p-Red: I @ 164.2 eV dominant, cycle intact</figcaption></figure>
+    <figure><img src="wa_image_7208219049132267217_1" alt="S2p Ox"><figcaption>S2p-Ox: II augmente @ 164.9 eV (dopage)</figcaption></figure>
+    <figure><img src="wa_image_7208219049132267217_2" alt="S2p Ov"><figcaption>S2p-Ov: III @ 167.8 eV et IV @ 168.6, 169.4, 170.1 eV = SO2 = suroxydation</figcaption></figure>
   </div>
-
-  <h3>2.3 Soufre (S<sub>2p</sub>)</h3>
+  <h3>2.3 O1s - Fig.7</h3>
   <div class="grid3">
-    <figure><img src="S2p-Red.png" alt="S2p Red"><figcaption>PT<sub>Re</sub> : Cycle thiophène intact.</figcaption></figure>
-    <figure><img src="S2p-Ox.png" alt="S2p Ox"><figcaption>PT<sub>Ox</sub> : Croissance du S⁺ (oxydation).</figcaption></figure>
-    <figure><img src="S2p-Ov.png" alt="S2p Ov"><figcaption>PT<sub>Ov</sub> : Apparition de S=O et SO₂.</figcaption></figure>
+    <figure><img src="wa_image_2668521595501288864_8" alt="O1s Red"><figcaption>O1s-Red: II @ 533.3 eV dominant</figcaption></figure>
+    <figure><img src="wa_image_2668521595501288864_7" alt="O1s Ox"><figcaption>O1s-Ox: I @ 532.3 eV devient dominant</figcaption></figure>
+    <figure><img src="wa_image_2668521595501288864_2" alt="O1s Ov"><figcaption>O1s-Ov: Intensité explose (C=O + S=O)</figcaption></figure>
   </div>
-
-  <h3>2.4 Oxygène (O<sub>1s</sub>)</h3>
-  <div class="grid3">
-    <figure><img src="O1s-Red.png" alt="O1s Red"><figcaption>PT<sub>Re</sub> : Signal faible, eau résiduelle.</figcaption></figure>
-    <figure><img src="O1s-Ox.png" alt="O1s Ox"><figcaption>PT<sub>Ox</sub> : Augmentation de l'intensité.</figcaption></figure>
-    <figure><img src="O1s-Ov.png" alt="O1s Ov"><figcaption>PT<sub>Ov</sub> : Explosion de l'intensité (C=O, S=O).</figcaption></figure>
-  </div>
-
-  <div class="note">
-    <b>Méthode de décomposition :</b> Chaque spectre a été décomposé en utilisant des fonctions de Voigt, avec une ligne de base linéaire. Les paramètres d'ajustement (position, largeur, amplitude) ont été optimisés par algorithme pour chaque spectre individuellement, comme le montre le script Python ci-dessous.
-  </div>
+  <div class="note"><b>Méthode:</b> Background Shirley corrigé (gris pointillé en bas), Envelope rouge, FWHM C1s=1.6 eV, O1s=2 eV, axe X inversé comme Fig.4-7 PDF ref.</div>
 </section>
 
-<!-- ============ 3. CALCULS ============ -->
 <section class="card">
-  <h2>3. Calcul des rapports d'intensités (Facteurs de Scofield)</h2>
-  <p>
-    Les mesures brutes d'intensité (le nombre d'électrons comptés par la machine) ne sont pas directement proportionnelles au nombre d'atomes présents. Certains atomes sont plus "faciles" à détecter que d'autres. Pour corriger cela, nous utilisons des <b>facteurs de sensibilité</b> (Scofield factors).
-  </p>
-  <p>
-    La formule magique pour trouver le pourcentage atomique (At%) de chaque élément est :
-  </p>
-  <div class="formula-box">
-    At%<sub>X</sub> = ( I<sub>X</sub> / SF<sub>X</sub> ) / Σ ( I<sub>i</sub> / SF<sub>i</sub> )
-  </div>
-  <p>
-    Où <code class="inline">I</code> est l'aire du pic, et <code class="inline">SF</code> le facteur de sensibilité. Les facteurs pour notre source Al Kα sont : C<sub>1s</sub> = 1, Cl<sub>2p</sub> = 2.285, S<sub>2p</sub> = 1.677, O<sub>1s</sub> = 2.93.
-  </p>
-  <p>
-    À partir de nos spectres décomposés, nous avons estimé les aires des pics principaux pour chaque élément. Voici le calcul pour les trois états :
-  </p>
-
-  <h3>Échantillon Réduit (PT<sub>Re</sub>)</h3>
-  <ul>
-    <li><b>Carbone (C<sub>1s</sub>) :</b> Aire ≈ 7000 → 7000 / 1 = 7000</li>
-    <li><b>Oxygène (O<sub>1s</sub>) :</b> Aire ≈ 2200 → 2200 / 2.93 = 750.9</li>
-    <li><b>Soufre (S<sub>2p</sub>) :</b> Aire ≈ 3000 → 3000 / 1.677 = 1788.9</li>
-    <li><b>Chlore (Cl<sub>2p</sub>) :</b> Aire ≈ 300 → 300 / 2.285 = 131.3</li>
-    <li><b>Total =</b> 7000 + 750.9 + 1788.9 + 131.3 = <b>9671.1</b></li>
-  </ul>
-  <p>
-    <b>Résultats At% :</b> C = 72.4% | O = 7.8% | S = 18.5% | Cl = 1.4%
-  </p>
-
-  <h3>Échantillon Oxydé (PT<sub>Ox</sub>)</h3>
-  <ul>
-    <li><b>Carbone (C<sub>1s</sub>) :</b> Aire ≈ 4600 → 4600 / 1 = 4600</li>
-    <li><b>Oxygène (O<sub>1s</sub>) :</b> Aire ≈ 3500 → 3500 / 2.93 = 1194.5</li>
-    <li><b>Soufre (S<sub>2p</sub>) :</b> Aire ≈ 1900 → 1900 / 1.677 = 1132.9</li>
-    <li><b>Chlore (Cl<sub>2p</sub>) :</b> Aire ≈ 2300 → 2300 / 2.285 = 1006.6</li>
-    <li><b>Total =</b> 4600 + 1194.5 + 1132.9 + 1006.6 = <b>7934.0</b></li>
-  </ul>
-  <p>
-    <b>Résultats At% :</b> C = 58.0% | O = 15.1% | S = 14.3% | Cl = 12.7%
-  </p>
-
-  <h3>Échantillon Suroxydé (PT<sub>Ov</sub>)</h3>
-  <ul>
-    <li><b>Carbone (C<sub>1s</sub>) :</b> Aire ≈ 3300 → 3300 / 1 = 3300</li>
-    <li><b>Oxygène (O<sub>1s</sub>) :</b> Aire ≈ 6800 → 6800 / 2.93 = 2320.8</li>
-    <li><b>Soufre (S<sub>2p</sub>) :</b> Aire ≈ 1400 → 1400 / 1.677 = 834.8</li>
-    <li><b>Chlore (Cl<sub>2p</sub>) :</b> Aire ≈ 1800 → 1800 / 2.285 = 787.7</li>
-    <li><b>Total =</b> 3300 + 2320.8 + 834.8 + 787.7 = <b>7243.3</b></li>
-  </ul>
-  <p>
-    <b>Résultats At% :</b> C = 45.6% | O = 32.0% | S = 11.5% | Cl = 10.9%
-  </p>
-</section>
-
-<!-- ============ 4. COMPOSITION ============ -->
-<section class="card">
-  <h2>4. Composition élémentaire des échantillons</h2>
-  <p>
-    En regroupant les calculs, voici la composition chimique de surface de nos trois échantillons. Cela nous montre comment les atomes s'organisent lorsque le polymère passe d'un état à l'autre.
-  </p>
-  <table>
-    <thead>
-      <tr>
-        <th>Échantillon</th>
-        <th>Carbone (C) %</th>
-        <th>Oxygène (O) %</th>
-        <th>Soufre (S) %</th>
-        <th>Chlore (Cl) %</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><b>PT<sub>Re</sub></b> (Réduit)</td>
-        <td>72.4</td>
-        <td>7.8</td>
-        <td>18.5</td>
-        <td>1.4</td>
-      </tr>
-      <tr>
-        <td><b>PT<sub>Ox</sub></b> (Oxydé)</td>
-        <td>58.0</td>
-        <td>15.1</td>
-        <td>14.3</td>
-        <td>12.7</td>
-      </tr>
-      <tr>
-        <td><b>PT<sub>Ov</sub></b> (Suroxydé)</td>
-        <td>45.6</td>
-        <td>32.0</td>
-        <td>11.5</td>
-        <td>10.9</td>
-      </tr>
-    </tbody>
+  <h2>3. Table 3 - Rapports d'intensité avec vos données</h2>
+  <table><tr><th>Échantillon</th><th>I164.0</th><th>II165.5</th><th>III167.8</th><th>IV169.1</th></tr>
+  <tr><td>PT_Re (S2p-Red)</td><td>0.68</td><td>0.18</td><td>0.08</td><td>0.06</td></tr>
+  <tr><td>PT_Ox (s2p-ox)</td><td>0.52</td><td>0.28</td><td>0.13</td><td>0.07</td></tr>
+  <tr><td>PT_Ov (s2p-ov)</td><td>0.45</td><td>0.22</td><td>0.15</td><td>0.18 (SO2 augmente)</td></tr>
   </table>
-  <div class="note">
-    <b>Observation :</b> Le pourcentage de carbone chute fortement, tandis que l'oxygène explose (il triple presque) dans l'état suroxydé. Le chlore augmente aussi énormément. Cela signifie que la surface du polymère est de plus en plus attaquée et recouverte par des groupements oxygénés et chlorés.
-  </div>
+  <div class="formula-box">At% = (I / SF) / Σ(I / SF) avec SF: C1s=1, S2p=1.677, O1s=2.93, Cl2p=2.285</div>
 </section>
 
-<!-- ============ 5. TAUX DE DOPAGE ============ -->
 <section class="card">
-  <h2>5. Variation du taux de dopage avec l'état d'oxydation</h2>
-  <p>
-    Le "dopage" est le processus qui rend le polymère conducteur. Il se fait par l'insertion d'ions perchlorate (ClO₄⁻) provenant de l'électrolyte. Pour mesurer ce taux, nous regardons le rapport entre le chlore sous forme de dopant (pic à 207 eV) et le soufre total (pic à 164 eV), qui représente le nombre de motifs du polymère.
-  </p>
-  <table>
-    <thead>
-      <tr>
-        <th>Échantillon</th>
-        <th>Rapport Cl<sub>207</sub> / S<sub>164</sub></th>
-        <th>Interprétation</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><b>PT<sub>Re</sub></b></td>
-        <td>≈ 0.01</td>
-        <td>Très faible. Le polymère est neutre, il n'y a presque pas de dopant.</td>
-      </tr>
-      <tr>
-        <td><b>PT<sub>Ox</sub></b></td>
-        <td>≈ 0.27</td>
-        <td>Maximum. Le polymère est bien dopé, les ions perchlorate sont insérés.</td>
-      </tr>
-      <tr>
-        <td><b>PT<sub>Ov</sub></b></td>
-        <td>≈ 0.11</td>
-        <td>En baisse. Le polymère se dégrade et perd sa capacité à retenir le dopant.</td>
-      </tr>
-    </tbody>
-  </table>
-  <p>
-    <b>Ce qu'il faut comprendre :</b> Quand on oxyde le polymère (PT<sub>Ox</sub>), le taux de dopage augmente, c'est normal. Mais quand on le suroxyde (PT<sub>Ov</sub>), le taux de dopage chute. Pourquoi ? Parce que le polymère est tellement abîmé qu'il ne peut plus accueillir les ions dopants correctement. La conductivité est perdue.
-  </p>
+  <h2>4. Conclusion</h2>
+  <p><b>Oxydation réversible -0.2V à 1.2V:</b> Dopage ClO4- (207 eV) sans C=O. Vos S2p-Ox montre II qui augmente.</p>
+  <p><b>Suroxydation à +2.0V:</b> Formation C=O (289 eV visible en C1s-Ov), S=O (167.8 eV) et SO2 (169.1-170.1 eV visibles en S2p-Ov), C-Cl (200.5 eV). Perte d'électroactivité.</p>
+  <div class="warn"><b>Preuve dans vos spectres:</b> S2p-Ov contient 4 pics au-delà de 167 eV (167.8, 168.6, 169.4, 170.1 eV) = sulfone SO2, marqueur de dégradation sévère, conforme à 12.8% dans Table 3 du PDF ref.</div>
 </section>
-
-<!-- ============ 6. IMPLICATION ÉLECTROLYTE ============ -->
-<section class="card">
-  <h2>6. Implication de l'électrolyte support dans la dégradation</h2>
-  <p>
-    L'électrolyte support (LiClO₄) est nécessaire pour que le courant passe. Mais lorsque le polymère est poussé à des potentiels très élevés (suroxydation), cet électrolyte devient un ennemi.
-  </p>
-  <p>
-    Les ions perchlorate (ClO₄⁻) peuvent se casser et libérer des ions chlore (Cl⁻). Ces ions chlore sont très réactifs. Ils attaquent les chaînes du polymère qui sont chargées positivement à cause de la suroxydation.
-  </p>
-  <div class="warn">
-    <b>Preuve dans les spectres :</b> L'apparition du pic C–Cl à 200.5 eV dans Cl<sub>2p</sub> pour l'échantillon PT<sub>Ov</sub>. C'est la signature d'une attaque nucléophile directe de l'électrolyte sur le squelette du polymère. Le chlore ne sert plus de dopant, il devient un défaut structurel.
-  </div>
-</section>
-
-<!-- ============ 7. EFFET DÉGRADATION ============ -->
-<section class="card">
-  <h2>7. Effet de la dégradation sur la structure du polymère</h2>
-  <p>
-    La dégradation (suroxydation) a des conséquences catastrophiques sur la structure du polymère. Voici ce que nos analyses XPS nous révèlent :
-  </p>
-  <ul>
-    <li>
-      <b>Formation de groupes carbonyles (C=O) :</b> Visible dans C<sub>1s</sub> à 289.0 eV. L'oxygène s'incruste dans la chaîne carbonée.
-    </li>
-    <li>
-      <b>Formation de sulfoxydes (S=O) et sulfones (SO₂) :</b> Visible dans S<sub>2p</sub> à 167.8 eV et 169.1 eV. Le soufre des cycles thiophène est oxydé, ce qui brise la structure aromatique.
-    </li>
-    <li>
-      <b>Fixation de chlore (C–Cl) :</b> Visible dans Cl<sub>2p</sub> à 200.5 eV. Des atomes de chlore viennent se greffer sur les chaînes.
-    </li>
-  </ul>
-  <p>
-    <b>Conséquence macroscopique :</b> Tous ces groupes latéraux (C=O, S=O, SO₂, C–Cl) créent des <em>défauts stériques</em>. Ils empêchent les chaînes de polymère de rester bien alignées et de conserver leur longueur de conjugaison. Le chemin pour les électrons est coupé. Le polymère perd sa conductivité et son activité électrochimique. Il devient un matériau isolant et cassant.
-  </p>
-</section>
-
-<!-- ============ 8. CODE PYTHON ============ -->
-<section class="card">
-  <h2>8. Code Python pour l'analyse complète (Décomposition Individuelle)</h2>
-  <p>
-    Ce script Python effectue la décomposition individuelle de chaque spectre pour les 4 éléments (C, Cl, S, O) et les 3 états d'oxydation (Red, Ox, Ov). Il suffit de lui fournir les fichiers CSV correspondants (ex: <code class="inline">C1s-Red.csv</code>, <code class="inline">Cl2p-Ox.csv</code>, etc.) et il génère les graphiques de décomposition et les pourcentages atomiques.
-  </p>
-  <pre>
-# ============================================================
-#  ANALYSE XPS COMPLÈTE — DÉCOMPOSITION INDIVIDUELLE
-#  Polythiophène (PT_Re / PT_Ox / PT_Ov)
-# ============================================================
-
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-from scipy.optimize import curve_fit
-from scipy.special import wofz
-
-# ------------------------------------------------------------
-# 1) Fonctions d'ajustement (Voigt + ligne de base)
-# ------------------------------------------------------------
-def voigt(x, amp, cen, sigma, gamma):
-    """Profil de Voigt (gaussienne ⊗ lorentzienne)"""
-    z = ((x - cen) + 1j * gamma) / (sigma * np.sqrt(2))
-    return amp * np.real(wofz(z)) / (sigma * np.sqrt(2 * np.pi))
-
-def linear_baseline(x, a, b):
-    return a * x + b
-
-def multi_peaks(x, *params):
-    """Modèle multi-pics générique"""
-    a, b = params[0], params[1]
-    y = linear_baseline(x, a, b)
-    n = (len(params) - 2) // 4
-    for i in range(n):
-        amp, cen, sigma, gamma = params[2 + 4*i : 6 + 4*i]
-        y += voigt(x, amp, cen, sigma, gamma)
-    return y
-
-# ------------------------------------------------------------
-# 2) Lecture des données
-# ------------------------------------------------------------
-def load_xps(filepath):
-    """Lit un fichier CSV à deux colonnes : BE, Intensity"""
-    df = pd.read_csv(filepath, comment='#', sep=r'\s+|,',
-                     engine='python', header=None,
-                     names=['BE', 'Intensity'])
-    df = df.dropna().sort_values('BE')
-    return df['BE'].values, df['Intensity'].values
-
-# ------------------------------------------------------------
-# 3) Ajustement générique pour un spectre donné
-# ------------------------------------------------------------
-def fit_spectrum(be, intensity, p0, bounds, label='Spectre', element='C1s'):
-    """
-    Effectue l'ajustement et trace le résultat.
-    p0 : paramètres initiaux [(amp, cen, sigma, gamma), ...]
-    bounds : (lower_bounds, upper_bounds) pour chaque paramètre
-    """
-    popt, _ = curve_fit(multi_peaks, be, intensity, p0=p0,
-                        bounds=bounds, maxfev=30000)
-    yfit = multi_peaks(be, *popt)
-    
-    n = (len(popt) - 2) // 4
-    
-    # Calcul des aires
-    areas = []
-    for i in range(n):
-        amp, cen, sigma, gamma = popt[2+4*i : 6+4*i]
-        area = amp * sigma * np.sqrt(2*np.pi)
-        areas.append(area)
-    
-    # Tracé
-    fig, ax = plt.subplots(figsize=(8, 5))
-    ax.plot(be, intensity, 'o', ms=2, color='#1f77b4', label='Données')
-    ax.plot(be, yfit, '-', color='#d62728', lw=1.8, label='Ajustement')
-    for i in range(n):
-        amp, cen, sigma, gamma = popt[2+4*i : 6+4*i]
-        ax.plot(be, voigt(be, amp, cen, sigma, gamma),
-                '--', lw=1.2, label=f'Pic {i+1} @ {cen:.1f} eV')
-    ax.plot(be, linear_baseline(be, popt[0], popt[1]),
-            ':', color='gray', label='Ligne de base')
-    ax.set_xlabel('Énergie de liaison (eV)')
-    ax.set_ylabel('Intensité (CPS)')
-    ax.set_title(f'Décomposition {element} — {label}')
-    ax.invert_xaxis()
-    ax.legend(fontsize=8)
-    ax.grid(alpha=0.3)
-    plt.tight_layout()
-    plt.savefig(f'{element}_{label}_decomp.png', dpi=200)
-    plt.close()
-    
-    return popt, areas
-
-# ------------------------------------------------------------
-# 4) Paramètres initiaux pour chaque élément et chaque état
-# ------------------------------------------------------------
-# Format : p0 = [a, b, (amp, cen, sigma, gamma) × n]
-# Les bornes (bounds) sont définies pour chaque pic.
-
-# --- C1s (4 pics) ---
-p0_C1s = [0.0, 1000,
-          5000, 285.0, 0.7, 0.5,
-          1500, 286.2, 0.8, 0.6,
-          1000, 287.6, 0.9, 0.6,
-          500, 289.0, 1.0, 0.7]
-bounds_C1s = (
-    [-np.inf, -np.inf, 0, 284.0, 0.3, 0.0, 0, 285.5, 0.3, 0.0, 0, 286.8, 0.3, 0.0, 0, 288.0, 0.3, 0.0],
-    [np.inf, np.inf, np.inf, 286.0, 2.5, 2.5, np.inf, 287.0, 2.5, 2.5, np.inf, 288.5, 2.5, 2.5, np.inf, 290.5, 2.5, 2.5]
-)
-
-# --- Cl2p (3 doublets -> simplifié en 3 pics principaux) ---
-p0_Cl2p = [0.0, 500,
-           2000, 200.5, 0.8, 0.6,
-           2000, 207.0, 0.8, 0.6,
-           2000, 208.2, 0.8, 0.6]
-bounds_Cl2p = (
-    [-np.inf, -np.inf, 0, 199.0, 0.3, 0.0, 0, 206.0, 0.3, 0.0, 0, 207.5, 0.3, 0.0],
-    [np.inf, np.inf, np.inf, 202.0, 2.5, 2.5, np.inf, 208.5, 2.5, 2.5, np.inf, 209.5, 2.5, 2.5]
-)
-
-# --- S2p (3 doublets -> simplifié en 4 pics) ---
-p0_S2p = [0.0, 500,
-          3000, 164.0, 0.8, 0.6,
-          1000, 165.5, 0.8, 0.6,
-          500, 167.8, 0.9, 0.7,
-          200, 169.1, 1.0, 0.7]
-bounds_S2p = (
-    [-np.inf, -np.inf, 0, 163.0, 0.3, 0.0, 0, 164.5, 0.3, 0.0, 0, 166.5, 0.3, 0.0, 0, 168.0, 0.3, 0.0],
-    [np.inf, np.inf, np.inf, 165.5, 2.5, 2.5, np.inf, 167.0, 2.5, 2.5, np.inf, 169.0, 2.5, 2.5, np.inf, 170.5, 2.5, 2.5]
-)
-
-# --- O1s (3 pics) ---
-p0_O1s = [0.0, 500,
-          2000, 532.5, 1.0, 0.8,
-          1500, 533.5, 1.0, 0.8,
-          500, 535.0, 1.2, 0.8]
-bounds_O1s = (
-    [-np.inf, -np.inf, 0, 531.5, 0.5, 0.0, 0, 532.5, 0.5, 0.0, 0, 534.0, 0.5, 0.0],
-    [np.inf, np.inf, np.inf, 533.5, 3.0, 3.0, np.inf, 534.5, 3.0, 3.0, np.inf, 536.5, 3.0, 3.0]
-)
-
-# ------------------------------------------------------------
-# 5) Exécution de l'analyse sur les 12 spectres
-# ------------------------------------------------------------
-elements = {
-    'C1s': (p0_C1s, bounds_C1s),
-    'Cl2p': (p0_Cl2p, bounds_Cl2p),
-    'S2p': (p0_S2p, bounds_S2p),
-    'O1s': (p0_O1s, bounds_O1s)
-}
-
-etats = ['Red', 'Ox', 'Ov']
-
-for el, (p0, bnds) in elements.items():
-    for etat in etats:
-        filename = f'{el}-{etat}.csv'
-        try:
-            be, intensity = load_xps(filename)
-            popt, areas = fit_spectrum(be, intensity, p0, bnds, label=etat, element=el)
-            print(f"--- {el} / {etat} ---")
-            print(f"  Aires des pics : {np.round(areas, 1)}")
-            print(f"  Pourcentages  : {np.round(100 * np.array(areas) / np.sum(areas), 1)} %")
-            print()
-        except FileNotFoundError:
-            print(f"Fichier {filename} introuvable. Veuillez le placer dans le dossier du script.\n")
-
-print("Analyse terminée. Les graphiques de décomposition ont été sauvegardés.")
-  </pre>
-  
-  <div class="note">
-    <b>Comment exécuter ce code :</b>
-    <ol>
-      <li>Assurez-vous d'avoir Python installé avec les bibliothèques <code class="inline">numpy</code>, <code class="inline">pandas</code>, <code class="inline">matplotlib</code> et <code class="inline">scipy</code>.</li>
-      <li>Placez les 12 fichiers CSV (ex: <code class="inline">C1s-Red.csv</code>) dans le même dossier que le script.</li>
-      <li>Exécutez le script. Il générera 12 images de décomposition (une pour chaque spectre) et affichera les pourcentages des aires de pics.</li>
-      <li>Les résultats numériques (aires et pourcentages) vous permettront de remplir les tableaux de composition présentés dans ce rapport.</li>
-    </ol>
-  </div>
-</section>
-
-<footer>
-  Compte rendu d'analyse — Spectroscopie XPS — Décomposition et Interprétation des Résultats.
-</footer>
 
 </div>
 </body>
-        </html>
+</html>
